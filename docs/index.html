@@ -92,5 +92,44 @@
     </div>
 
     <script src="script.js"></script>
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico">
+    <span class="material-symbols-outlined">developer_mode</span>
+</div>
+
+<div id="dev-tools-panel" class="hidden">
+    <div class="panel-header">
+        <div class="panel-title">
+            <span class="material-symbols-outlined">neurology</span>
+            <span>Painel de Diagnóstico Super Proteção</span>
+        </div>
+        <button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button>
+    </div>
+
+    <div class="panel-tabs">
+        <button class="tab-button active" data-tab="console">Console</button>
+        <button class="tab-button" data-tab="elements">Elementos</button>
+        <button class="tab-button" data-tab="performance">Desempenho</button>
+        <button class="tab-button" data-tab="info">Info</button>
+    </div>
+
+    <div class="panel-content">
+        <div id="console-tab-content" class="tab-content active">
+            <div class="console-toolbar">
+                <button id="console-clear-button">
+                    <span class="material-symbols-outlined">delete</span> Limpar
+                </button>
+            </div>
+            <div id="console-output" class="console-output"></div>
+        </div>
+
+        <div id="elements-tab-content" class="tab-content">
+            <div id="dom-tree-output" class="dom-tree-output"></div>
+        </div>
+
+        <div id="performance-tab-content" class="tab-content"></div>
+
+        <div id="info-tab-content" class="tab-content"></div>
+    </div>
+</div>
 </body>
 </html>
