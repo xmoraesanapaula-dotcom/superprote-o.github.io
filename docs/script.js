@@ -1,70 +1,149 @@
-// Aguarda o conteúdo da página ser totalmente carregado antes de executar o script
 document.addEventListener('DOMContentLoaded', () => {
-    
-    console.log("Super Proteção - Script de Monitoramento Ativado.");
 
-    const versionInfo = document.getElementById('version-info');
-    const statusIndicator = document.getElementById('status-indicator');
-    
-    // --- INICIALIZAÇÃO ---
-    // Define a versão do projeto
-    versionInfo.textContent = 'Nascemos como a versão 1.0';
-    // Define o status inicial como 'OK' (verde)
-    statusIndicator.classList.add('ok');
-    statusIndicator.title = 'Todos os scripts foram carregados com sucesso.';
+    // --- ELEMENTOS DO PAINEL ---
+    const trigger = document.getElementById('dev-tools-trigger');
+    const panel = document.getElementById('dev-tools-panel');
+    const closeButton = document.getElementById('dev-tools-close');
+    const tabs = document.querySelectorAll('.tab-button');
+    const contentAreas = document.querySelectorAll('.tab-content');
+    const consoleOutput = document.getElementById('console-output');
+    const consoleClearBtn = document.getElementById('console-clear-button');
+    const domTreeOutput = document.getElementById('dom-tree-output');
+    const performanceContent = document.getElementById('performance-tab-content');
+    const infoContent = document.getElementById('info-tab-content');
 
-    // --- FERRAMENTA 1: Monitor Global de Erros (Error Catcher) ---
-    // Esta função será chamada automaticamente se qualquer erro de JavaScript ocorrer na página.
-    window.onerror = function(message, source, lineno, colno, error) {
-        console.error("ERRO DETECTADO:", { message, source, lineno, error });
-        
-        // Mostra uma notificação visual na tela
-        showErrorToast(`Erro detectado: ${message}`);
+    // --- LÓGICA DE ABERTURA/FECHAMENTO E ABAS ---
+    trigger.addEventListener('click', () => panel.classList.remove('hidden'));
+    closeButton.addEventListener('click', () => panel.classList.add('hidden'));
 
-        // Muda o status para 'Erro' (vermelho)
-        statusIndicator.classList.remove('ok');
-        statusIndicator.classList.add('error');
-        statusIndicator.title = `Erro no script! Veja o console (F12) para detalhes.`;
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contentAreas.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`${tab.dataset.tab}-tab-content`).classList.add('active');
+        });
+    });
 
-        return true; // Impede que o erro padrão apareça no console do navegador
+    // --- MÓDULO 1: CONSOLE EMBUTIDO ---
+    const originalConsole = {
+        log: console.log,
+        warn: console.warn,
+        error: console.error,
+        info: console.info,
     };
 
-    // --- FERRAMENTA 2: Detector de Anomalias (Verificador de Links) ---
-    // Procura por links que ainda são placeholders (href="#") e avisa o desenvolvedor no console.
-    function checkLinkAnomalies() {
-        const allLinks = document.querySelectorAll('a');
-        let anomalyFound = false;
+    function createLogMessage(type, icon, args) {
+        const line = document.createElement('div');
+        line.className = `console-line ${type}`;
         
-        allLinks.forEach((link, index) => {
-            if (link.getAttribute('href') === '#') {
-                console.warn(`ANOMALIA ${index + 1}: Link com href="#" encontrado.`, link);
-                anomalyFound = true;
+        let message = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>`;
+        args.forEach(arg => {
+            if (typeof arg === 'object' && arg !== null) {
+                message += JSON.stringify(arg, null, 2);
+            } else {
+                message += arg;
             }
+            message += ' ';
+        });
+        message += '</div>';
+        line.innerHTML = message;
+        consoleOutput.appendChild(line);
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    console.log = function(...args) {
+        originalConsole.log.apply(console, args);
+        createLogMessage('log', 'terminal', args);
+    };
+    console.warn = function(...args) {
+        originalConsole.warn.apply(console, args);
+        createLogMessage('warn', 'warning', args);
+    };
+    console.error = function(...args) {
+        originalConsole.error.apply(console, args);
+        createLogMessage('error', 'error', args);
+    };
+    console.info = function(...args) {
+        originalConsole.info.apply(console, args);
+        createLogMessage('info', 'info', args);
+    };
+
+    consoleClearBtn.addEventListener('click', () => {
+        consoleOutput.innerHTML = '';
+        console.info("Console limpo.");
+    });
+    
+    console.info("Painel de Diagnóstico inicializado.");
+
+    // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
+    function buildDomTree(element, parentElement, depth = 0) {
+        if (element.id === 'dev-tools-panel' || element.id === 'dev-tools-trigger') return;
+
+        const node = document.createElement('div');
+        node.className = 'dom-node';
+        node.style.paddingLeft = `${depth * 20}px`;
+
+        let attributes = '';
+        for (const attr of element.attributes) {
+            attributes += ` <span class="dom-attribute-name">${attr.name}</span>="<span class="dom-attribute-value">${attr.value}</span>"`;
+        }
+
+        node.innerHTML = `&lt;<span class="dom-tag">${element.tagName.toLowerCase()}</span>${attributes}&gt;`;
+        parentElement.appendChild(node);
+        
+        // Destaque na página ao passar o mouse
+        let originalOutline = '';
+        node.addEventListener('mouseover', (e) => {
+            e.stopPropagation();
+            originalOutline = element.style.outline;
+            element.style.outline = '2px solid #60a5fa';
+        });
+        node.addEventListener('mouseout', (e) => {
+            e.stopPropagation();
+            element.style.outline = originalOutline;
         });
 
-        if (!anomalyFound) {
-            console.log("Verificação de links concluída. Nenhuma anomalia encontrada.");
-        }
+        element.childNodes.forEach(child => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+                buildDomTree(child, parentElement, depth + 1);
+            }
+        });
     }
+    buildDomTree(document.documentElement, domTreeOutput);
 
-    // Executa o verificador de links
-    checkLinkAnomalies();
-
-
-    // --- FUNÇÃO AUXILIAR: Mostrar Notificação de Erro (Toast) ---
-    function showErrorToast(message) {
-        const toast = document.getElementById('error-toast');
-        if (toast) {
-            toast.textContent = message;
-            toast.classList.add('show');
-
-            // Esconde a notificação após 5 segundos
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 5000);
+    // --- MÓDULO 3: MÉTRICAS DE DESEMPENHO ---
+    window.addEventListener('load', () => {
+        setTimeout(() => { // Espera um pouco para capturar todas as métricas
+            const perf = window.performance;
+            const resources = perf.getEntriesByType('resource');
+            let content = `<table class="info-table">`;
+            content += `<tr><td>Tempo total de carregamento:</td><td>${(perf.timing.loadEventEnd - perf.timing.navigationStart).toFixed(2)} ms</td></tr>`;
+            content += `<tr><td>Recursos carregados:</td><td>${resources.length}</td></tr>`;
+            content += `</table><h4 class="mt-4 font-bold">Recursos:</h4><table class="info-table">`;
+            resources.forEach(res => {
+                content += `<tr><td>${res.name.split('/').pop()}</td><td>${res.duration.toFixed(2)} ms</td></tr>`;
+            });
+            content += '</table>';
+            performanceContent.innerHTML = content;
+        }, 500);
+    });
+    
+    // --- MÓDULO 4: INFORMAÇÕES DA PÁGINA ---
+    function populateInfoTab() {
+        const info = {
+            'URL': window.location.href,
+            'Navegador (User Agent)': navigator.userAgent,
+            'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
+            'Versão do Projeto': '1.0',
+            'Linguagem': navigator.language
+        };
+        let content = `<table class="info-table">`;
+        for (const [key, value] of Object.entries(info)) {
+            content += `<tr><td>${key}:</td><td>${value}</td></tr>`;
         }
+        content += '</table>';
+        infoContent.innerHTML = content;
     }
-
-    // Para testar o detector de erros, remova o comentário da linha abaixo:
-    // testeDeErro(); 
+    populateInfoTab();
 });
