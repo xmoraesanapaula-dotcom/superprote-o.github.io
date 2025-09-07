@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <link rel="stylesheet" href="style.css">
@@ -21,7 +20,6 @@
     <div id="error-toast" class="error-toast"></div>
 
     <div class="flex min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
-
         <header class="sticky top-0 z-20 border-b border-gray-200 bg-white">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-3">
@@ -33,49 +31,11 @@
 
         <main class="flex-1">
             <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-
-                <div class="mb-10 border-b border-gray-200 pb-8">
+                 <div class="mb-10 border-b border-gray-200 pb-8">
                     <h2 class="text-4xl font-extrabold tracking-tight text-gray-900">Proteção Simplificada e Eficiente</h2>
-                    <p class="mt-4 max-w-3xl text-lg text-gray-600">Explore as funcionalidades e recursos do projeto Super Proteção. Nossa missão é oferecer segurança e tranquilidade através de tecnologia inovadora e fácil de usar.</p>
+                    <p class="mt-4 max-w-3xl text-lg text-gray-600">Explore as funcionalidades e recursos do projeto Super Proteção...</p>
                 </div>
-
-                <div class="space-y-12">
-                    <div>
-                        <h3 class="mb-6 border-b border-gray-200 pb-2 text-2xl font-bold text-gray-900">Funcionalidades Principais</h3>
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            <div class="card">
-                                <div class="flex flex-col p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600"><span class="material-symbols-outlined">shield</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900">Monitoramento Ativo</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600">Nosso sistema monitora continuamente para garantir que tudo esteja seguro, 24 horas por dia.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 bg-gray-50 px-6 py-3"><a class="link-card" href="#"><span>Saiba mais</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
-                            </div>
-                            <div class="card">
-                                <div class="flex flex-col p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600"><span class="material-symbols-outlined">notifications_active</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900">Alertas Instantâneos</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600">Receba notificações em tempo real no seu dispositivo sempre que uma atividade suspeita for detectada.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 bg-gray-50 px-6 py-3"><a class="link-card" href="https://github.com"><span>Saiba mais</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
-                            </div>
-                            <div class="card">
-                                <div class="flex flex-col p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600"><span class="material-symbols-outlined">data_usage</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900">Relatórios Detalhados</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600">Acesse relatórios completos e fáceis de entender sobre todas as atividades e eventos de segurança.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 bg-gray-50 px-6 py-3"><a class="link-card" href="#"><span>Saiba mais</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="space-y-12"></div>
             </div>
         </main>
 
@@ -88,48 +48,11 @@
                 </div>
             </div>
         </footer>
-
     </div>
+
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico">...</div>
+    <div id="dev-tools-panel" class="hidden">...</div>
 
     <script src="script.js"></script>
-    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico">
-    <span class="material-symbols-outlined">developer_mode</span>
-</div>
-
-<div id="dev-tools-panel" class="hidden">
-    <div class="panel-header">
-        <div class="panel-title">
-            <span class="material-symbols-outlined">neurology</span>
-            <span>Painel de Diagnóstico Super Proteção</span>
-        </div>
-        <button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button>
-    </div>
-
-    <div class="panel-tabs">
-        <button class="tab-button active" data-tab="console">Console</button>
-        <button class="tab-button" data-tab="elements">Elementos</button>
-        <button class="tab-button" data-tab="performance">Desempenho</button>
-        <button class="tab-button" data-tab="info">Info</button>
-    </div>
-
-    <div class="panel-content">
-        <div id="console-tab-content" class="tab-content active">
-            <div class="console-toolbar">
-                <button id="console-clear-button">
-                    <span class="material-symbols-outlined">delete</span> Limpar
-                </button>
-            </div>
-            <div id="console-output" class="console-output"></div>
-        </div>
-
-        <div id="elements-tab-content" class="tab-content">
-            <div id="dom-tree-output" class="dom-tree-output"></div>
-        </div>
-
-        <div id="performance-tab-content" class="tab-content"></div>
-
-        <div id="info-tab-content" class="tab-content"></div>
-    </div>
-</div>
 </body>
 </html>
