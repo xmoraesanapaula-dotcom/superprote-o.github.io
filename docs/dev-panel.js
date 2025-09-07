@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elementsSearchInput = document.getElementById('elements-search-input');
     const storageContent = document.getElementById('storage-tab-content');
     const consoleInput = document.getElementById('console-input');
+    const networkContent = document.getElementById('network-tab-content');
 
     const commandHistory = [];
     let historyIndex = 0;
@@ -128,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.4.3 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.5 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -196,8 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    console.info("Painel de Diagnóstico v1.4.3 (com histórico) inicializado.");
 
     // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
     function buildDomTree(element, parentElement, depth = 0) {
@@ -310,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.4.3',
+            'Versão do Projeto': '1.5',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -320,5 +319,73 @@ document.addEventListener('DOMContentLoaded', () => {
         content += '</table>';
         infoContent.innerHTML = content;
     }
+    
+    // --- MÓDULO 6: NETWORK INTERCEPTOR (NOVO v1.5) ---
+    function initializeNetworkInterceptor() {
+        if (!networkContent) return;
+
+        networkContent.innerHTML = `
+            <table class="network-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Status</th>
+                        <th>Método</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
+                <tbody id="network-log-body"></tbody>
+            </table>
+        `;
+
+        const networkLogBody = document.getElementById('network-log-body');
+        const originalFetch = window.fetch;
+
+        window.fetch = function(...args) {
+            const startTime = performance.now();
+            const url = args[0] instanceof Request ? args[0].url : args[0];
+            const method = args[0] instanceof Request ? args[0].method : (args[1]?.method || 'GET');
+            const shortUrl = url.split('/').pop().split('?')[0] || url; // Fallback para a URL completa
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="url">${shortUrl}</td>
+                <td class="status-pending">pendente...</td>
+                <td>${method}</td>
+                <td class="time">...</td>
+            `;
+            if (networkLogBody) networkLogBody.appendChild(row);
+
+            const fetchPromise = originalFetch.apply(this, args);
+            fetchPromise.then(response => {
+                const duration = (performance.now() - startTime).toFixed(0);
+                const statusCell = row.querySelector('td:nth-child(2)');
+                if (statusCell) {
+                    statusCell.textContent = `${response.status} ${response.statusText}`;
+                    statusCell.className = response.ok ? 'status-ok' : 'status-error';
+                }
+                const timeCell = row.querySelector('.time');
+                if (timeCell) timeCell.textContent = `${duration} ms`;
+
+            }).catch(error => {
+                const duration = (performance.now() - startTime).toFixed(0);
+                const statusCell = row.querySelector('td:nth-child(2)');
+                if (statusCell) {
+                    statusCell.textContent = 'Falhou';
+                    statusCell.className = 'status-error';
+                }
+                const timeCell = row.querySelector('.time');
+                if (timeCell) timeCell.textContent = `${duration} ms`;
+                
+                console.error("Erro de rede interceptado:", error);
+            });
+
+            return fetchPromise;
+        };
+    }
+
+    // Inicializa todos os módulos no final
     populateInfoTab();
+    initializeNetworkInterceptor();
+    console.info("Painel de Diagnóstico v1.5 (com aba Network) inicializado.");
 });
