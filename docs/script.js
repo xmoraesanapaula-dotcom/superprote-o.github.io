@@ -1,4 +1,4 @@
-// CÓDIGO JAVASCRIPT COMPLETO E CORRIGIDO
+// CÓDIGO JAVASCRIPT COMPLETO v1.1
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- ELEMENTOS DO DOM ---
@@ -15,9 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const versionInfo = document.getElementById('version-info');
     const statusIndicator = document.getElementById('status-indicator');
     const errorToast = document.getElementById('error-toast');
+    const consoleExportBtn = document.getElementById('console-export-button');
+    const elementsSearchInput = document.getElementById('elements-search-input');
+    const storageContent = document.getElementById('storage-tab-content');
 
     // --- INICIALIZAÇÃO E CONTROLES DO PAINEL ---
-    if (versionInfo) versionInfo.textContent = 'Nascemos como a versão 1.0';
+    if (versionInfo) versionInfo.textContent = 'v1.1'; // Atualiza a versão
     if (statusIndicator) {
         statusIndicator.classList.add('ok');
         statusIndicator.title = 'Todos os scripts foram carregados com sucesso.';
@@ -34,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetContent = document.getElementById(`${tab.dataset.tab}-tab-content`);
             if (targetContent) {
                 targetContent.classList.add('active');
+            }
+            // Atualiza a aba Storage sempre que for clicada, para pegar novos dados
+            if (tab.dataset.tab === 'storage') {
+                populateStorageTab();
             }
         });
     });
@@ -99,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error = function(...args) {
         originalConsole.error.apply(console, args);
         createLogMessage('error', 'error', args);
-        if (args.length > 0) handleVisualError(args[0]);
+        if (args.length > 0) handleVisualError(String(args[0]));
     };
     console.info = function(...args) {
         originalConsole.info.apply(console, args);
@@ -111,7 +118,30 @@ document.addEventListener('DOMContentLoaded', () => {
         console.info("Console limpo.");
     });
     
-    console.info("Painel de Diagnóstico e Alertas Visuais inicializados.");
+    if (consoleExportBtn) {
+        consoleExportBtn.addEventListener('click', () => {
+            if (!consoleOutput) return;
+            let logText = `--- Log do Console - Super Proteção v1.1 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            
+            consoleOutput.querySelectorAll('.console-line').forEach(line => {
+                const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
+                logText += `${type} ${line.innerText}\n`;
+            });
+
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `superprotecao-log-${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.info("Log do console exportado com sucesso.");
+        });
+    }
+
+    console.info("Painel de Diagnóstico v1.1 inicializado.");
 
     // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
     function buildDomTree(element, parentElement, depth = 0) {
@@ -149,35 +179,82 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     if (domTreeOutput) buildDomTree(document.documentElement, domTreeOutput);
+    
+    if (elementsSearchInput) {
+        elementsSearchInput.addEventListener('keyup', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const allNodes = domTreeOutput.querySelectorAll('.dom-node');
+            
+            allNodes.forEach(node => {
+                const tag = node.querySelector('.dom-tag');
+                if (tag && tag.textContent.toLowerCase().includes(searchTerm)) {
+                    node.style.display = 'block';
+                } else {
+                    node.style.display = 'none';
+                }
+            });
+        });
+    }
 
     // --- MÓDULO 3: MÉTRICAS DE DESEMPENHO ---
     window.addEventListener('load', () => {
         setTimeout(() => {
-            if (!performanceContent || !window.performance) return;
+            if (!performanceContent || !window.performance || !window.performance.getEntriesByType) return;
             const perf = window.performance;
             const resources = perf.getEntriesByType('resource');
             const navTiming = perf.getEntriesByType("navigation")[0];
             
+            if (!navTiming) return;
+
             let content = `<table class="info-table">`;
             content += `<tr><td>Tempo total de carregamento:</td><td>${navTiming.duration.toFixed(2)} ms</td></tr>`;
             content += `<tr><td>Recursos carregados:</td><td>${resources.length}</td></tr>`;
             content += `</table><h4 class="mt-4 font-bold">Recursos:</h4><table class="info-table">`;
             resources.forEach(res => {
-                content += `<tr><td>${res.name.split('/').pop()}</td><td>${res.duration.toFixed(2)} ms</td></tr>`;
+                const resourceName = res.name.split('/').pop();
+                if (resourceName) {
+                     content += `<tr><td>${resourceName}</td><td>${res.duration.toFixed(2)} ms</td></tr>`;
+                }
             });
             content += '</table>';
             performanceContent.innerHTML = content;
         }, 500);
     });
     
-    // --- MÓDULO 4: INFORMAÇÕES DA PÁGINA ---
+    // --- MÓDULO 4: STORAGE ---
+    function populateStorageTab() {
+        if (!storageContent) return;
+        storageContent.innerHTML = ''; 
+
+        const createStorageTable = (title, storage) => {
+            let tableHTML = `<div class="storage-section"><h3 class="storage-title">${title}</h3>`;
+            if (storage.length === 0) {
+                tableHTML += `<p>Nenhum dado encontrado.</p></div>`;
+                return tableHTML;
+            }
+
+            tableHTML += `<table class="storage-table"><thead><tr><th>Chave (Key)</th><th>Valor (Value)</th></tr></thead><tbody>`;
+            for (let i = 0; i < storage.length; i++) {
+                const key = storage.key(i);
+                const value = storage.getItem(key);
+                tableHTML += `<tr><td class="key">${key}</td><td class="value">${value}</td></tr>`;
+            }
+            tableHTML += `</tbody></table></div>`;
+            return tableHTML;
+        };
+
+        storageContent.innerHTML += createStorageTable('Local Storage', window.localStorage);
+        storageContent.innerHTML += createStorageTable('Session Storage', window.sessionStorage);
+    }
+    
+    // --- MÓDULO 5: INFORMAÇÕES DA PÁGINA ---
     function populateInfoTab() {
         if (!infoContent) return;
         const info = {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.0',
+            'Versão do Projeto': '1.1',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
