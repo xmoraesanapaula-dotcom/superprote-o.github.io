@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.1</title>
+    <title>Super Proteção v1.2</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -105,11 +105,11 @@
         </div>
         <div class="panel-content">
             <div id="console-tab-content" class="tab-content active">
-                <div class="panel-toolbar">
-                    <button id="console-clear-button"><span class="material-symbols-outlined">delete</span> Limpar</button>
-                    <button id="console-export-button"><span class="material-symbols-outlined">download</span> Exportar Log</button>
-                </div>
                 <div id="console-output" class="console-output"></div>
+                <div class="console-input-area">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                    <input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter...">
+                </div>
             </div>
             <div id="elements-tab-content" class="tab-content">
                 <div class="panel-toolbar">
@@ -123,6 +123,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="dev-panel.js" defer></script>
+    <script src="main.js" defer></script>
 </body>
 </html>
