@@ -1,6 +1,10 @@
-/* Estilos personalizados para o projeto Super Proteção */
+/* CÓDIGO CSS COMPLETO v1.1 */
 
-/* Animação suave para os cards ao passar o mouse */
+/* Estilos Globais e da Página Principal */
+html {
+    scroll-behavior: smooth;
+}
+
 .card {
     @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out;
 }
@@ -9,56 +13,10 @@
     @apply shadow-lg transform -translate-y-1;
 }
 
-/* Estilo do link dentro do card */
 .link-card {
     @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
 }
 
-
-/* --- FERRAMENTAS DE DESENVOLVEDOR --- */
-
-/* Estilo para a notificação de erro (toast) */
-.error-toast {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background-color: #EF4444; /* Vermelho */
-    color: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    z-index: 1000;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    visibility: hidden;
-}
-
-.error-toast.show {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-}
-
-/* Estilo para o indicador de status no rodapé */
-.status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-}
-
-.status-indicator.ok {
-    background-color: #22C55E; /* Verde */
-    box-shadow: 0 0 8px #22C55E;
-}
-
-.status-indicator.error {
-    background-color: #EF4444; /* Vermelho */
-    box-shadow: 0 0 8px #EF4444;
-}
 /* --- ESTILOS PARA O PAINEL DE DIAGNÓSTICO --- */
 
 /* Cores e Variáveis */
@@ -172,22 +130,6 @@
 }
 
 /* Estilos específicos da aba CONSOLE */
-.console-toolbar {
-    padding-bottom: 5px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid var(--panel-border);
-}
-#console-clear-button {
-    background: none;
-    border: 1px solid var(--panel-border);
-    color: var(--panel-text);
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
 .console-output {
     font-family: var(--code-font);
     font-size: 14px;
@@ -218,10 +160,90 @@
 .dom-attribute-name { color: #facc15; } /* Amarelo */
 .dom-attribute-value { color: #6ee7b7; } /* Verde */
 
-/* Estilos para as outras abas */
+/* Estilos para a aba INFO */
 .info-table { width: 100%; font-size: 14px; }
 .info-table td { padding: 6px; border-bottom: 1px solid var(--panel-border); }
 .info-table td:first-child { font-weight: bold; color: var(--color-info); }
+
+
+/* --- ESTILOS v1.1: APRIMORAMENTOS DO PAINEL DE DIAGNÓSTICO --- */
+
+/* Barra de ferramentas genérica para as abas */
+.panel-toolbar {
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--panel-border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Estilos para os botões da barra de ferramentas do console */
+.console-toolbar button {
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--panel-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+.console-toolbar button:hover {
+    background-color: #374151;
+}
+.console-toolbar button .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* Estilo para a barra de busca da aba Elementos */
+.panel-search-input {
+    width: 100%;
+    background-color: #374151;
+    border: 1px solid var(--panel-border);
+    color: var(--panel-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--code-font);
+}
+.panel-search-input::placeholder {
+    color: #9ca3af;
+}
+
+/* Estilos para a aba Storage */
+.storage-section {
+    margin-bottom: 20px;
+}
+.storage-title {
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+.storage-table {
+    width: 100%;
+    font-size: 14px;
+    font-family: var(--code-font);
+    border-collapse: collapse;
+}
+.storage-table th, .storage-table td {
+    padding: 6px;
+    border: 1px solid var(--panel-border);
+    text-align: left;
+}
+.storage-table th {
+    background-color: #374151;
+}
+.storage-table .key {
+    color: var(--color-warn);
+}
+.storage-table .value {
+    color: var(--color-log);
+    word-break: break-all; /* Quebra palavras longas para não estourar a tabela */
+}
 
 /* --- ESTILOS ADICIONAIS: INDICADOR DE STATUS E NOTIFICAÇÃO --- */
 
