@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.2 */
+/* CÓDIGO CSS COMPLETO v1.3 */
 
 /* Estilos Globais e da Página Principal */
 html {
@@ -121,14 +121,14 @@ html {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px;
-    display: flex; /* Adicionado para layout flexível */
+    display: flex; 
 }
 .tab-content {
     display: none;
-    width: 100%; /* Garante que o conteúdo da aba ocupe todo o espaço */
+    width: 100%; 
 }
 .tab-content.active {
-    display: flex; /* Alterado para flex para o console interativo */
+    display: flex; 
     flex-direction: column;
     height: 100%;
 }
@@ -172,6 +172,7 @@ html {
 
 
 /* --- ESTILOS v1.2: APRIMORAMENTOS DO PAINEL DE DIAGNÓSTICO --- */
+/* (Estes estilos continuam válidos para a v1.3) */
 
 /* Barra de ferramentas genérica para as abas */
 .panel-toolbar {
