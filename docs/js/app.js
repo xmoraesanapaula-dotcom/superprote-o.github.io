@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('mainContent');
     const sidebarNav = document.getElementById('sidebarNav');
     const tocContainer = document.getElementById('tocContainer');
-    const themeToggle = document.getElementById('themeToggle');
+    const themeToggleButton = document.getElementById('themeToggleButton'); // Novo botão para abrir o dropdown
+    const themeDropdown = document.getElementById('themeDropdown'); // Novo dropdown
     const mobileMenuButton = document.getElementById('mobileMenuButton');
     const sidebar = document.getElementById('sidebar');
     const searchInput = document.getElementById('searchInput');
@@ -13,19 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let searchIndex = [];
     let navStructure = [];
     let tocObserver;
+    const availableThemes = ['light', 'dark', 'light-high-contrast', 'dark-high-contrast'];
 
     /**
      * Carrega e renderiza um arquivo Markdown no conteúdo principal.
      * @param {string} path - O caminho para o arquivo .md.
+     * @param {string} searchTerm - Termo de pesquisa para realçar.
      */
-    const loadContent = async (path) => {
+    const loadContent = async (path, searchTerm = '') => {
+        // Remove a classe 'loaded' para reiniciar a animação
+        mainContent.classList.remove('loaded');
+
         try {
             const response = await fetch(path);
             if (!response.ok) throw new Error('Documento não encontrado.');
             
-            const markdown = await response.text();
+            let markdown = await response.text();
+            
+            // Realça termos de pesquisa no conteúdo (se houver)
+            if (searchTerm) {
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                markdown = markdown.replace(regex, '<span class="highlight">$1</span>');
+            }
+
             mainContent.innerHTML = marked.parse(markdown);
             
+            // Adiciona a classe 'loaded' após um pequeno atraso para a animação
+            setTimeout(() => {
+                mainContent.classList.add('loaded');
+            }, 50);
+
             Prism.highlightAllUnder(mainContent);
             updateActiveLink(path);
             generateAndObserveToc();
@@ -41,8 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const handleRouting = () => {
         const defaultPath = navStructure[0]?.children ? navStructure[0].children[0].path : navStructure[0]?.path;
-        const path = window.location.hash.substring(1) || defaultPath || 'home.md';
-        loadContent(path);
+        const path = window.location.hash.substring(1).split('?')[0] || defaultPath || 'home.md'; // Ignora query params
+        const params = new URLSearchParams(window.location.hash.substring(1).split('?')[1]);
+        const searchTerm = params.get('q') || ''; // Pega o termo de pesquisa da URL se existir
+
+        loadContent(path, searchTerm);
     };
 
     /**
@@ -77,7 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tocObserver) tocObserver.disconnect();
         tocContainer.innerHTML = '';
         const headings = mainContent.querySelectorAll('h2, h3');
-        if (headings.length < 2) return;
+        if (headings.length < 2) { // Não gerar TOC se menos de 2 headings
+            document.getElementById('tocSidebar').style.display = 'none';
+            return;
+        } else {
+            document.getElementById('tocSidebar').style.display = 'block'; // Mostra se houver TOC
+        }
 
         const ul = document.createElement('ul');
         headings.forEach(h => {
@@ -86,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const li = document.createElement('li');
             const a = document.createElement('a');
-            a.href = `#${id}`;
+            a.href = `#${window.location.hash.split('?')[0].substring(1)}?q=${searchInput.value}#${id}`; // Mantém termo de busca na URL
             a.textContent = h.textContent;
             a.dataset.targetId = id;
             a.classList.add(`toc-${h.tagName.toLowerCase()}`);
@@ -102,9 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
             entries.forEach(entry => {
                 const id = entry.target.id;
                 const link = tocContainer.querySelector(`a[data-target-id="${id}"]`);
-                if (link && entry.isIntersecting) {
-                    tocLinks.forEach(l => l.classList.remove('toc-active'));
-                    link.classList.add('toc-active');
+                if (link) { // Verifica se o link existe
+                    if (entry.isIntersecting) {
+                        tocLinks.forEach(l => l.classList.remove('toc-active'));
+                        link.classList.add('toc-active');
+                    }
                 }
             });
         }, observerOptions);
@@ -123,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const content = await response.text();
                     searchIndex.push({ path: item.path, title: item.title, content: content });
                 } catch (e) {
-                    console.error(`Não foi possível indexar: ${item.path}`);
+                    console.error(`Não foi possível indexar: ${item.path}`, e);
                 }
             }
             if (item.children) {
@@ -144,20 +172,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const results = searchIndex.filter(item => 
-            item.title.toLowerCase().includes(query) || 
+        // Prioriza resultados que contêm a query no título
+        const titleResults = searchIndex.filter(item => item.title.toLowerCase().includes(query));
+        const contentResults = searchIndex.filter(item => 
+            !item.title.toLowerCase().includes(query) && // Evita duplicados já no título
             item.content.toLowerCase().includes(query)
         );
+
+        const results = [...titleResults, ...contentResults];
 
         if (results.length > 0) {
             results.forEach(item => {
                 const resultItem = document.createElement('a');
-                resultItem.href = `#${item.path}`;
+                resultItem.href = `#${item.path}?q=${encodeURIComponent(query)}`; // Adiciona termo na URL
                 resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `<span class="title">${item.title}</span><span class="path">${item.path}</span>`;
+                
+                // Realça o termo de busca no título do resultado
+                const highlightedTitle = item.title.replace(new RegExp(query, 'gi'), '<span class="highlight">$&</span>');
+                
+                resultItem.innerHTML = `<span class="title">${highlightedTitle}</span><span class="path">${item.path}</span>`;
                 resultItem.onclick = () => {
                     searchInput.value = '';
                     searchResults.classList.remove('visible');
+                    // Não precisa mais chamar loadContent aqui, o hashchange fará isso
                 };
                 searchResults.appendChild(resultItem);
             });
@@ -165,6 +202,26 @@ document.addEventListener('DOMContentLoaded', () => {
             searchResults.innerHTML = '<div class="no-results">Nenhum resultado encontrado.</div>';
         }
         searchResults.classList.add('visible');
+    };
+
+    /**
+     * Altera o tema do site.
+     * @param {string} themeName - O nome do tema ('light', 'dark', etc.).
+     */
+    const setTheme = (themeName) => {
+        document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('theme', themeName);
+        updateThemeDropdownActiveState(themeName);
+    };
+
+    /**
+     * Atualiza o estado ativo dos botões no dropdown de temas.
+     * @param {string} activeTheme - O tema atualmente ativo.
+     */
+    const updateThemeDropdownActiveState = (activeTheme) => {
+        themeDropdown.querySelectorAll('button').forEach(button => {
+            button.classList.toggle('active-theme', button.dataset.themeName === activeTheme);
+        });
     };
 
     // --- FUNÇÕES AUXILIARES ---
@@ -187,11 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- INICIALIZAÇÃO E EVENTOS ---
     const init = async () => {
+        // Inicializa o tema
         const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        setTheme(savedTheme);
 
         try {
-            const response = await fetch('nav.json');
+            const response = await fetch('nav.json'); // Atualizado para nav.json
             navStructure = await response.json();
             buildNav(navStructure, sidebarNav);
             handleRouting();
@@ -202,11 +260,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         window.addEventListener('hashchange', handleRouting);
-        themeToggle.addEventListener('click', () => {
-            const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+        
+        // Evento para abrir/fechar o dropdown de temas
+        themeToggleButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Impede que o clique no botão feche o dropdown imediatamente
+            themeDropdown.classList.toggle('visible');
         });
+
+        // Eventos para selecionar o tema
+        themeDropdown.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                setTheme(button.dataset.themeName);
+                themeDropdown.classList.remove('visible'); // Fecha o dropdown após a seleção
+            });
+        });
+
+        // Fecha o dropdown se clicar fora
+        document.addEventListener('click', (e) => {
+            if (!themeDropdown.contains(e.target) && e.target !== themeToggleButton) {
+                themeDropdown.classList.remove('visible');
+            }
+        });
+
         mobileMenuButton.addEventListener('click', () => sidebar.classList.toggle('open'));
         searchInput.addEventListener('keyup', performSearch);
         searchInput.addEventListener('focus', performSearch);
