@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.1 */
+/* CÓDIGO CSS COMPLETO v1.2 */
 
 /* Estilos Globais e da Página Principal */
 html {
@@ -121,18 +121,24 @@ html {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px;
+    display: flex; /* Adicionado para layout flexível */
 }
 .tab-content {
     display: none;
+    width: 100%; /* Garante que o conteúdo da aba ocupe todo o espaço */
 }
 .tab-content.active {
-    display: block;
+    display: flex; /* Alterado para flex para o console interativo */
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Estilos específicos da aba CONSOLE */
 .console-output {
     font-family: var(--code-font);
     font-size: 14px;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 .console-line {
     padding: 4px 0;
@@ -150,7 +156,6 @@ html {
 /* Estilos específicos da aba ELEMENTOS */
 .dom-tree-output { font-family: var(--code-font); font-size: 14px; }
 .dom-node {
-    padding-left: 20px;
     cursor: pointer;
 }
 .dom-node:hover {
@@ -166,7 +171,7 @@ html {
 .info-table td:first-child { font-weight: bold; color: var(--color-info); }
 
 
-/* --- ESTILOS v1.1: APRIMORAMENTOS DO PAINEL DE DIAGNÓSTICO --- */
+/* --- ESTILOS v1.2: APRIMORAMENTOS DO PAINEL DE DIAGNÓSTICO --- */
 
 /* Barra de ferramentas genérica para as abas */
 .panel-toolbar {
@@ -242,7 +247,37 @@ html {
 }
 .storage-table .value {
     color: var(--color-log);
-    word-break: break-all; /* Quebra palavras longas para não estourar a tabela */
+    word-break: break-all;
+}
+
+/* Estilos para o Console Interativo */
+.console-input-area {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--panel-border);
+    padding: 4px 0;
+    margin-top: 4px;
+}
+#console-input {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    color: var(--panel-text);
+    font-family: var(--code-font);
+    font-size: 14px;
+    outline: none;
+    padding-left: 8px;
+}
+.console-line.command {
+    color: #9ca3af;
+}
+.console-line.return {
+    color: #a78bfa;
+}
+.console-return-icon {
+    transform: rotate(180deg);
+    font-size: 16px;
+    color: #9ca3af;
 }
 
 /* --- ESTILOS ADICIONAIS: INDICADOR DE STATUS E NOTIFICAÇÃO --- */
@@ -259,7 +294,7 @@ html {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
-    z-index: 10000; /* Z-index maior para ficar sobre o painel */
+    z-index: 10000;
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
