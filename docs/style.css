@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.4.2 */
+/* CÓDIGO CSS COMPLETO v1.5 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -41,12 +41,12 @@ body {
 }
 
 /* v1.4.2: CORREÇÃO DE COR DE TEXTO NO MODO ESCURO */
-.dark .card h4, .dark .card p {
-    color: var(--text-secondary);
-}
-.dark h2, .dark h3 {
-    color: var(--text-primary);
-}
+.dark .text-gray-900 { color: var(--text-primary); }
+.dark .text-gray-600 { color: var(--text-secondary); }
+.dark .card h4 { color: var(--text-primary); }
+.dark .card p { color: var(--text-secondary); }
+.dark h2, .dark h3 { color: var(--text-primary); }
+
 
 .link-card {
     @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
@@ -69,56 +69,16 @@ footer {
 
 
 /* --- v1.4: ESTILOS PARA CONTEÚDO MARKDOWN (CLASSE .prose) --- */
-.prose h1, .prose h2, .prose h3, .prose h4 {
-    color: var(--text-primary);
-    margin-bottom: 1em;
-    margin-top: 1.5em;
-}
-.prose p {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1em;
-}
-.prose a {
-    color: var(--primary-color);
-    text-decoration: underline;
-}
-.prose strong {
-    color: var(--text-primary);
-}
-.prose ul, .prose ol {
-    color: var(--text-secondary);
-    padding-left: 2em;
-    margin-bottom: 1em;
-}
-.prose li {
-    margin-bottom: 0.5em;
-}
-.prose blockquote {
-    border-left: 4px solid var(--primary-color);
-    padding-left: 1em;
-    font-style: italic;
-    color: var(--text-secondary);
-}
-.prose code {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-family: var(--code-font);
-}
-.prose pre {
-    background-color: #1e293b;
-    color: #e2e8f0;
-    padding: 1em;
-    border-radius: 8px;
-    overflow-x: auto;
-}
-.prose pre code {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-}
+.prose h1, .prose h2, .prose h3, .prose h4 { color: var(--text-primary); margin-bottom: 1em; margin-top: 1.5em; }
+.prose p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 1em; }
+.prose a { color: var(--primary-color); text-decoration: underline; }
+.prose strong { color: var(--text-primary); }
+.prose ul, .prose ol { color: var(--text-secondary); padding-left: 2em; margin-bottom: 1em; }
+.prose li { margin-bottom: 0.5em; }
+.prose blockquote { border-left: 4px solid var(--primary-color); padding-left: 1em; font-style: italic; color: var(--text-secondary); }
+.prose code { background-color: var(--secondary-color); color: var(--primary-color); padding: 0.2em 0.4em; border-radius: 4px; font-family: var(--code-font); }
+.prose pre { background-color: #1e293b; color: #e2e8f0; padding: 1em; border-radius: 8px; overflow-x: auto; }
+.prose pre code { background-color: transparent; color: inherit; padding: 0; }
 
 
 /* --- ESTILOS PARA O PAINEL DE DIAGNÓSTICO --- */
@@ -180,6 +140,36 @@ footer {
 .console-line.command { color: #9ca3af; }
 .console-line.return { color: #a78bfa; }
 .console-return-icon { transform: rotate(180deg); font-size: 16px; color: #9ca3af; }
+
+/* --- v1.5: ESTILOS PARA A ABA NETWORK --- */
+.network-table {
+    width: 100%;
+    font-size: 12px;
+    font-family: var(--code-font);
+    border-collapse: collapse;
+}
+.network-table th, .network-table td {
+    padding: 6px 8px;
+    border: 1px solid var(--panel-border);
+    text-align: left;
+    white-space: nowrap;
+}
+.network-table th {
+    background-color: #374151;
+}
+.network-table td.url {
+    white-space: normal;
+    word-break: break-all;
+    color: var(--color-log);
+}
+.network-table .status-ok {
+    color: #6ee7b7; /* Verde */
+    font-weight: bold;
+}
+.network-table .status-error {
+    color: var(--color-error); /* Vermelho */
+    font-weight: bold;
+}
 
 /* --- ESTILOS ADICIONAIS: INDICADOR DE STATUS E NOTIFICAÇÃO --- */
 .error-toast { position: fixed; bottom: 20px; left: 20px; background-color: #EF4444; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-family: 'Inter', sans-serif; font-size: 14px; z-index: 10000; opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; visibility: hidden; }
