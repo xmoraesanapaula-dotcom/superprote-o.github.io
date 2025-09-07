@@ -59,3 +59,166 @@
     background-color: #EF4444; /* Vermelho */
     box-shadow: 0 0 8px #EF4444;
 }
+/* --- ESTILOS PARA O PAINEL DE DIAGNÓSTICO --- */
+
+/* Cores e Variáveis */
+:root {
+    --panel-bg: #1f2937; /* Cinza escuro */
+    --panel-text: #d1d5db; /* Cinza claro */
+    --panel-border: #4b5563;
+    --color-log: #e5e7eb;
+    --color-warn: #facc15; /* Amarelo */
+    --color-error: #f87171; /* Vermelho */
+    --color-info: #60a5fa; /* Azul */
+    --code-font: 'Courier New', Courier, monospace;
+}
+
+/* Botão Flutuante */
+#dev-tools-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--panel-bg);
+    color: var(--panel-text);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9998;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+}
+#dev-tools-trigger:hover {
+    transform: scale(1.1);
+}
+
+/* Painel Principal */
+#dev-tools-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40vh; /* 40% da altura da tela */
+    background-color: var(--panel-bg);
+    color: var(--panel-text);
+    border-top: 2px solid var(--panel-border);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
+    font-family: 'Inter', sans-serif;
+}
+#dev-tools-panel.hidden {
+    display: none;
+}
+
+/* Cabeçalho do Painel */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--panel-border);
+    background-color: #374151;
+}
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+}
+.close-button {
+    background: none;
+    border: none;
+    color: var(--panel-text);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Abas */
+.panel-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--panel-border);
+}
+.tab-button {
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: var(--panel-text);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+.tab-button.active {
+    color: white;
+    font-weight: bold;
+    border-bottom-color: var(--color-info);
+}
+
+/* Conteúdo das Abas */
+.panel-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+
+/* Estilos específicos da aba CONSOLE */
+.console-toolbar {
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--panel-border);
+}
+#console-clear-button {
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--panel-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.console-output {
+    font-family: var(--code-font);
+    font-size: 14px;
+}
+.console-line {
+    padding: 4px 0;
+    border-bottom: 1px solid #374151;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+.console-line.log { color: var(--color-log); }
+.console-line.warn { color: var(--color-warn); }
+.console-line.error { color: var(--color-error); }
+.console-line.info { color: var(--color-info); }
+.console-icon { font-size: 16px; }
+
+/* Estilos específicos da aba ELEMENTOS */
+.dom-tree-output { font-family: var(--code-font); font-size: 14px; }
+.dom-node {
+    padding-left: 20px;
+    cursor: pointer;
+}
+.dom-node:hover {
+    background-color: #374151;
+}
+.dom-tag { color: #f87171; } /* Vermelho */
+.dom-attribute-name { color: #facc15; } /* Amarelo */
+.dom-attribute-value { color: #6ee7b7; } /* Verde */
+
+/* Estilos para as outras abas */
+.info-table { width: 100%; font-size: 14px; }
+.info-table td { padding: 6px; border-bottom: 1px solid var(--panel-border); }
+.info-table td:first-child { font-weight: bold; color: var(--color-info); }
