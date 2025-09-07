@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.4 */
+/* CÓDIGO CSS COMPLETO v1.4.1 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -25,7 +25,6 @@ html {
     scroll-behavior: smooth;
 }
 body {
-    /* Garante que o body use as variáveis de cor para o dark mode */
     background-color: var(--background-primary);
     color: var(--text-primary);
 }
@@ -37,11 +36,9 @@ body {
     background-color: var(--background-secondary);
     border-color: var(--secondary-color);
 }
-
 .card:hover {
     @apply shadow-lg transform -translate-y-1;
 }
-
 .link-card {
     @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
 }
@@ -50,6 +47,14 @@ body {
 }
 .dark .link-card:hover {
     color: #60a5fa;
+}
+
+/* --- v1.4.1: CORREÇÃO PARA O RODAPÉ --- */
+footer {
+    background-color: #f9fafb; /* Cor clara padrão do rodapé */
+}
+.dark footer {
+    background-color: #0b111e; /* Cor escura consistente */
 }
 
 
@@ -107,7 +112,7 @@ body {
 
 
 /* --- ESTILOS PARA O PAINEL DE DIAGNÓSTICO --- */
-/* (Esta seção continua a mesma da v1.3, sem alterações) */
+/* (Esta seção continua a mesma, sem alterações) */
 :root {
     --panel-bg: #1f2937;
     --panel-text: #d1d5db;
