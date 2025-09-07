@@ -32,10 +32,22 @@
                     <svg class="search-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10.68 11.74a6.5 6.5 0 0 1-7.922-8.982 6.5 6.5 0 0 1 8.982 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04ZM8.5 1.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Z"></path></svg>
                     <div class="search-results" id="searchResults"></div>
                 </div>
-                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                    <svg class="sun-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path fill-rule="evenodd" d="M8 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 14a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"></path></svg>
-                    <svg class="moon-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M9.598 1.591a.75.75 0 0 1 .782 1.273 5.25 5.25 0 0 0 1.025 5.023.75.75 0 0 1-1.273.782A6.75 6.75 0 0 1 1.025 2.852a.75.75 0 0 1 1.273-.782 5.25 5.25 0 0 0 5.023 1.025.75.75 0 0 1 .782-1.273Z"></path></svg>
-                </button>
+                
+                <div class="theme-selector">
+                    <button class="theme-toggle-button" id="themeToggleButton" aria-label="Alternar tema">
+                        <svg class="sun-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path fill-rule="evenodd" d="M8 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 14a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"></path></svg>
+                        <svg class="moon-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M9.598 1.591a.75.75 0 0 1 .782 1.273 5.25 5.25 0 0 0 1.025 5.023.75.75 0 0 1-1.273.782A6.75 6.75 0 0 1 1.025 2.852a.75.75 0 0 1 1.273-.782 5.25 5.25 0 0 0 5.023 1.025.75.75 0 0 1 .782-1.273Z"></path></svg>
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-triangle-down ml-1">
+                            <path d="M4.427 7.757L8 11.33l3.573-3.573A.25.25 0 0112 8V4.75a.75.75 0 00-1.22-.573L8 6.58 5.22.477A.75.75 0 004 4.75V8c0 .114.045.224.127.303z"></path>
+                        </svg>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <button data-theme-name="light">Claro</button>
+                        <button data-theme-name="dark">Escuro</button>
+                        <button data-theme-name="light-high-contrast">Claro Contraste</button>
+                        <button data-theme-name="dark-high-contrast">Escuro Contraste</button>
+                    </div>
+                </div>
             </div>
         </header>
 
