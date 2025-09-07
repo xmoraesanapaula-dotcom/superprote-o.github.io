@@ -1,5 +1,6 @@
 /* GERAL E VARIÁVEIS DE TEMA */
 :root {
+    /* Light Theme (Default) */
     --bg-primary: #ffffff;
     --bg-secondary: #f6f8fa;
     --bg-tertiary: #e1e4e8;
@@ -7,14 +8,15 @@
     --text-secondary: #57606a;
     --text-link: #0969da;
     --border-primary: #d0d7de;
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     --code-bg: #f6f8fa;
     --code-text: #24292f;
-    --header-height: 60px;
-    --sidebar-width: 260px;
-    --toc-width: 240px;
+    --code-border: #d0d7de; /* Nova variável para borda do código */
+    --search-result-hover: #eaeef2; /* Nova variável */
+    --selection-bg: #cce2ff; /* Nova variável */
+    --selection-text: #000000; /* Nova variável */
 }
 
+/* Dark Theme */
 [data-theme='dark'] {
     --bg-primary: #0d1117;
     --bg-secondary: #161b22;
@@ -25,8 +27,47 @@
     --border-primary: #30363d;
     --code-bg: #161b22;
     --code-text: #c9d1d9;
+    --code-border: #30363d;
+    --search-result-hover: #1f2732;
+    --selection-bg: #00459e;
+    --selection-text: #ffffff;
 }
 
+/* Light High Contrast Theme */
+[data-theme='light-high-contrast'] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f4f6;
+    --bg-tertiary: #e5e7eb;
+    --text-primary: #000000; /* Preto puro */
+    --text-secondary: #4b5563;
+    --text-link: #00008b; /* Azul marinho */
+    --border-primary: #9ca3af;
+    --code-bg: #f0f2f5;
+    --code-text: #000000;
+    --code-border: #9ca3af;
+    --search-result-hover: #dde1e6;
+    --selection-bg: #90caf9;
+    --selection-text: #000000;
+}
+
+/* Dark High Contrast Theme */
+[data-theme='dark-high-contrast'] {
+    --bg-primary: #000000; /* Preto puro */
+    --bg-secondary: #121212;
+    --bg-tertiary: #212121;
+    --text-primary: #ffffff; /* Branco puro */
+    --text-secondary: #e0e0e0;
+    --text-link: #82b1ff; /* Azul mais vibrante */
+    --border-primary: #424242;
+    --code-bg: #121212;
+    --code-text: #ffffff;
+    --code-border: #424242;
+    --search-result-hover: #292929;
+    --selection-bg: #0056b3;
+    --selection-text: #ffffff;
+}
+
+/* Base global */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -34,11 +75,18 @@
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transição mais suave */
     line-height: 1.6;
+    font-size: 16px;
+}
+
+/* Seleção de texto */
+::selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
 }
 
 /* LAYOUT PRINCIPAL */
@@ -73,7 +121,7 @@ body {
 .header-left, .header-right { display: flex; align-items: center; gap: 1rem; }
 .logo-link { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--text-primary); }
 .logo-link span { font-size: 1.25rem; font-weight: 600; }
-.octicon-logo { fill: var(--text-primary); }
+.octicon-logo { fill: var(--text-primary); transition: fill 0.3s ease; } /* Transição para o SVG */
 
 .mobile-menu-button { display: none; background: none; border: none; cursor: pointer; fill: var(--text-primary); }
 
@@ -85,16 +133,71 @@ body {
     padding: 0.5rem 0.75rem 0.5rem 2.5rem;
     color: var(--text-primary);
     width: 250px;
-    transition: width 0.2s;
+    transition: width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
-.search-input:focus { width: 400px; outline: 2px solid var(--text-link); }
-.search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); fill: var(--text-secondary); }
+.search-input:focus { width: 400px; outline: 2px solid var(--text-link); border-color: var(--text-link); }
+.search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); fill: var(--text-secondary); transition: fill 0.3s ease; }
 
-.theme-toggle { background: none; border: none; cursor: pointer; padding: 5px; }
-.theme-toggle svg { fill: var(--text-primary); width: 16px; height: 16px; }
+/* Novo seletor de tema */
+.theme-selector {
+    position: relative;
+    display: inline-block;
+}
+.theme-toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    fill: var(--text-primary);
+    transition: fill 0.3s ease;
+    display: flex; /* Para alinhar o ícone e a seta */
+    align-items: center;
+}
+.theme-toggle-button svg { width: 16px; height: 16px; }
 .moon-icon { display: none; }
-[data-theme='dark'] .sun-icon { display: none; }
-[data-theme='dark'] .moon-icon { display: block; }
+/* Aqui você vai controlar qual ícone aparece */
+[data-theme='light'] .moon-icon,
+[data-theme='light-high-contrast'] .moon-icon { display: none; }
+[data-theme='dark'] .sun-icon,
+[data-theme='dark-high-contrast'] .sun-icon { display: none; }
+[data-theme='dark'] .moon-icon,
+[data-theme='dark-high-contrast'] .moon-icon { display: block; }
+
+.theme-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%; /* Abaixo do botão */
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 180px;
+    z-index: 10;
+    padding: 0.5rem 0;
+}
+.theme-dropdown.visible {
+    display: block;
+}
+.theme-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.95rem;
+}
+.theme-dropdown button:hover {
+    background-color: var(--bg-secondary);
+}
+.theme-dropdown button.active-theme {
+    font-weight: 600;
+    background-color: var(--bg-tertiary);
+}
 
 
 /* SIDEBAR (NAVEGAÇÃO ESQUERDA) */
@@ -103,6 +206,7 @@ body {
     border-right: 1px solid var(--border-primary);
     padding: 1.5rem;
     overflow-y: auto;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 
 .sidebar nav ul {
@@ -113,6 +217,7 @@ body {
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
+    font-size: 1.05rem;
 }
 
 .sidebar nav ul li a {
@@ -121,7 +226,7 @@ body {
     text-decoration: none;
     color: var(--text-secondary);
     border-radius: 6px;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 .sidebar nav ul li a:hover {
     background-color: var(--bg-tertiary);
@@ -129,9 +234,13 @@ body {
 }
 .sidebar nav ul li a.active {
     background-color: var(--text-link);
-    color: white;
+    color: white; /* Cor do texto no link ativo para contraste */
 }
-[data-theme='dark'] .sidebar nav ul li a.active { color: #0d1117; }
+/* No tema dark, o texto ativo em background azul pode precisar de uma cor diferente */
+[data-theme='dark'] .sidebar nav ul li a.active,
+[data-theme='dark-high-contrast'] .sidebar nav ul li a.active {
+    color: #0d1117; /* Garante que o texto seja escuro no background azul claro */
+}
 
 
 /* CONTEÚDO PRINCIPAL */
@@ -139,18 +248,27 @@ body {
     padding: 2rem 3rem;
     overflow-y: auto;
     max-width: 900px;
+    opacity: 0; /* Começa invisível para a animação */
+    transform: translateY(10px); /* Começa ligeiramente abaixo */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Animação */
+}
+.main-content.loaded {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .main-content h1, .main-content h2, .main-content h3, .main-content h4 {
     margin-top: 2rem;
     margin-bottom: 1rem;
     font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 .main-content h1 { font-size: 2.5rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 0.5rem; }
 .main-content h2 { font-size: 2rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 0.4rem; }
 .main-content h3 { font-size: 1.5rem; }
 .main-content p { margin-bottom: 1rem; }
-.main-content a { color: var(--text-link); text-decoration: none; }
+.main-content a { color: var(--text-link); text-decoration: none; transition: color 0.3s ease; }
 .main-content a:hover { text-decoration: underline; }
 .main-content ul, .main-content ol { padding-left: 2rem; margin-bottom: 1rem; }
 .main-content blockquote {
@@ -167,17 +285,22 @@ body {
     background-color: var(--code-bg);
     padding: 0.2em 0.4em;
     border-radius: 6px;
+    color: var(--code-text);
 }
 .main-content pre {
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--code-border); /* Usando a nova variável */
     border-radius: 6px;
     margin-bottom: 1rem;
     position: relative;
+    background-color: var(--code-bg); /* Garante que o fundo do bloco seja o do tema */
 }
 .main-content pre code {
     background-color: transparent;
     padding: 0;
     border-radius: 0;
+    display: block; /* Para o padding funcionar corretamente em pre > code */
+    padding: 1em;
+    overflow-x: auto; /* Garante scroll horizontal em linhas longas */
 }
 .copy-button {
     position: absolute;
@@ -190,7 +313,8 @@ body {
     padding: 0.3rem 0.6rem;
     border-radius: 6px;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+    font-size: 0.8rem;
 }
 .main-content pre:hover .copy-button {
     opacity: 1;
@@ -202,8 +326,9 @@ body {
     overflow-y: auto;
     border-left: 1px solid var(--border-primary);
     font-size: 0.9rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-.toc-sidebar h3 { font-size: 1rem; margin-bottom: 1rem; }
+.toc-sidebar h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--text-primary); }
 .toc-sidebar #tocContainer ul { list-style: none; }
 .toc-sidebar #tocContainer a {
     display: block;
@@ -212,7 +337,7 @@ body {
     text-decoration: none;
     border-left: 2px solid transparent;
     padding-left: 0.75rem;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 .toc-sidebar #tocContainer a:hover { color: var(--text-link); }
 .toc-sidebar #tocContainer a.toc-active {
@@ -228,7 +353,7 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 400px;
+    width: 400px; /* Ajustado para ser igual ao input focado */
     background-color: var(--bg-primary);
     border: 1px solid var(--border-primary);
     border-radius: 6px;
@@ -237,6 +362,7 @@ body {
     overflow-y: auto;
     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     z-index: 200;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .search-results.visible {
     display: block;
@@ -247,12 +373,13 @@ body {
     text-decoration: none;
     display: block;
     color: var(--text-primary);
+    transition: background-color 0.2s ease;
 }
 .search-result-item:last-child {
     border-bottom: none;
 }
 .search-result-item:hover {
-    background-color: var(--bg-secondary);
+    background-color: var(--search-result-hover); /* Usando nova variável */
 }
 .search-result-item .title {
     font-weight: 600;
@@ -268,6 +395,19 @@ body {
     color: var(--text-secondary);
 }
 
+/* Realce de termos de pesquisa */
+.highlight {
+    background-color: yellow;
+    color: black;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+[data-theme='dark'] .highlight,
+[data-theme='dark-high-contrast'] .highlight {
+    background-color: #f7e07a; /* Amarelo mais visível no escuro */
+    color: #1a1a1a;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
     .container {
@@ -277,6 +417,8 @@ body {
             "sidebar main";
     }
     .toc-sidebar { display: none; }
+    .search-input:focus { width: 300px; } /* Ajuste para telas menores */
+    .search-results { width: 300px; }
 }
 
 @media (max-width: 768px) {
@@ -302,6 +444,10 @@ body {
     }
     .main-content { padding: 1.5rem; }
     .mobile-menu-button { display: block; }
-    .search-input { width: 150px; }
-    .search-input:focus { width: 200px; }
+    .search-input { width: 100px; padding-left: 2rem; }
+    .search-input:focus { width: calc(100vw - 150px); } /* Ocupa quase toda a largura */
+    .search-icon { left: 0.5rem; }
+    .search-results { width: calc(100vw - 3rem); left: 1.5rem; right: 1.5rem; } /* Centra os resultados */
+    .header-right { gap: 0.5rem; }
+    .logo-link span { font-size: 1.1rem; }
 }
