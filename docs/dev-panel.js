@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const storageContent = document.getElementById('storage-tab-content');
     const consoleInput = document.getElementById('console-input');
 
+    // v1.3: Variáveis para o Histórico de Comandos
+    const commandHistory = [];
+    let historyIndex = 0;
+
     // Se o painel não existir na página, este script não faz mais nada.
     if (!panel) return;
 
@@ -124,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.2 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.3 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -146,8 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (consoleInput) {
         consoleInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                const command = e.target.value;
+            const command = e.target.value.trim();
+
+            if (e.key === 'Enter' && command !== '') {
+                // v1.3: Adiciona o comando ao histórico
+                if (commandHistory[commandHistory.length - 1] !== command) {
+                    commandHistory.push(command);
+                }
+                historyIndex = commandHistory.length;
+                
                 createLogMessage('command', 'chevron_right', [command]);
                 try {
                     const result = (new Function(`return ${command}`))();
@@ -168,11 +179,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 e.target.value = '';
                 if (consoleOutput) consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            } else if (e.key === 'ArrowUp') {
+                // v1.3: Navega para o comando anterior no histórico
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    e.target.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                // v1.3: Navega para o próximo comando no histórico
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    e.target.value = commandHistory[historyIndex];
+                } else {
+                    // Se chegar ao final do histórico, limpa o campo
+                    historyIndex = commandHistory.length;
+                    e.target.value = '';
+                }
             }
         });
     }
 
-    console.info("Painel de Diagnóstico v1.2 (interativo) inicializado.");
+    console.info("Painel de Diagnóstico v1.3 (com histórico) inicializado.");
 
     // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
     function buildDomTree(element, parentElement, depth = 0) {
@@ -285,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.2',
+            'Versão do Projeto': '1.3',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
