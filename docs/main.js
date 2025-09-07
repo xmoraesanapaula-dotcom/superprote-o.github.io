@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DA VERSÃO ---
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.4.2';
+        versionInfo.textContent = 'v1.4.3';
     }
 
     // --- v1.4: LÓGICA DO MODO ESCURO (DARK MODE) ---
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    console.log("Script principal (main.js) v1.4.2 carregado com sucesso.");
+    console.log("Script principal (main.js) v1.4.3 carregado com sucesso.");
 
     // No futuro, a lógica para animações de cards, formulários, etc., viria aqui.
 });
