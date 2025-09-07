@@ -18,3 +18,4 @@ function calculateTotal(items) {
 
 const myCart = [{ price: 10 }, { price: 25 }];
 console.log(calculateTotal(myCart));
+```
