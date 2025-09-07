@@ -1,187 +1,155 @@
-# Bem-vindo à Documentação do **Super Proteção**
+# Bem-vindo à Documentação do Super Proteção
 
-Este é o primeiro documento oficial do projeto **Super Proteção**, carregado dinamicamente a partir de um arquivo Markdown!
+Este é o documento oficial do projeto **Super Proteção**, carregado dinamicamente a partir de um arquivo Markdown.
 
 Nossa missão é oferecer **segurança, praticidade e tranquilidade** através de tecnologia inovadora, acessível e fácil de usar.
 
-Este sistema de documentação foi criado para ser:
-
-* **Simples:** Fácil de escrever, ler e manter.
-* **Flexível:** Suporta textos, listas, imagens, links, blocos de código e muito mais.
-* **Integrado:** Funciona perfeitamente com o layout do site e as ferramentas do projeto.
-* **Escalável:** Permite crescimento e organização conforme novos recursos e artigos forem adicionados.
-
 ---
 
-## Como Funciona
+## Webhooks
 
-A página que você está vendo (`documento.html`) é apenas um **molde**.
-O conteúdo que aparece aqui vem diretamente do arquivo **`/docs/artigos/introducao.md`**.
+O **Super Proteção** fornece suporte a **Webhooks** para permitir que sua aplicação seja notificada em tempo real sobre eventos importantes.
 
-O script **`doc-loader.js`** é responsável por:
+### Funcionamento
 
-1. **Buscar** o arquivo `.md` especificado.
-2. **Converter** o conteúdo de Markdown para HTML.
-3. **Exibir** o resultado dentro da área central da página.
-4. **Gerar o sumário** automaticamente na barra lateral a partir dos títulos (H2, H3, etc.).
+1. Você cadastra uma URL de callback no sistema.
+2. Sempre que um evento ocorrer, o **Super Proteção** envia uma requisição HTTP `POST` para a sua URL.
+3. Sua aplicação processa os dados recebidos e executa as ações necessárias.
 
-Dessa forma, cada documento é totalmente modular e fácil de atualizar.
+### Eventos Disponíveis
 
----
+* `usuario_criado` → disparado quando um novo usuário é registrado.
+* `usuario_desativado` → disparado quando um usuário é desativado.
+* `login_suspeito` → disparado quando ocorre uma tentativa de login fora do padrão.
+* `token_expirado` → disparado quando um token atinge a data de expiração.
 
-## Estrutura do Projeto
+### Exemplo de Payload
 
-A documentação é organizada da seguinte maneira:
-
-```
-/docs
- ├── /artigos
- │    ├── introducao.md
- │    ├── instalacao.md
- │    ├── configuracao.md
- │    └── faq.md
- ├── documento.html
- ├── style.css
- └── doc-loader.js
+```json
+{
+  "evento": "login_suspeito",
+  "usuario": "matheus@example.com",
+  "ip": "200.100.50.25",
+  "data": "2025-09-07T20:30:00Z"
+}
 ```
 
-* **/docs/artigos/** → Contém todos os arquivos `.md` da documentação.
-* **documento.html** → Página modelo onde o conteúdo renderizado aparece.
-* **style.css** → Define os estilos de layout e formatação (cores, fontes, blocos de código).
-* **doc-loader.js** → Faz a leitura, conversão e exibição dos arquivos Markdown.
+---
+
+## Integrações Externas
+
+### Integração com Telegram
+
+É possível configurar o **Super Proteção** para enviar notificações diretamente para um canal ou grupo no **Telegram**.
+
+#### Exemplo de Mensagem Enviada
+
+```
+[Super Proteção] Alerta de segurança
+Evento: login_suspeito
+Usuário: matheus@example.com
+Data: 2025-09-07 20:30:00
+```
+
+Para isso, basta utilizar um **Bot Token** do Telegram e cadastrar o `chat_id` do grupo/canal.
 
 ---
 
-## Exemplo de Bloco de Código
+### Integração com Slack
 
-Os blocos de código podem ser escritos em várias linguagens.
-O estilo visual é controlado por **`style.css`**, garantindo consistência em toda a documentação.
+No **Slack**, as notificações podem ser enviadas para um canal específico usando **Incoming Webhooks**.
 
-### Exemplo em JavaScript
+#### Exemplo de Payload
+
+```json
+{
+  "text": "[Super Proteção] Novo usuário criado: matheus@example.com"
+}
+```
+
+---
+
+### Integração com WhatsApp
+
+A integração com **WhatsApp** pode ser feita utilizando provedores como **Twilio** ou **Meta Cloud API**.
+
+#### Exemplo de Notificação
+
+```
+[Super Proteção]
+Alerta: Tentativa de login suspeita
+Usuário: ana@example.com
+IP: 201.150.33.40
+```
+
+---
+
+## Boas Práticas de Segurança Digital
+
+Para garantir a segurança da documentação e da API, siga as recomendações abaixo:
+
+### Armazenamento Seguro de Credenciais
+
+* Nunca exponha tokens de autenticação em código público.
+* Utilize variáveis de ambiente (`.env`) em vez de armazenar chaves diretamente no código.
+* Revogue imediatamente tokens comprometidos.
+
+### Proteção de Endpoints
+
+* Utilize sempre **HTTPS**.
+* Implemente controle de **rate limit** para evitar abusos.
+* Habilite logs de auditoria para monitorar acessos.
+
+### Uso Correto de Webhooks
+
+* Valide a origem das requisições recebidas.
+* Implemente autenticação nos endpoints que recebem Webhooks.
+* Armazene e registre todos os eventos recebidos para auditoria futura.
+
+---
+
+## Exemplo Completo de Integração
+
+### Recebendo Webhook de Alerta no Backend (Node.js)
 
 ```javascript
-// Exemplo de código em JavaScript
-function saudacao(nome) {
-  console.log(`Olá, ${nome}! Bem-vindo à documentação.`);
-}
+import express from "express";
 
-saudacao('Usuário');
-```
+const app = express();
+app.use(express.json());
 
-### Exemplo em HTML
+app.post("/webhook/seguranca", (req, res) => {
+  const evento = req.body;
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Exemplo</title>
-</head>
-<body>
-  <h1>Olá, mundo!</h1>
-  <p>Este é um exemplo em HTML.</p>
-</body>
-</html>
-```
+  console.log("Evento recebido:", evento);
 
-### Exemplo em CSS
+  if (evento.evento === "login_suspeito") {
+    // Notificar via e-mail, SMS ou outro canal
+    console.log(`Alerta: login suspeito detectado para ${evento.usuario}`);
+  }
 
-```css
-body {
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  color: #333;
-}
+  res.status(200).send("OK");
+});
 
-h1 {
-  color: #0057d9;
-}
+app.listen(4000, () => {
+  console.log("Servidor de Webhooks ativo em http://localhost:4000");
+});
 ```
 
 ---
 
-## Adicionando Novos Documentos
+## Roadmap de Integrações
 
-1. Crie um novo arquivo `.md` dentro da pasta `/docs/artigos/`.
-
-   * Exemplo: `seguranca-avancada.md`
-2. Estruture o conteúdo em Markdown (com títulos, listas, códigos, imagens, etc.).
-3. O **`doc-loader.js`** automaticamente detectará os títulos e os exibirá no sumário.
-4. Crie links entre documentos usando o formato padrão:
-
-```markdown
-[Ir para Instalação](./instalacao.md)
-```
+* Suporte nativo para **Microsoft Teams**.
+* Criação de conectores para **Zapier** e **Integromat**.
+* Automação de respostas em caso de eventos críticos (ex: bloqueio automático após login suspeito).
+* Central de notificações unificada no painel web do **Super Proteção**.
 
 ---
 
-## Boas Práticas de Documentação
+## Conclusão
 
-* **Clareza:** Explique cada funcionalidade de forma simples.
-* **Organização:** Divida em tópicos e subtópicos usando títulos (`##`, `###`).
-* **Exemplos:** Inclua sempre blocos de código ou imagens quando necessário.
-* **Atualização constante:** Sempre que uma nova funcionalidade for criada, adicione documentação correspondente.
-* **Padronização:** Utilize o mesmo estilo de escrita e formatação em todos os arquivos.
+A documentação do **Super Proteção** é projetada para ser simples, clara e expansível.
+O suporte a **API REST, Webhooks e integrações externas** permite que empresas e desenvolvedores adaptem o sistema para diferentes cenários.
 
----
-
-## Recursos Avançados
-
-Além do básico, você pode enriquecer a documentação com:
-
-* **Imagens:**
-
-  ```markdown
-  ![Logo do Projeto](/docs/imagens/logo.png)
-  ```
-
-* **Citações:**
-
-  > "Segurança não é um produto, mas um processo contínuo."
-
-* **Listas de Tarefas:**
-
-  * [x] Criar sistema de carregamento dinâmico
-  * [x] Configurar estilo dos blocos de código
-  * [ ] Escrever documentação detalhada de API
-
-* **Links externos:**
-  [Documentação oficial do Markdown](https://www.markdownguide.org/)
-
----
-
-## Perguntas Frequentes (FAQ)
-
-**1. Preciso de um servidor para rodar?**
-Não, basta abrir o arquivo `documento.html` em um navegador moderno.
-
-**2. Posso usar essa documentação em outros projetos?**
-Sim, o sistema é genérico e pode ser adaptado a qualquer aplicação.
-
-**3. Como adicionar suporte para outras linguagens de programação nos blocos de código?**
-Basta utilizar a sintaxe padrão do Markdown:
-
-````markdown
-```python
-print("Exemplo em Python")
-````
-
-```
-
----
-
-## Próximos Passos
-
-Agora que o sistema de documentação está funcional, o próximo passo é:  
-1. Criar novos arquivos Markdown dentro de `/docs/artigos/`.  
-2. Conectar os documentos entre si com links internos.  
-3. Expandir a documentação com guias, tutoriais e exemplos práticos.  
-4. Manter um guia de **Boas Práticas** para novos contribuidores.  
-
----
-
-🔒 **Super Proteção** — Construindo um futuro mais seguro, simples e confiável.  
-
----
-
-Quer que eu prepare **outros arquivos `.md` prontos** (como `instalacao.md`, `configuracao.md` e `faq.md`) para você já ter um conjunto inicial de documentação, ou prefere só expandir este arquivo introdutório por enquanto?
-```
+Combinando boas práticas de segurança, flexibilidade e escalabilidade, o **Super Proteção** está preparado para atender desde projetos pessoais até ambientes corporativos de alta complexidade.
