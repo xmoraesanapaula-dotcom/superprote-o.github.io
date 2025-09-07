@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Constrói a navegação da barra lateral a partir do _nav.json.
+     * Constrói a navegação da barra lateral a partir do nav.json.
      */
     const buildNav = (items, parentElement) => {
         const ul = document.createElement('ul');
@@ -191,14 +191,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         try {
-            const response = await fetch('_nav.json');
+            const response = await fetch('nav.json');
             navStructure = await response.json();
             buildNav(navStructure, sidebarNav);
             handleRouting();
             await buildSearchIndex(navStructure);
         } catch(error) {
             console.error("Falha ao carregar a navegação:", error);
-            mainContent.innerHTML = "<h1>Erro Crítico</h1><p>Não foi possível carregar a navegação do site (_nav.json). Verifique o console para mais detalhes.</p>";
+            mainContent.innerHTML = "<h1>Erro Crítico</h1><p>Não foi possível carregar a navegação do site (nav.json). Verifique o console para mais detalhes.</p>";
         }
 
         window.addEventListener('hashchange', handleRouting);
