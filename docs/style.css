@@ -1,0 +1,61 @@
+/* Estilos personalizados para o projeto Super Proteção */
+
+/* Animação suave para os cards ao passar o mouse */
+.card {
+    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out;
+}
+
+.card:hover {
+    @apply shadow-lg transform -translate-y-1;
+}
+
+/* Estilo do link dentro do card */
+.link-card {
+    @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
+}
+
+
+/* --- FERRAMENTAS DE DESENVOLVEDOR --- */
+
+/* Estilo para a notificação de erro (toast) */
+.error-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #EF4444; /* Vermelho */
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    visibility: hidden;
+}
+
+.error-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+/* Estilo para o indicador de status no rodapé */
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.status-indicator.ok {
+    background-color: #22C55E; /* Verde */
+    box-shadow: 0 0 8px #22C55E;
+}
+
+.status-indicator.error {
+    background-color: #EF4444; /* Vermelho */
+    box-shadow: 0 0 8px #EF4444;
+}
