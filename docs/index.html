@@ -3,14 +3,18 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.4.3</title>
+    <title>Super Proteção v1.5</title>
+
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <link rel="stylesheet" href="style.css">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
+
 <body class="bg-[var(--background-primary)] text-[var(--text-primary)] transition-colors duration-500">
     <div id="error-toast" class="error-toast"></div>
 
@@ -29,6 +33,7 @@
                 </button>
             </div>
         </header>
+
         <main class="flex-1">
             <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
                 <div class="mb-10 border-b border-gray-200 dark:border-[var(--secondary-color)] pb-8">
@@ -98,7 +103,7 @@
             <button class="tab-button" data-tab="elements">Elementos</button>
             <button class="tab-button" data-tab="performance">Desempenho</button>
             <button class="tab-button" data-tab="storage">Storage</button>
-            <button class="tab-button" data-tab="info">Info</button>
+            <button class="tab-button" data-tab="network">Network</button> <button class="tab-button" data-tab="info">Info</button>
         </div>
         <div class="panel-content">
             <div id="console-tab-content" class="tab-content active">
@@ -116,7 +121,7 @@
             </div>
             <div id="performance-tab-content" class="tab-content"></div>
             <div id="storage-tab-content" class="tab-content"></div>
-            <div id="info-tab-content" class="tab-content"></div>
+            <div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
         </div>
     </div>
 
