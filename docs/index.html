@@ -1,1 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docs</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/prism-theme.css">
+    <script src="js/lib/marked.min.js" defer></script>
+    <script src="js/lib/prism.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Abrir menu">
+                    <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path></svg>
+                </button>
+                <a href="#" class="logo-link">
+                    <svg height="32" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="32" class="octicon-logo">
+                        <path fill-rule="evenodd" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.19.01-.82.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21-.15.46-.55.38A8.013 8.013 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
+                    </svg>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="header-right">
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Pesquisar..." class="search-input" id="searchInput">
+                    <svg class="search-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10.68 11.74a6.5 6.5 0 0 1-7.922-8.982 6.5 6.5 0 0 1 8.982 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04ZM8.5 1.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Z"></path></svg>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                    <svg class="sun-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path fill-rule="evenodd" d="M8 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 14a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"></path></svg>
+                    <svg class="moon-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M9.598 1.591a.75.75 0 0 1 .782 1.273 5.25 5.25 0 0 0 1.025 5.023.75.75 0 0 1-1.273.782A6.75 6.75 0 0 1 1.025 2.852a.75.75 0 0 1 1.273-.782 5.25 5.25 0 0 0 5.023 1.025.75.75 0 0 1 .782-1.273Z"></path></svg>
+                </button>
+            </div>
+        </header>
 
+        <aside class="sidebar" id="sidebar">
+            <nav id="sidebarNav"></nav>
+        </aside>
+
+        <main class="main-content" id="mainContent"></main>
+        
+        <aside class="toc-sidebar" id="tocSidebar">
+             <h3>Nesta página</h3>
+             <div id="tocContainer"></div>
+        </aside>
+    </div>
+</body>
+</html>
