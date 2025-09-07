@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Página Inicial",
+    "path": "home.md"
+  },
+  {
+    "title": "Guias de Uso",
+    "children": [
+      {
+        "title": "Começando",
+        "path": "guias/getting-started.md"
+      }
+    ]
+  },
+  {
+    "title": "Recursos",
+    "children": [
+      {
+        "title": "Pesquisa e Temas",
+        "path": "features/search-and-theme.md"
+      }
+    ]
+  }
+]
