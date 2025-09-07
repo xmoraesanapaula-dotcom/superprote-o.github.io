@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.4 - Documento</title>
+    <title>Super Proteção v1.4.1 - Documento</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -65,11 +65,41 @@
     </div>
 
     <div id="dev-tools-panel" class="hidden">
+        <div class="panel-header">
+            <div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div>
+            <button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button>
         </div>
+        <div class="panel-tabs">
+            <button class="tab-button active" data-tab="console">Console</button>
+            <button class="tab-button" data-tab="elements">Elementos</button>
+            <button class="tab-button" data-tab="performance">Desempenho</button>
+            <button class="tab-button" data-tab="storage">Storage</button>
+            <button class="tab-button" data-tab="info">Info</button>
+        </div>
+        <div class="panel-content">
+            <div id="console-tab-content" class="tab-content active">
+                <div id="console-output" class="console-output"></div>
+                <div class="console-input-area">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                    <input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter...">
+                </div>
+            </div>
+            <div id="elements-tab-content" class="tab-content">
+                <div class="panel-toolbar">
+                    <input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag (ex: div)...">
+                </div>
+                <div id="dom-tree-output" class="dom-tree-output"></div>
+            </div>
+            <div id="performance-tab-content" class="tab-content"></div>
+            <div id="storage-tab-content" class="tab-content"></div>
+            <div id="info-tab-content" class="tab-content"></div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
-    <script src="doc-loader.js" defer></script> </body>
+    <script src="doc-loader.js" defer></script>
+</body>
 </html>
