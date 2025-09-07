@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createLogMessage('info', 'info', args);
     };
     
-    // O botão de limpar console não existe mais na v1.2+, mas o código não quebra.
+    // O botão de limpar console foi removido do HTML na v1.4, mas mantemos a lógica caso volte.
     if(consoleClearBtn) consoleClearBtn.addEventListener('click', () => {
         if(consoleOutput) consoleOutput.innerHTML = '';
         console.info("Console limpo.");
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.4.2 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.4.3 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    console.info("Painel de Diagnóstico v1.4.2 (com histórico) inicializado.");
+    console.info("Painel de Diagnóstico v1.4.3 (com histórico) inicializado.");
 
     // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
     function buildDomTree(element, parentElement, depth = 0) {
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.4.2',
+            'Versão do Projeto': '1.4.3',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
