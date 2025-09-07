@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const storageContent = document.getElementById('storage-tab-content');
     const consoleInput = document.getElementById('console-input');
 
-    // v1.3: Variáveis para o Histórico de Comandos
     const commandHistory = [];
     let historyIndex = 0;
 
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.3 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.4 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -153,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const command = e.target.value.trim();
 
             if (e.key === 'Enter' && command !== '') {
-                // v1.3: Adiciona o comando ao histórico
                 if (commandHistory[commandHistory.length - 1] !== command) {
                     commandHistory.push(command);
                 }
@@ -180,20 +178,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.value = '';
                 if (consoleOutput) consoleOutput.scrollTop = consoleOutput.scrollHeight;
             } else if (e.key === 'ArrowUp') {
-                // v1.3: Navega para o comando anterior no histórico
                 e.preventDefault();
                 if (historyIndex > 0) {
                     historyIndex--;
                     e.target.value = commandHistory[historyIndex];
                 }
             } else if (e.key === 'ArrowDown') {
-                // v1.3: Navega para o próximo comando no histórico
                 e.preventDefault();
                 if (historyIndex < commandHistory.length - 1) {
                     historyIndex++;
                     e.target.value = commandHistory[historyIndex];
                 } else {
-                    // Se chegar ao final do histórico, limpa o campo
                     historyIndex = commandHistory.length;
                     e.target.value = '';
                 }
@@ -201,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    console.info("Painel de Diagnóstico v1.3 (com histórico) inicializado.");
+    console.info("Painel de Diagnóstico v1.4 inicializado.");
 
     // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
     function buildDomTree(element, parentElement, depth = 0) {
@@ -314,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.3',
+            'Versão do Projeto': '1.4',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -324,5 +319,4 @@ document.addEventListener('DOMContentLoaded', () => {
         content += '</table>';
         infoContent.innerHTML = content;
     }
-    populateInfoTab();
-});
+    populateInfoT
