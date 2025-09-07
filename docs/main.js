@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.2';
+        versionInfo.textContent = 'v1.3';
     }
 
     console.log("Script principal (main.js) carregado com sucesso.");
