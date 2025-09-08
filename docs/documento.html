@@ -78,6 +78,12 @@
         </div>
         <div class="panel-content">
             <div id="console-tab-content" class="tab-content active">
+                <div class="panel-toolbar console-toolbar">
+                    <button id="console-clear-button" title="Limpar console">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span>Limpar</span>
+                    </button>
+                </div>
                 <div id="console-output" class="console-output"></div>
                 <div class="console-input-area">
                     <span class="material-symbols-outlined">chevron_right</span>
@@ -86,7 +92,7 @@
             </div>
             <div id="elements-tab-content" class="tab-content">
                 <div class="panel-toolbar">
-                    <input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag (ex: div)...">
+                    <input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe...">
                 </div>
                 <div id="dom-tree-output" class="dom-tree-output"></div>
             </div>
