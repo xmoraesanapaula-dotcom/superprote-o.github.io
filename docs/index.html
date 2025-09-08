@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.6.2</title>
+    <title>Super Proteção 3.0.0</title>
 
     <script>
         (function() {
@@ -29,9 +29,13 @@
 <body class="bg-[var(--background-primary)] text-[var(--text-primary)] transition-colors duration-500">
     <div id="error-toast" class="error-toast"></div>
 
-    <div class="flex min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-3 bg-[var(--background-primary)]">
-            <div class="flex items-center gap-8">
+    <div class="flex size-full min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
+            <div class="flex items-center gap-4">
+                <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                    <span class="sr-only">Abrir menu</span>
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
                 <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
                     <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
                     <h1 class="text-xl font-bold">Super Proteção</h1>
@@ -40,7 +44,7 @@
             <div class="flex items-center gap-4">
                 <form id="header-search-form" action="busca.html" method="GET" class="relative hidden sm:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar na documentação..." type="search" />
+                    <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar..." type="search" />
                 </form>
                 <button class="rounded-full" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
                     <span class="sr-only">Toggle theme</span>
@@ -49,76 +53,61 @@
             </div>
         </header>
 
-        <main class="flex-1">
-            <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-                <div class="mb-10 border-b border-gray-200 dark:border-[var(--secondary-color)] pb-8">
-                    <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-[var(--text-primary)]">Proteção Simplificada e Eficiente</h2>
-                    <p class="mt-4 max-w-3xl text-lg text-gray-600 dark:text-[var(--text-secondary)]">Explore as funcionalidades e recursos do projeto Super Proteção. Nossa missão é oferecer segurança e tranquilidade através de tecnologia inovadora e fácil de usar.</p>
+        <div class="flex flex-1">
+            <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0 pt-8">
+                <div class="flex items-center justify-between mb-4 lg:hidden">
+                    <h2 class="text-lg font-semibold">Navegação</h2>
+                    <button id="sidebar-close-btn" class="p-2 rounded-md text-[var(--text-primary)]">
+                        <span class="sr-only">Fechar menu</span>
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
-                <div class="space-y-12">
-                    <div>
-                        <h3 class="mb-6 border-b border-gray-200 dark:border-[var(--secondary-color)] pb-2 text-2xl font-bold text-gray-900 dark:text-[var(--text-primary)]">Funcionalidades Principais</h3>
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            <div class="card">
-                                <div class="p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600"><span class="material-symbols-outlined">shield</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900 dark:text-[var(--text-secondary)]">Monitoramento Ativo</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600 dark:text-[var(--text-secondary)]">Nosso sistema monitora continuamente para garantir que tudo esteja seguro, 24 horas por dia.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 dark:border-[var(--secondary-color)] bg-gray-50 dark:bg-transparent px-6 py-3"><a class="link-card" href="documento.html?pagina=introducao"><span>Leia a introdução</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
+                <nav id="main-nav" class="space-y-2">
+                    <a href="documento.html?pagina=introducao" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">description</span>
+                        <span>Introdução</span>
+                    </a>
+                    <a href="documento.html?pagina=alertas" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">notifications_active</span>
+                        <span>Alertas</span>
+                    </a>
+                    <a href="documento.html?pagina=relatorios" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">summarize</span>
+                        <span>Relatórios</span>
+                    </a>
+                </nav>
+            </aside>
+            
+            <main class="flex-1 min-w-0 p-8 md:p-12">
+                <div class="mx-auto max-w-5xl">
+                    <div class="mb-12">
+                        <h2 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-[var(--text-primary)]">Documentação Super Proteção</h2>
+                        <p class="mt-4 max-w-3xl text-lg text-gray-600 dark:text-[var(--text-secondary)]">Tudo o que você precisa saber para integrar e utilizar nossos recursos de segurança com eficiência.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <a href="documento.html?pagina=introducao" class="card p-6">
+                            <div class="mb-4 flex items-center gap-4">
+                                <div class="icon-gradient-blue flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">description</span></div>
+                                <h4 class="flex-1 text-lg font-semibold text-gray-900">Comece por aqui</h4>
                             </div>
-                            <div class="card">
-                                <div class="p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600"><span class="material-symbols-outlined">notifications_active</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900 dark:text-[var(--text-secondary)]">Alertas Instantâneos</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600 dark:text-[var(--text-secondary)]">Receba notificações em tempo real no seu dispositivo sempre que uma atividade suspeita for detectada.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 dark:border-[var(--secondary-color)] bg-gray-50 dark:bg-transparent px-6 py-3"><a class="link-card" href="documento.html?pagina=alertas"><span>Saiba mais</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
+                            <p class="mb-4 text-sm text-gray-600">Uma visão geral do projeto, seus recursos e os primeiros passos para começar a usar.</p>
+                        </a>
+                        <a href="busca.html" class="card p-6">
+                             <div class="mb-4 flex items-center gap-4">
+                                <div class="icon-gradient-green flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">search</span></div>
+                                <h4 class="flex-1 text-lg font-semibold text-gray-900">Buscar em Artigos</h4>
                             </div>
-                            <div class="card">
-                                <div class="p-6">
-                                    <div class="mb-4 flex items-center gap-4">
-                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600"><span class="material-symbols-outlined">data_usage</span></div>
-                                        <h4 class="flex-1 text-lg font-semibold text-gray-900 dark:text-[var(--text-secondary)]">Relatórios Detalhados</h4>
-                                    </div>
-                                    <p class="mb-4 text-sm text-gray-600 dark:text-[var(--text-secondary)]">Acesse relatórios completos e fáceis de entender sobre todas as atividades e eventos de segurança.</p>
-                                </div>
-                                <div class="mt-auto border-t border-gray-200 dark:border-[var(--secondary-color)] bg-gray-50 dark:bg-transparent px-6 py-3"><a class="link-card" href="documento.html?pagina=relatorios"><span>Saiba mais</span><span class="material-symbols-outlined">arrow_forward</span></a></div>
-                            </div>
-                        </div>
+                            <p class="mb-4 text-sm text-gray-600">Encontre rapidamente o que você precisa em nossa base de conhecimento.</p>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </main>
-        
-        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
-                <div class="flex items-center gap-2">
-                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
-                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
-                </div>
-            </div>
-        </footer>
-    </div>
-    
-    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
-    <div id="dev-tools-panel" class="hidden">
-        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
-        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
-        <div class="panel-content">
-            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
-            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
-            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
-            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button></div><div id="tests-output" class="tests-output"></div></div>
+            </main>
         </div>
     </div>
+    
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
-    <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
 </body>
 </html>
