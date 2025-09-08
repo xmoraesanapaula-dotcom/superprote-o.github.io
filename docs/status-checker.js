@@ -1,6 +1,6 @@
 // ARQUIVO: status-checker.js
 // RESPONSABILIDADE: Realizar um diagnóstico detalhado dos componentes do site.
-// VERSÃO: 2.1.0 (Correções de UI e Verificação de CORS)
+// VERSÃO: 2.2.0 (Correção definitiva de Cores e Verificação Externa)
 
 document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('status-results');
@@ -17,14 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         CRITICAL: 'CRITICAL'
     };
     
-    // Mapeamento de códigos de status para textos amigáveis
     const statusTextMap = {
         200: "OK",
         404: "Not Found",
         500: "Internal Server Error"
     };
 
-    // Lista de componentes a serem verificados com o tipo de verificação.
     const checks = [
         { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
         { name: 'Dados da Busca (busca-data.json)', url: 'busca-data.json', type: 'json' },
@@ -34,40 +32,36 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' },
         { name: 'Script da Busca (busca.js)', url: 'busca.js', type: 'script' },
         { name: 'Folha de Estilos (style.css)', url: 'style.css', type: 'content' },
-        { name: 'Dependência Externa (Tailwind)', url: 'https://cdn.tailwindcss.com', type: 'external_css' }
+        { name: 'Dependência Externa (Tailwind)', url: 'https://cdn.tailwindcss.com', type: 'external_script' }
     ];
 
     let criticalErrors = 0;
     let warnings = 0;
 
-    // Função para renderizar o resultado de cada verificação na tela.
     const renderResult = ({ name, status, detail, solution }) => {
-        let dotClass, borderColor, bgColor, summaryTextColor;
+        let dotClass, blockClass;
 
         switch (status) {
             case STATUS.SUCCESS:
                 dotClass = 'status-dot-green';
-                borderColor = 'border-gray-200 dark:border-gray-700';
-                bgColor = 'bg-white dark:bg-gray-800';
+                blockClass = 'result-block';
                 break;
             case STATUS.WARNING:
                 dotClass = 'status-dot-yellow';
-                borderColor = 'border-yellow-500/30 dark:border-yellow-600/50';
-                bgColor = 'bg-yellow-100/50 dark:bg-yellow-900/20';
+                blockClass = 'result-block result-warning';
                 break;
             case STATUS.CRITICAL:
                 dotClass = 'status-dot-red';
-                borderColor = 'border-red-500/30 dark:border-red-600/50';
-                bgColor = 'bg-red-100/50 dark:bg-red-900/20';
+                blockClass = 'result-block result-critical';
                 break;
         }
 
-        const solutionHTML = solution ? `<div class="mt-2 pt-2 border-t border-dashed ${borderColor}">
+        const solutionHTML = solution ? `<div class="mt-2 pt-2 border-t border-dashed border-gray-500/20">
             <p class="text-sm"><strong class="font-semibold text-blue-600 dark:text-blue-400">Solução Sugerida:</strong> ${solution}</p>
         </div>` : '';
 
         resultsContainer.innerHTML += `
-            <div class="p-4 rounded-md border ${borderColor} ${bgColor}">
+            <div class="p-4 rounded-md ${blockClass}">
                 <div class="flex items-center gap-4">
                     <span class="status-dot ${dotClass}"></span>
                     <div class="flex-grow">
@@ -80,14 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     };
     
-    // Função que verifica se uma folha de estilo externa foi carregada.
-    const checkExternalCss = ({ name, url }) => {
-        const found = Array.from(document.styleSheets).some(sheet => sheet.href && sheet.href.startsWith(url));
+    // Função que verifica se um SCRIPT externo foi carregado.
+    const checkExternalScript = ({ name, url }) => {
+        const found = document.querySelector(`script[src^="${url}"]`);
         if (found) {
             renderResult({
                 name,
                 status: STATUS.SUCCESS,
-                detail: 'Estilo carregado com sucesso na página.',
+                detail: 'Script de dependência encontrado no HTML.',
                 solution: null
             });
         } else {
@@ -95,22 +89,21 @@ document.addEventListener('DOMContentLoaded', () => {
             renderResult({
                 name,
                 status: STATUS.CRITICAL,
-                detail: 'Folha de estilo não encontrada no documento.',
-                solution: `Verifique se a tag <link href="${url}..."> está presente no <head> do HTML e se não há bloqueios de rede.`
+                detail: 'Tag de script não encontrada no documento.',
+                solution: `Verifique se a tag <script src="${url}..."> está presente no <head> do HTML.`
             });
         }
     };
     
-    // Função principal que executa uma verificação detalhada.
     const runCheck = async ({ name, url, type }) => {
-        if (type === 'external_css') {
-            checkExternalCss({ name, url });
+        if (type === 'external_script') {
+            checkExternalScript({ name, url });
             return;
         }
 
         try {
             const response = await fetch(url);
-            const statusText = statusTextMap[response.status] || response.statusText;
+            const statusText = statusTextMap[response.status] || response.statusText || 'OK';
             const detail = `Status HTTP: ${response.status} (${statusText})`;
 
             if (!response.ok) {
@@ -119,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     name,
                     status: STATUS.CRITICAL,
                     detail,
-                    solution: `O arquivo não foi encontrado ou o servidor retornou um erro. Verifique se o caminho do arquivo ("${url}") está correto e se ele foi enviado para o servidor.`
+                    solution: `O arquivo não foi encontrado ou o servidor retornou um erro. Verifique se o caminho do arquivo ("${url}") está correto.`
                 });
                 return;
             }
@@ -131,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     name,
                     status: STATUS.WARNING,
                     detail,
-                    solution: `O arquivo está vazio. Embora acessível, ele não contém dados e pode causar falhas em partes do site. Adicione o conteúdo necessário.`
+                    solution: `O arquivo está vazio. Embora acessível, ele não contém dados e pode causar falhas. Adicione o conteúdo necessário.`
                 });
                 return;
             }
@@ -145,17 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         name,
                         status: STATUS.CRITICAL,
                         detail: 'Erro de formatação JSON.',
-                        solution: `O arquivo não é um JSON válido. Verifique a sintaxe em busca de erros como vírgulas faltantes, chaves ou aspas incorretas.`
+                        solution: `O arquivo não é um JSON válido. Verifique a sintaxe em busca de erros (vírgulas, chaves, aspas).`
                     });
                     return;
                 }
             }
 
-            // Se tudo estiver certo
             renderResult({ name, status: STATUS.SUCCESS, detail, solution: null });
 
         } catch (error) {
-            // Erros de rede (CORS, offline, etc.)
             criticalErrors++;
             renderResult({
                 name,
@@ -166,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Função que orquestra todas as verificações.
     const runAllChecks = async () => {
         summaryContainer.innerHTML = '<p class="text-center text-lg text-[var(--text-secondary)]">Analisando componentes...</p>';
         resultsContainer.innerHTML = '';
@@ -175,16 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
             await runCheck(check);
         }
 
-        // Exibe o sumário final com base nos resultados.
         if (criticalErrors > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-red-200 text-red-900 dark:bg-red-900/30 dark:text-red-300';
-            summaryContainer.innerHTML = `<h3 class="font-bold text-lg">Diagnóstico Concluído: ${criticalErrors} erro(s) crítico(s) e ${warnings} aviso(s) encontrado(s).</h3>`;
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-critical';
+            summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: ${criticalErrors} erro(s) crítico(s) e ${warnings} aviso(s) encontrado(s).</h3>`;
         } else if (warnings > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-yellow-200 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-300';
-            summaryContainer.innerHTML = `<h3 class="font-bold text-lg">Diagnóstico Concluído: Nenhum erro crítico, mas ${warnings} aviso(s) requerem atenção.</h3>`;
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-warning';
+            summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: Nenhum erro crítico, mas ${warnings} aviso(s) requerem atenção.</h3>`;
         } else {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-green-200 text-green-900 dark:bg-green-900/30 dark:text-green-300';
-            summaryContainer.innerHTML = '<h3 class="font-bold text-lg">Diagnóstico Concluído: Todos os sistemas estão operacionais.</h3>';
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-success';
+            summaryContainer.innerHTML = '<h3>Diagnóstico Concluído: Todos os sistemas estão operacionais.</h3>';
         }
     };
 
