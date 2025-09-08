@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Verificação da saúde e status operacional dos componentes do site de documentação Super Proteção.">
-    <title>Super Proteção 3.0.0 - Status do Sistema</title>
+    <meta name="description" content="Diagnóstico detalhado e status operacional dos componentes do site de documentação Super Proteção.">
+    <title>Super Proteção 3.0.0 - Diagnóstico do Sistema</title>
 
     <script>
         (function() {
@@ -23,6 +23,19 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    
+    <style>
+        /* Estilos para os pontos de status */
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .status-dot-green { background-color: #22C55E; }
+        .status-dot-yellow { background-color: #FACC15; }
+        .status-dot-red { background-color: #EF4444; }
+    </style>
 </head>
 <body style='font-family: Inter, sans-serif;'>
     <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
@@ -74,16 +87,16 @@
     
     <div class="main-content-wrapper">
         <main class="p-8 md:p-12">
-            <div class="mx-auto max-w-4xl">
+            <div class="mx-auto max-w-5xl">
                 <div class="mb-8">
-                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Status do Sistema</h2>
-                    <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Verificação em tempo real da saúde dos componentes do site de documentação.</p>
+                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Diagnóstico do Sistema</h2>
+                    <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Análise detalhada da saúde dos componentes do site de documentação.</p>
                 </div>
                 
                 <div id="status-summary" class="mb-8 p-4 rounded-md text-center">
                     </div>
 
-                <div id="status-results" class="space-y-4">
+                <div class="space-y-3" id="status-results">
                     </div>
             </div>
         </main>
