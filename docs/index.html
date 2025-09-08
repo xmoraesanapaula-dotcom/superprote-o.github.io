@@ -3,8 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Documentação oficial do Super Proteção 3.0.0">
-    <title>Super Proteção 3.0.0 - Documentação</title>
+    <meta name="description" content="Documentação oficial do Super Proteção. Aprenda a integrar e utilizar nossos recursos de segurança como webhooks, alertas e relatórios.">
+    
+    <title>Super Proteção 3.0.0</title>
 
     <script>
         (function() {
@@ -21,9 +22,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <link rel="stylesheet" href="style.css">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
+
 <body style='font-family: Inter, sans-serif;'>
     <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
         <div class="flex items-center gap-4">
@@ -59,15 +63,20 @@
         <nav id="main-nav" class="space-y-2">
         </nav>
     </aside>
-
+    
     <div class="main-content-wrapper">
-        <main class="flex-1 min-w-0 p-8 md:p-12">
-            <div class="mx-auto max-w-4xl">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Bem-vindo à Documentação</h2>
-                    <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">
-                        Aqui você encontrará informações completas sobre o funcionamento e a utilização do Super Proteção 3.0.0.
-                    </p>
+        <main class="p-8 md:p-12">
+            <div class="mx-auto max-w-5xl">
+                <div class="mb-12">
+                    <h2 id="hero-titulo" class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-[var(--text-primary)]"></h2>
+                    <p id="hero-subtitulo" class="mt-4 max-w-3xl text-lg text-gray-600 dark:text-[var(--text-secondary)]"></p>
+                </div>
+
+                <div id="cards-container" class="grid grid-cols-1 gap-6 md:grid-cols-2"></div>
+                
+                <div class="mt-16">
+                    <h3 class="mb-8 text-2xl font-bold text-center text-gray-900 dark:text-[var(--text-primary)]">Últimas Atualizações</h3>
+                    <div id="novidades-container"></div>
                 </div>
             </div>
         </main>
@@ -77,41 +86,20 @@
                 <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
                 <div class="flex items-center gap-2">
                     <div id="status-indicator" class="status-indicator" title="Status do script"></div>
-                    <a href="status.html" class="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]" title="Verificar Status do Sistema">Status</a>
-                    <span class="text-[var(--text-secondary)]">|</span>
                     <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]">3.0.0</p>
                 </div>
             </div>
         </footer>
     </div>
-
+    
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
     <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
     <div id="dev-tools-panel" class="hidden">
-        <div class="panel-header">
-            <div class="panel-title">
-                <span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico</span>
-            </div>
-            <button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button>
-        </div>
-        <div class="panel-tabs">
-            <button class="tab-button active" data-tab="console">Console</button>
-            <button class="tab-button" data-tab="elements">Elementos</button>
-            <button class="tab-button" data-tab="performance">Desempenho</button>
-            <button class="tab-button" data-tab="storage">Storage</button>
-            <button class="tab-button" data-tab="network">Network</button>
-            <button class="tab-button" data-tab="info">Info</button>
-            <button class="tab-button" data-tab="tests">Testes</button>
-        </div>
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
         <div class="panel-content">
-            <div id="console-tab-content" class="tab-content active">
-                <div class="panel-toolbar console-toolbar">
-                    <button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button>
-                </div>
-                <div id="console-output" class="console-output"></div>
-                <div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div>
-            </div>
+            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
             <div id="elements-tab-content" class="tab-content" style="flex-direction: row; align-items: stretch;">
                 <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
                     <div class="panel-toolbar">
@@ -124,20 +112,12 @@
                     <div class="style-placeholder">Selecione um elemento na árvore para inspecionar seus estilos.</div>
                 </div>
             </div>
-            <div id="performance-tab-content" class="tab-content"></div>
-            <div id="storage-tab-content" class="tab-content"></div>
-            <div id="network-tab-content" class="tab-content"></div>
-            <div id="info-tab-content" class="tab-content"></div>
-            <div id="tests-tab-content" class="tab-content">
-                <div class="panel-toolbar">
-                    <button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button>
-                </div>
-                <div id="tests-output" class="tests-output"></div>
-            </div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button></div><div id="tests-output" class="tests-output"></div></div>
         </div>
     </div>
 
-    <script src="main.js" defer></script>
     <script src="dev-panel.js" defer></script>
+    <script src="main.js" defer></script>
 </body>
 </html>
