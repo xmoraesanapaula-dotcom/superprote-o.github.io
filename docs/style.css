@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.5.2 */
+/* CÓDIGO CSS COMPLETO v1.5.3 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -204,7 +204,6 @@ footer {
 .storage-action-btn.delete-btn:hover {
     color: var(--color-error);
 }
-
 .network-row {
     cursor: pointer;
 }
@@ -212,7 +211,7 @@ footer {
     background-color: #374151;
 }
 .network-row.details-visible {
-    background-color: #4b5563; /* Cor de fundo para a linha ativa */
+    background-color: #4b5563;
 }
 .network-details-row td {
     background-color: #111827;
@@ -232,4 +231,13 @@ footer {
 }
 .headers-list strong {
     color: var(--color-info);
+}
+
+/* --- v1.5.3: ESTILOS PARA A UX --- */
+#table-of-contents a.active-toc-link {
+    font-weight: 700; /* Pode ser 600 (semibold) ou 700 (bold) */
+    color: var(--primary-color);
+}
+.dark #table-of-contents a.active-toc-link {
+    color: #60a5fa; /* Um azul mais claro para melhor contraste no modo escuro */
 }
