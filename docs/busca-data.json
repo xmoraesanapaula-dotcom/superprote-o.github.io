@@ -7,7 +7,8 @@
     "difficulty": "iniciante",
     "date": "2025-09-08",
     "page": "introducao",
-    "anchor": "webhooks"
+    "anchor": "webhooks",
+    "content": "O Super Proteção fornece suporte a Webhooks para permitir que sua aplicação seja notificada em tempo real sobre eventos importantes. Essa funcionalidade é ideal para integrar o sistema com aplicações de terceiros, monitoramento em tempo real e automação de processos. Eventos Disponíveis: usuario_criado, usuario_desativado, login_suspeito, token_expirado, usuario_bloqueado."
   },
   {
     "id": 2,
@@ -17,7 +18,8 @@
     "difficulty": "intermediario",
     "date": "2025-09-07",
     "page": "introducao",
-    "anchor": "integracoes-externas"
+    "anchor": "integracoes-externas",
+    "content": "O Super Proteção possui suporte nativo para diversas integrações externas, permitindo que alertas e notificações sejam enviados diretamente para ferramentas de comunicação utilizadas no dia a dia. Integração com Telegram, Integração com Slack, Integração com WhatsApp. Requisitos: Criar um Bot Token utilizando o BotFather, obter o chat_id do grupo ou canal."
   },
   {
     "id": 3,
@@ -27,7 +29,8 @@
     "difficulty": "avancado",
     "date": "2025-09-06",
     "page": "introducao",
-    "anchor": "boas-praticas-de-seguranca-digital"
+    "anchor": "boas-praticas-de-seguranca-digital",
+    "content": "Armazenamento Seguro de Credenciais: Nunca exponha tokens ou chaves de autenticação em repositórios públicos. Utilize variáveis de ambiente. Proteção de Endpoints: Utilize obrigatoriamente HTTPS para todas as comunicações. Implemente rate limiting para mitigar tentativas de ataque de força bruta. Uso Correto de Webhooks: Valide a assinatura ou chave secreta de cada requisição recebida."
   },
   {
     "id": 4,
@@ -37,7 +40,8 @@
     "difficulty": "iniciante",
     "date": "2025-09-05",
     "page": "alertas",
-    "anchor": "configuracao"
+    "anchor": "configuracao",
+    "content": "Para receber alertas, é necessário configurar previamente os canais de notificação desejados. Atualmente, o sistema suporta: E-mail, SMS, Webhooks, Integrações com Slack e Telegram. A configuração é realizada no Painel de Controle, dentro da seção Alertas."
   },
   {
     "id": 5,
@@ -47,7 +51,8 @@
     "difficulty": "intermediario",
     "date": "2025-09-04",
     "page": "alertas",
-    "anchor": "tipos-de-alerta"
+    "anchor": "tipos-de-alerta",
+    "content": "O sistema permite customizar quais eventos devem disparar notificações. Os mais comuns são: login_suspeito, falha_multiplas_tentativas, alteracao_sensivel, bloqueio_automatico, acesso_novo_dispositivo, token_revogado."
   },
   {
     "id": 6,
@@ -57,7 +62,8 @@
     "difficulty": "intermediario",
     "date": "2025-09-03",
     "page": "alertas",
-    "anchor": "niveis-de-prioridade"
+    "anchor": "niveis-de-prioridade",
+    "content": "Cada alerta pode ser classificado em um nível de prioridade: Informativo (eventos de rotina), Atenção (comportamento suspeito), Crítico (incidentes com resposta imediata). O usuário pode definir quais níveis devem acionar quais canais. Exemplo: Crítico → SMS + Webhook."
   },
   {
     "id": 7,
@@ -67,7 +73,8 @@
     "difficulty": "iniciante",
     "date": "2025-09-02",
     "page": "relatorios",
-    "anchor": "relatorio-diario-de-atividades"
+    "anchor": "relatorio-diario-de-ativades",
+    "content": "Exemplos de relatórios apresentados em tabelas Markdown, representando visualizações que podem ser exportadas em PDF ou CSV. Relatório Diário de Atividades. Tabela com Data/Hora, Usuário, Evento, IP, Status. Exemplo: login_ok, login_falhou, usuario_criado, login_suspeito."
   },
   {
     "id": 8,
@@ -77,6 +84,7 @@
     "difficulty": "avancado",
     "date": "2025-09-01",
     "page": "introducao",
-    "anchor": "exemplo-completo-de-integracao"
+    "anchor": "exemplo-completo-de-integracao",
+    "content": "Recebendo Webhook de Alerta no Backend (Node.js). Exemplo com express.js. app.post('/webhook/seguranca', (req, res) => { ... }); Esse exemplo pode ser adaptado para qualquer linguagem de programação compatível com APIs REST."
   }
 ]
