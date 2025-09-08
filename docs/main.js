@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- ATUALIZADO: LÓGICA PARA CARREGAR CONTEÚDO DA PÁGINA INICIAL (usando JSON) ---
+    // --- LÓGICA PARA CARREGAR CONTEÚDO DA PÁGINA INICIAL (usando JSON) ---
     async function loadHomePageContent() {
         const heroTitulo = document.getElementById('hero-titulo');
         const cardsContainer = document.getElementById('cards-container');
@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('conteudo-index.json');
             if (!response.ok) throw new Error('Arquivo de conteúdo "conteudo-index.json" não encontrado.');
             
-            // Lê o arquivo diretamente como JSON, sem parser customizado
             const data = await response.json();
 
             // Preenche o Título e Subtítulo
@@ -100,6 +99,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
             cardsContainer.innerHTML = cardsHTML;
+
+            // ATUALIZADO: Cria a seção de Novidades
+            if (data.novidades && data.novidades.length > 0) {
+                const novidadesContainer = document.getElementById('novidades-container');
+                if (novidadesContainer) {
+                    let novidadesHTML = '';
+                    data.novidades.forEach(item => {
+                        novidadesHTML += `
+                            <a href="${item.link}" class="news-item">
+                                <p class="date">${item.data}</p>
+                                <h4 class="title">${item.titulo}</h4>
+                                <p class="description">${item.descricao}</p>
+                            </a>
+                        `;
+                    });
+                    novidadesContainer.innerHTML = novidadesHTML;
+                }
+            }
 
         } catch (error) {
             console.error("Erro ao carregar conteúdo da página inicial:", error);
