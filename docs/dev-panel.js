@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
     
-    // --- MÓDULO 4: STORAGE (ATUALIZADO v1.5.2) ---
+    // --- MÓDULO 4: STORAGE ---
     function populateStorageTab() {
         if (!storageContent) return;
         storageContent.innerHTML = ''; 
@@ -313,7 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
         storageContent.innerHTML += createStorageTable('Session Storage', window.sessionStorage);
     }
     
-    // Event listener para as ações de storage (usando delegação de eventos)
     if (storageContent) {
         storageContent.addEventListener('click', (e) => {
             const target = e.target.closest('.storage-action-btn');
@@ -326,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target.classList.contains('delete-btn')) {
                 if (confirm(`Tem certeza que deseja excluir a chave "${key}" do ${storageType}?`)) {
                     storage.removeItem(key);
-                    populateStorageTab(); // Atualiza a visualização
+                    populateStorageTab();
                     console.info(`Chave "${key}" removida do ${storageType}.`);
                 }
             }
@@ -337,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (newValue !== null && newValue !== currentValue) {
                     storage.setItem(key, newValue);
-                    populateStorageTab(); // Atualiza a visualização
+                    populateStorageTab();
                     console.info(`Chave "${key}" atualizada no ${storageType}.`);
                 }
             }
@@ -362,9 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
         infoContent.innerHTML = content;
     }
     
-    // --- MÓDULO 6: NETWORK INTERCEPTOR ---
+    // --- MÓDULO 6: NETWORK INTERCEPTOR (ATUALIZADO v1.5.2) ---
     function initializeNetworkInterceptor() {
         if (!networkContent) return;
+        let networkRequests = []; // Armazena os detalhes das requisições
 
         networkContent.innerHTML = `
             <table class="network-table">
@@ -389,28 +389,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const method = args[0] instanceof Request ? args[0].method : (args[1]?.method || 'GET');
             const shortUrl = url.split('/').pop().split('?')[0] || url;
 
+            const requestIndex = networkRequests.length;
+            const requestData = { url, method, response: null, duration: null };
+            networkRequests.push(requestData);
+
             const row = document.createElement('tr');
+            row.dataset.requestIndex = requestIndex;
+            row.classList.add('network-row');
             row.innerHTML = `
                 <td class="url">${shortUrl}</td>
                 <td class="status-pending">pendente...</td>
                 <td>${method}</td>
                 <td class="time">...</td>
             `;
-            if (networkLogBody) networkLogBody.appendChild(row);
+            if (networkLogBody) networkLogBody.prepend(row);
 
             const fetchPromise = originalFetch.apply(this, args);
             fetchPromise.then(response => {
+                const resClone = response.clone();
+                requestData.response = resClone;
                 const duration = (performance.now() - startTime).toFixed(0);
+                requestData.duration = duration;
+
                 const statusCell = row.querySelector('td:nth-child(2)');
                 if (statusCell) {
-                    statusCell.textContent = `${response.status} ${response.statusText}`;
-                    statusCell.className = response.ok ? 'status-ok' : 'status-error';
+                    statusCell.textContent = `${resClone.status} ${resClone.statusText}`;
+                    statusCell.className = resClone.ok ? 'status-ok' : 'status-error';
                 }
                 const timeCell = row.querySelector('.time');
                 if (timeCell) timeCell.textContent = `${duration} ms`;
 
             }).catch(error => {
                 const duration = (performance.now() - startTime).toFixed(0);
+                requestData.duration = duration;
+                
                 const statusCell = row.querySelector('td:nth-child(2)');
                 if (statusCell) {
                     statusCell.textContent = 'Falhou';
@@ -424,6 +436,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return fetchPromise;
         };
+
+        if (networkLogBody) {
+            networkLogBody.addEventListener('click', (e) => {
+                const row = e.target.closest('.network-row');
+                if (!row) return;
+
+                const existingDetailsRow = row.nextElementSibling;
+                if (existingDetailsRow && existingDetailsRow.classList.contains('network-details-row')) {
+                    existingDetailsRow.remove();
+                    row.classList.remove('details-visible');
+                    return;
+                }
+
+                document.querySelectorAll('.network-details-row').forEach(r => r.remove());
+                document.querySelectorAll('.network-row.details-visible').forEach(r => r.classList.remove('details-visible'));
+
+                const requestIndex = parseInt(row.dataset.requestIndex, 10);
+                const requestData = networkRequests[requestIndex];
+
+                if (!requestData || !requestData.response) return;
+
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'network-details-row';
+
+                let headersHTML = '';
+                for (const [key, value] of requestData.response.headers.entries()) {
+                    headersHTML += `<div><strong>${key}:</strong> ${value}</div>`;
+                }
+
+                detailsRow.innerHTML = `
+                    <td colspan="4">
+                        <div class="network-details-content">
+                            <h4>Response Headers</h4>
+                            <div class="headers-list">${headersHTML}</div>
+                        </div>
+                    </td>
+                `;
+                
+                row.after(detailsRow);
+                row.classList.add('details-visible');
+            });
+        }
     }
 
     // Inicializa todos os módulos no final
