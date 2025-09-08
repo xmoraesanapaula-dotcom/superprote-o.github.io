@@ -235,11 +235,9 @@ body.sidebar-open #sidebar {
     transform: translateX(0);
 }
 
-/* Estilos para a área de saída da aba de Testes */
-.tests-output {
-    font-family: var(--code-font);
-    font-size: 14px;
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 5px;
+/* NOVO: Estilo para o link ativo na navegação principal (v3.0.0) */
+#main-nav a.active-nav-link {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+    font-weight: 600;
 }
