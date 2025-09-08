@@ -13,5 +13,20 @@
     "titulo": "Relatórios",
     "pagina": "relatorios",
     "icone": "summarize"
+  },
+  {
+    "titulo": "Webhooks",
+    "pagina": "webhooks",
+    "icone": "webhook"
+  },
+  {
+    "titulo": "Autenticação na API",
+    "pagina": "autenticacao-api",
+    "icone": "key"
+  },
+  {
+    "titulo": "Boas Práticas de Segurança",
+    "pagina": "boas-praticas-seguranca",
+    "icone": "security"
   }
 ]
