@@ -267,3 +267,8 @@ footer {
 .copy-code-btn:hover {
     background-color: #4b5563;
 }
+
+/* --- CLASSE PARA TRANSIÇÃO DE TEMA SUAVE --- */
+.no-transitions * {
+    transition: none !important;
+}
