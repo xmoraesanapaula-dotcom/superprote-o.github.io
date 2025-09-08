@@ -78,48 +78,54 @@
                 </nav>
             </aside>
             
-            <main class="flex-1 min-w-0 p-8 md:p-12">
-                <div class="mx-auto max-w-4xl">
-                    <h1 class="text-4xl font-extrabold tracking-tight mb-6">Busca na Documentação</h1>
-                    
-                    <div class="mb-8">
-                        <label for="main-search-input" class="sr-only">Buscar</label>
-                        <div class="relative">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                                <span class="material-symbols-outlined text-gray-400">search</span>
+            <div class="flex flex-1 flex-col">
+                <main class="flex-1 min-w-0 p-8 md:p-12">
+                    <div class="mx-auto max-w-4xl">
+                        <h1 class="text-4xl font-extrabold tracking-tight mb-6">Busca na Documentação</h1>
+                        
+                        <div class="mb-8">
+                            <label for="main-search-input" class="sr-only">Buscar</label>
+                            <div class="relative">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <span class="material-symbols-outlined text-gray-400">search</span>
+                                </div>
+                                <input type="search" name="search" id="main-search-input" class="block w-full rounded-lg border-gray-300 bg-[var(--background-secondary)] p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-[var(--secondary-color)]" placeholder="Digite para buscar nos artigos...">
                             </div>
-                            <input type="search" name="search" id="main-search-input" class="block w-full rounded-lg border-gray-300 bg-[var(--background-secondary)] p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-[var(--secondary-color)]" placeholder="Digite para buscar nos artigos...">
+                        </div>
+                        
+                        <div id="results-container">
+                            </div>
+                    </div>
+                </main>
+
+                <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)] mt-auto">
+                    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                        <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                        <div class="flex items-center gap-2">
+                            <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                            <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]">3.0.0</p>
                         </div>
                     </div>
-                    
-                    <div id="results-container">
-                        <section id="group-webhook" class="search-results-group" data-category="webhook">
-                            <h2>Webhooks</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                        </section>
-                        <section id="group-seguranca" class="search-results-group" data-category="seguranca">
-                            <h2>Segurança</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                        </section>
-                        <section id="group-integracao" class="search-results-group" data-category="integracao">
-                            <h2>Integrações</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                        </section>
-                        <section id="group-api" class="search-results-group" data-category="api">
-                            <h2>API</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                        </section>
-                        <div id="no-results-message" class="hidden text-center text-[var(--text-secondary)] py-12">
-                            <p class="text-lg">Nenhum resultado encontrado para a sua busca.</p>
-                        </div>
-                    </div>
-                </div>
-            </main>
+                </footer>
+            </div>
         </div>
     </div>
     
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
+    <div id="dev-tools-panel" class="hidden">
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
+        <div class="panel-content">
+            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span> Limpar</button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS..."></div></div>
+            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span> Iniciar Testes</button></div><div id="tests-output" class="tests-output"></div></div>
+        </div>
+    </div>
+
+    <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
     <script src="busca.js" defer></script>
 </body>
