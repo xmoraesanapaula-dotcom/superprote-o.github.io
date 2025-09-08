@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentArea.innerHTML = marked.parse(markdownText);
             buildTableOfContents(contentArea, tocContainer);
             activateScrollSpy();
-            addCopyButtonsToCodeBlocks(); // Nova função para botão de copiar
+            enhanceCodeBlocks(); // Função atualizada para v1.6.1
         })
         .catch(error => {
             console.error('Erro ao carregar o documento:', error);
@@ -97,26 +97,48 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightTocLink();
     }
 
-    function addCopyButtonsToCodeBlocks() {
+    function enhanceCodeBlocks() {
         const codeBlocks = contentArea.querySelectorAll('pre');
         codeBlocks.forEach(block => {
+            const code = block.querySelector('code');
+            let language = 'shell'; // Padrão se nenhuma linguagem for especificada
+
+            if (code && code.className.startsWith('language-')) {
+                language = code.className.replace('language-', '').trim();
+            }
+
+            // Cria o cabeçalho
+            const header = document.createElement('div');
+            header.className = 'code-block-header';
+
+            // Cria o span para o nome da linguagem
+            const langSpan = document.createElement('span');
+            langSpan.className = 'language-name';
+            langSpan.textContent = language;
+
+            // Cria o botão de copiar
             const button = document.createElement('button');
             button.className = 'copy-code-btn';
             button.title = 'Copiar código';
-            button.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+            button.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copiar</span>';
 
-            block.appendChild(button);
+            // Adiciona os elementos ao cabeçalho
+            header.appendChild(langSpan);
+            header.appendChild(button);
 
+            // Insere o cabeçalho no início do bloco <pre>
+            block.prepend(header);
+
+            // Adiciona a lógica de clique ao botão
             button.addEventListener('click', () => {
-                const code = block.querySelector('code');
                 if (!code) return;
 
                 navigator.clipboard.writeText(code.innerText).then(() => {
-                    button.innerHTML = '<span class="material-symbols-outlined">done</span>';
+                    button.innerHTML = '<span class="material-symbols-outlined">done</span><span>Copiado!</span>';
                     button.title = 'Copiado!';
                     
                     setTimeout(() => {
-                        button.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+                        button.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copiar</span>';
                         button.title = 'Copiar código';
                     }, 2000);
                 }).catch(err => {
