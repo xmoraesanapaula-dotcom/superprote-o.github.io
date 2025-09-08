@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         versionInfo.textContent = 'v1.5.3';
     }
 
-    // --- v1.4: LÓGICA DO MODO ESCURO (DARK MODE) ---
+    // --- LÓGICA DO MODO ESCURO (DARK MODE) - ATUALIZADO v1.5.3 ---
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
     const themeIcon = themeToggle ? themeToggle.querySelector('.material-symbols-outlined') : null;
@@ -34,27 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme('light');
     }
 
-    // Adiciona o evento de clique ao botão de toggle
+    // Adiciona o evento de clique ao botão de toggle com a lógica de transição suave
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            // Verifica se o corpo JÁ TEM a classe 'dark'
             const isDarkMode = body.classList.contains('dark');
-            
-            if (isDarkMode) {
-                // Se sim, remove e salva a preferência 'light'
-                applyTheme('light');
-                localStorage.setItem('theme', 'light');
-                console.log("Tema alterado para: Claro");
-            } else {
-                // Se não, adiciona e salva a preferência 'dark'
-                applyTheme('dark');
-                localStorage.setItem('theme', 'dark');
-                console.log("Tema alterado para: Escuro");
-            }
+            const newTheme = isDarkMode ? 'light' : 'dark';
+
+            // 1. Adiciona classe para desativar transições
+            document.documentElement.classList.add('no-transitions');
+
+            // 2. Aplica o novo tema
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+            console.log(`Tema alterado para: ${newTheme === 'dark' ? 'Escuro' : 'Claro'}`);
+
+            // 3. Força o navegador a aplicar as mudanças (reflow)
+            // A leitura de uma propriedade como offsetHeight é uma forma de garantir isso.
+            document.documentElement.offsetHeight; 
+
+            // 4. Remove a classe para reativar as transições
+            document.documentElement.classList.remove('no-transitions');
         });
     }
 
     console.log("Script principal (main.js) v1.5.3 carregado com sucesso.");
-
-    // No futuro, a lógica para animações de cards, formulários, etc., viria aqui.
 });
