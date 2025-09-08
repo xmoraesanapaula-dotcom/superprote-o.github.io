@@ -38,7 +38,6 @@ html.dark .card {
 }
 .card:hover {
     @apply shadow-lg transform -translate-y-1;
-    /* NOVO: Efeito de borda brilhante */
     border-color: var(--primary-color);
     box-shadow: 0 0 15px 0 rgba(19, 127, 236, 0.3);
 }
@@ -261,9 +260,10 @@ html.dark .prose tr:nth-child(even) { @apply bg-[var(--background-secondary)]/50
 .prose .alert.alert-warn { @apply border-yellow-300 bg-yellow-50 text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200; }
 .prose hr { @apply my-8 border-t border-dashed border-[var(--secondary-color)]; }
 
-/* NOVO: Estilos para a página inicial (index.html) */
+/* Estilos para a página inicial (index.html) */
 .hero-bg {
-    background-color: var(--background-secondary);
+    /* ATUALIZADO: Corrigido para a cor de fundo principal */
+    background-color: var(--background-primary);
     background-image: radial-gradient(var(--secondary-color) 1px, transparent 1px);
     background-size: 20px 20px;
 }
