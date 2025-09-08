@@ -37,3 +37,47 @@ Todos os eventos de webhook são enviados como uma requisição `HTTP POST` com 
     }
   }
 }
+```
+ * id: Identificador único do evento.
+ * type: O tipo do evento que ocorreu (ex: alerta.critico_gerado, usuario.criado).
+ * created: Timestamp de quando o evento foi criado.
+ * data.object: O objeto completo relacionado ao evento (por exemplo, o objeto de alerta, o objeto de usuário, etc.).
+Segurança: Validando a Assinatura
+Qualquer pessoa pode encontrar sua URL de endpoint e enviar dados falsos. Para garantir que cada requisição veio da Super Proteção, você deve validar a assinatura.
+Cada requisição de webhook inclui um cabeçalho HTTP especial chamado X-Protecao-Signature. Ele contém um timestamp e uma assinatura HMAC-SHA256 do corpo da requisição, usando seu "segredo de assinatura" como chave.
+O processo de validação é:
+ * Extraia o timestamp e a assinatura do cabeçalho X-Protecao-Signature.
+ * Prepare a string de assinatura, que é o timestamp, um ponto (.), e o corpo exato da requisição recebida. Ex: 1725833315.{"id":"evt_123..."}.
+ * Calcule o HMAC-SHA256 da string preparada, usando seu segredo de webhook (whsec_...) como chave.
+ * Compare a assinatura que você calculou com a assinatura recebida no cabeçalho. Se forem idênticas, a requisição é legítima.
+> Aviso:
+> Sempre use uma função de comparação segura contra "timing attacks" ao verificar assinaturas.
+> 
+
+Exemplo de Validação em Node.js
+
+```
+const crypto = require('crypto');
+
+// O segredo do seu endpoint de webhook
+const webhookSecret = 'whsec_exemploDeSegredo123';
+
+// Função para verificar a assinatura
+function verificarAssinatura(req) {
+  const signatureHeader = req.get('X-Protecao-Signature');
+  const [timestamp, signature] = signatureHeader.split(',');
+
+  // Passo 2: Preparar a string
+  const payload = `${timestamp.split('=')[1]}.${req.rawBody}`;
+
+  // Passo 3: Calcular a assinatura esperada
+  const hmac = crypto.createHmac('sha256', webhookSecret);
+  const expectedSignature = hmac.update(payload).digest('hex');
+
+  // Passo 4: Comparar com segurança
+  return crypto.timingSafeEqual(Buffer.from(signature.split('=')[1]), Buffer.from(expectedSignature));
+}
+```
+
+Respondendo aos Webhooks
+Seu endpoint deve responder à requisição de webhook o mais rápido possível com um código de status 200 OK. Se a Super Proteção não receber uma resposta 200 dentro de alguns segundos, consideramos que a entrega falhou e tentaremos reenviar o evento em intervalos de tempo crescentes.
