@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca - Super Proteção v1.6.0</title>
+
+    <script>
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) { console.error("Erro ao aplicar o tema inicial:", e); }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+
+<body class="bg-[var(--background-secondary)] text-[var(--text-primary)] transition-colors duration-500">
+    <div id="error-toast" class="error-toast"></div>
+
+    <div class="flex min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-3 bg-[var(--background-primary)]">
+            <div class="flex items-center gap-8">
+                <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
+                    <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
+                    <h1 class="text-xl font-bold">Super Proteção</h1>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="rounded-full" id="theme-toggle" title="Alternar tema">
+                    <span class="sr-only">Toggle theme</span>
+                    <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                
+                <aside class="lg:col-span-1">
+                    <div class="sticky top-8">
+                        <h2 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Filtrar Resultados</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Tópico</h3>
+                                <div id="topic-filters" class="space-y-2">
+                                    <label class="flex items-center"><input value="webhook" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Webhooks</span></label>
+                                    <label class="flex items-center"><input value="integracao" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Integrações</span></label>
+                                    <label class="flex items-center"><input value="seguranca" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Segurança</span></label>
+                                    <label class="flex items-center"><input value="api" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">API</span></label>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Nível</h3>
+                                <div id="difficulty-filters" class="space-y-2">
+                                    <label class="flex items-center"><input value="iniciante" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Iniciante</span></label>
+                                    <label class="flex items-center"><input value="intermediario" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Intermediário</span></label>
+                                    <label class="flex items-center"><input value="avancado" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Avançado</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="lg:col-span-3">
+                    <div class="flex items-center justify-between border-b border-[var(--secondary-color)] pb-4 mb-6">
+                        <p id="results-count" class="text-sm text-[var(--text-secondary)]">Mostrando <span class="font-bold text-[var(--text-primary)]">0 resultados</span></p>
+                        <div>
+                            <label class="sr-only" for="sort-by">Ordenar por</label>
+                            <select id="sort-by" class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="relevance">Relevância</option>
+                                <option value="date">Data</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="results-container" class="space-y-6">
+                        </div>
+
+                </div>
+            </div>
+        </main>
+
+        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                <div class="flex items-center gap-2">
+                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
+    <div id="dev-tools-panel" class="hidden">
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button> <button class="tab-button" data-tab="info">Info</button></div>
+        <div class="panel-content">
+            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
+            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+        </div>
+    </div>
+
+    <script src="dev-panel.js" defer></script>
+    <script src="main.js" defer></script>
+    <script src="busca.js" defer></script> </body>
+</html>
