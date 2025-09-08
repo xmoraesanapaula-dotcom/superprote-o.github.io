@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortByElement = document.getElementById('sort-by');
 
     // Dados de exemplo (simulando um banco de dados)
+    // ATUALIZADO: Adicionado 'page' e 'anchor' para criar links funcionais
     const mockData = [
         {
             id: 1,
@@ -17,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Aprenda o básico sobre como os webhooks funcionam e como podem notificar seus sistemas em tempo real.',
             category: 'webhook',
             difficulty: 'iniciante',
-            date: '2025-09-01'
+            date: '2025-09-01',
+            page: 'introducao',
+            anchor: 'heading-1-H2' // ID da seção 'Webhooks'
         },
         {
             id: 2,
@@ -25,7 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Proteja seus endpoints com as melhores práticas de segurança do mercado, incluindo autenticação e autorização.',
             category: 'seguranca',
             difficulty: 'avancado',
-            date: '2025-08-15'
+            date: '2025-08-15',
+            page: 'introducao',
+            anchor: 'heading-6-H2' // ID da seção 'Boas Práticas de Segurança Digital'
         },
         {
             id: 3,
@@ -33,7 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Um guia passo a passo para configurar notificações e alertas automáticos diretamente no Telegram.',
             category: 'integracao',
             difficulty: 'intermediario',
-            date: '2025-07-20'
+            date: '2025-07-20',
+            page: 'introducao',
+            anchor: 'heading-3-H3' // ID da subseção 'Integração com Telegram'
         },
         {
             id: 4,
@@ -41,7 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Um tutorial avançado sobre como garantir que as requisições de webhooks são autênticas e seguras.',
             category: 'webhook',
             difficulty: 'avancado',
-            date: '2025-09-05'
+            date: '2025-09-05',
+            page: 'introducao',
+            anchor: 'heading-8-H3' // ID da subseção 'Uso Correto de Webhooks'
         },
         {
             id: 5,
@@ -49,7 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Documentação detalhada de todos os endpoints disponíveis na nossa API, com exemplos de requisição e resposta.',
             category: 'api',
             difficulty: 'intermediario',
-            date: '2025-06-30'
+            date: '2025-06-30',
+            page: 'relatorios', // Exemplo apontando para outra página
+            anchor: 'heading-0-H1'
         },
         {
             id: 6,
@@ -57,13 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Entenda os princípios de confidencialidade, integridade e disponibilidade para criar sistemas mais robustos.',
             category: 'seguranca',
             difficulty: 'iniciante',
-            date: '2025-08-25'
+            date: '2025-08-25',
+            page: 'introducao',
+            anchor: 'heading-6-H2' // ID da seção 'Boas Práticas de Segurança Digital'
         }
     ];
 
     // Função para renderizar os resultados na tela
     const renderResults = (results) => {
-        // Limpa os resultados antigos
         resultsContainer.innerHTML = '';
 
         if (results.length === 0) {
@@ -71,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Cria e adiciona o HTML para cada resultado
         results.forEach(item => {
+            // ATUALIZADO: O 'href' agora é construído dinamicamente
             const resultCard = `
                 <div class="card bg-[var(--background-primary)] p-6 rounded-md shadow-sm border border-[var(--secondary-color)] hover:shadow-md transition-shadow">
-                    <a class="block" href="#">
+                    <a class="block" href="documento.html?pagina=${item.page}#${item.anchor}">
                         <h3 class="text-lg font-semibold text-[var(--text-primary)] hover:text-blue-600">${item.title}</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             Categoria: <span class="font-medium text-[var(--text-secondary)]">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
@@ -94,37 +106,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateResults = () => {
         let filteredData = [...mockData];
 
-        // 1. Aplicar filtro de Tópico (checkboxes)
         const checkedTopics = [...topicFilters.querySelectorAll('input:checked')].map(input => input.value);
         if (checkedTopics.length > 0) {
             filteredData = filteredData.filter(item => checkedTopics.includes(item.category));
         }
 
-        // 2. Aplicar filtro de Nível (radio buttons)
         const checkedDifficulty = difficultyFilters.querySelector('input:checked');
         if (checkedDifficulty) {
             filteredData = filteredData.filter(item => item.difficulty === checkedDifficulty.value);
         }
 
-        // 3. Aplicar Ordenação
         const sortBy = sortByElement.value;
         if (sortBy === 'date') {
-            filteredData.sort((a, b) => new Date(b.date) - new Date(a.date)); // Mais recente primeiro
+            filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
-        // A ordenação por 'relevância' já é a padrão do mockData
-
-        // 4. Atualizar contagem de resultados
+        
         resultsCountElement.innerHTML = `Mostrando <span class="font-bold text-[var(--text-primary)]">${filteredData.length} resultados</span>`;
         
-        // 5. Renderizar os resultados finais
         renderResults(filteredData);
     };
 
-    // Adiciona os "escutadores" de eventos para todos os filtros
     topicFilters.addEventListener('change', updateResults);
     difficultyFilters.addEventListener('change', updateResults);
     sortByElement.addEventListener('change', updateResults);
 
-    // Renderiza os resultados iniciais ao carregar a página
     updateResults();
 });
