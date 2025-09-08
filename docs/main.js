@@ -6,15 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DA VERSÃO ---
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.5.3';
+        versionInfo.textContent = 'v1.6.0';
     }
 
-    // --- LÓGICA DO MODO ESCURO (DARK MODE) - ATUALIZADO ---
+    // --- LÓGICA DO MODO ESCURO (DARK MODE) ---
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle ? themeToggle.querySelector('.material-symbols-outlined') : null;
 
     // Função para aplicar o tema (claro ou escuro)
-    // Agora opera no <html> (documentElement) para consistência com o script de bloqueio
     const applyTheme = (theme) => {
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // A lógica de transição suave que implementamos anteriormente
+    // Lógica de transição suave
     const smoothThemeTransition = (newTheme) => {
         document.documentElement.classList.add('no-transitions');
         applyTheme(newTheme);
@@ -52,5 +51,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    console.log("Script principal (main.js) v1.5.3 carregado com sucesso.");
+    console.log("Script principal (main.js) v1.6.0 carregado com sucesso.");
 });
