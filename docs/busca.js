@@ -3,88 +3,76 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // Seletores dos elementos da página
-    const mainSearchInput = document.getElementById('main-search-input');
     const resultsContainer = document.getElementById('results-container');
-    const noResultsMessage = document.getElementById('no-results-message');
-    const categoryGroups = document.querySelectorAll('.search-results-group');
+    const resultsCountElement = document.getElementById('results-count');
+    const topicFilters = document.getElementById('topic-filters');
+    const difficultyFilters = document.getElementById('difficulty-filters');
+    const sortByElement = document.getElementById('sort-by');
+    const mainSearchInput = document.getElementById('main-search-input'); // Campo de busca principal
     
     let allData = []; // Variável para armazenar todos os dados carregados
 
-    // Objeto para mapear categorias a ícones e cores, para o novo design
-    const categoryStyles = {
-        webhook: { icon: 'webhook', color: 'search-icon-bg-red' },
-        seguranca: { icon: 'security', color: 'search-icon-bg-orange' },
-        integracao: { icon: 'integration_instructions', color: 'search-icon-bg-teal' },
-        api: { icon: 'code', color: 'search-icon-bg-purple' }
-    };
-
     // Função para renderizar os resultados na tela
     const renderResults = (results) => {
-        // 1. Limpa o conteúdo de todos os grupos
-        categoryGroups.forEach(group => {
-            const grid = group.querySelector('.grid');
-            if (grid) grid.innerHTML = '';
-        });
+        if (!resultsContainer) return;
+        resultsContainer.innerHTML = '';
 
-        // 2. Preenche os grupos com os cards correspondentes
-        results.forEach(item => {
-            const style = categoryStyles[item.category] || { icon: 'article', color: 'search-icon-bg-blue' };
-            const groupContainer = document.querySelector(`#group-${item.category} .grid`);
-            
-            if (groupContainer) {
-                // ATUALIZADO: A estrutura interna do card foi ajustada com um 'div' flex-grow
-                const resultCard = `
-                    <a href="documento.html?pagina=${item.page}#${item.anchor}" class="search-card">
-                        <div class="search-card-content">
-                            <div class="search-card-header">
-                                <div class="search-card-icon ${style.color}">
-                                    <span class="material-symbols-outlined">${style.icon}</span>
-                                </div>
-                                <h3 class="search-card-title">${item.title}</h3>
-                            </div>
-                            <p class="search-card-description">${item.description}</p>
-                        </div>
-                        <div class="search-card-footer">
-                            <span>Leia o artigo</span>
-                            <span class="material-symbols-outlined ml-2">arrow_forward</span>
-                        </div>
-                    </a>
-                `;
-                groupContainer.innerHTML += resultCard;
-            }
-        });
-
-        // 3. Mostra ou esconde os grupos e a mensagem de "nenhum resultado"
-        let totalVisibleCards = 0;
-        categoryGroups.forEach(group => {
-            const grid = group.querySelector('.grid');
-            if (grid && grid.children.length > 0) {
-                group.style.display = 'block';
-                totalVisibleCards += grid.children.length;
-            } else {
-                group.style.display = 'none';
-            }
-        });
-
-        if (totalVisibleCards === 0) {
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<p class="text-[var(--text-secondary)]">Nenhum resultado encontrado para os filtros selecionados.</p>';
+            return;
         }
+
+        results.forEach(item => {
+            const resultCard = `
+                <div class="card bg-[var(--background-primary)] p-6 rounded-md shadow-sm border border-[var(--secondary-color)] hover:shadow-md transition-shadow">
+                    <a class="block" href="documento.html?pagina=${item.page}#${item.anchor}">
+                        <h3 class="text-lg font-semibold text-[var(--text-primary)] hover:text-blue-600">${item.title}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Categoria: <span class="font-medium text-[var(--text-secondary)]">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
+                            <span class="mx-2">|</span>
+                            Nível: <span class="font-medium text-[var(--text-secondary)]">${item.difficulty.charAt(0).toUpperCase() + item.difficulty.slice(1)}</span>
+                        </p>
+                        <p class="text-[var(--text-secondary)] mt-2 text-sm">${item.description}</p>
+                    </a>
+                </div>
+            `;
+            resultsContainer.innerHTML += resultCard;
+        });
     };
 
-    // Função que filtra os dados e chama a renderização
+    // Função principal que filtra, ordena e renderiza os resultados
     const updateResults = () => {
         let filteredData = [...allData];
-        const searchTerm = mainSearchInput.value.toLowerCase().trim();
 
+        // 1. Filtro pelo campo de busca de texto
+        const searchTerm = mainSearchInput.value.toLowerCase().trim();
         if (searchTerm) {
             filteredData = filteredData.filter(item => 
                 item.title.toLowerCase().includes(searchTerm) || 
                 item.description.toLowerCase().includes(searchTerm)
             );
         }
+
+        // 2. Filtro pelos checkboxes de Tópico
+        const checkedTopics = [...topicFilters.querySelectorAll('input:checked')].map(input => input.value);
+        if (checkedTopics.length > 0) {
+            filteredData = filteredData.filter(item => checkedTopics.includes(item.category));
+        }
+
+        // 3. Filtro pelos radio buttons de Nível
+        const checkedDifficulty = difficultyFilters.querySelector('input:checked');
+        if (checkedDifficulty) {
+            filteredData = filteredData.filter(item => item.difficulty === checkedDifficulty.value);
+        }
+
+        // 4. Ordenação
+        const sortBy = sortByElement.value;
+        if (sortBy === 'date') {
+            filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
         
+        // 5. Atualiza a contagem e renderiza
+        resultsCountElement.innerHTML = `Mostrando <span class="font-bold text-[var(--text-primary)]">${filteredData.length} resultados</span>`;
         renderResults(filteredData);
     };
 
@@ -97,16 +85,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             allData = await response.json();
             
+            // Adiciona os listeners de eventos APÓS os dados serem carregados
             mainSearchInput.addEventListener('input', updateResults);
+            topicFilters.addEventListener('change', updateResults);
+            difficultyFilters.addEventListener('change', updateResults);
+            sortByElement.addEventListener('change', updateResults);
 
+            // Verifica se há um termo de busca na URL
             const urlParams = new URLSearchParams(window.location.search);
             const queryFromUrl = urlParams.get('q');
             if (queryFromUrl) {
                 mainSearchInput.value = queryFromUrl;
             }
 
+            // Renderiza os resultados iniciais (já filtrados se houver query na URL)
             updateResults();
-            console.log("Sistema de busca (novo design) inicializado com sucesso.");
+            console.log("Sistema de busca inicializado com sucesso.");
 
         } catch (error) {
             console.error(error);
