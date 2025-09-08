@@ -17,38 +17,38 @@
       "link": "busca.html"
     },
     {
-      "icone": "notifications_active",
-      "cor": "orange",
-      "titulo": "Alertas Instantâneos",
-      "descricao": "Receba notificações em tempo real sobre atividades suspeitas para proteger sua conta.",
-      "link": "documento.html?pagina=alertas"
+      "icone": "key",
+      "cor": "purple",
+      "titulo": "Autenticação na API",
+      "descricao": "Aprenda como autenticar suas requisições de forma segura para interagir com a API.",
+      "link": "documento.html?pagina=autenticacao-api"
     },
     {
-      "icone": "summarize",
-      "cor": "purple",
-      "titulo": "Relatórios Detalhados",
-      "descricao": "Acesse relatórios completos e fáceis de entender sobre todos os eventos de segurança.",
-      "link": "documento.html?pagina=relatorios"
+      "icone": "webhook",
+      "cor": "orange",
+      "titulo": "Guias de Webhooks",
+      "descricao": "Receba notificações em tempo real e aprenda a validar as requisições para maior segurança.",
+      "link": "documento.html?pagina=webhooks"
     }
   ],
   "novidades": [
     {
       "data": "08 SET, 2025",
-      "titulo": "Lançamento da Versão 3.0.0",
-      "descricao": "Introduzimos um novo layout com navegação global para uma experiência de usuário mais coesa e intuitiva em todo o site.",
-      "link": "#"
+      "titulo": "Novos Artigos Detalhados Publicados",
+      "descricao": "Guias completos sobre Webhooks, Autenticação na API e Boas Práticas de Segurança já estão disponíveis.",
+      "link": "documento.html?pagina=boas-praticas-seguranca"
     },
     {
       "data": "05 SET, 2025",
       "titulo": "Ferramentas de Desenvolvedor Aprimoradas",
-      "descricao": "A aba 'Testes' no painel de diagnóstico agora verifica automaticamente a acessibilidade, links quebrados e performance.",
+      "descricao": "A aba 'Testes' no painel de diagnóstico agora executa uma varredura completa, verificando links, acessibilidade e performance.",
       "link": "#"
     },
     {
       "data": "02 SET, 2025",
-      "titulo": "Novo Artigo: Documentação de Relatórios",
-      "descricao": "A documentação completa para a seção de Relatórios já está disponível, incluindo exemplos de tabelas e exportação.",
-      "link": "documento.html?pagina=relatorios"
+      "titulo": "Lançamento dos Relatórios Visuais",
+      "descricao": "Uma nova página com gráficos e análises detalhadas dos relatórios de segurança já está no ar.",
+      "link": "documento.html?pagina=relatorios-visuais"
     }
   ]
 }
