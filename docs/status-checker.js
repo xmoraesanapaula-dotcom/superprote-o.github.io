@@ -1,6 +1,6 @@
 // ARQUIVO: status-checker.js
 // RESPONSABILIDADE: Realizar um diagnóstico detalhado dos componentes do site.
-// VERSÃO: 2.0.0 (Diagnóstico Avançado)
+// VERSÃO: 2.1.0 (Correções de UI e Verificação de CORS)
 
 document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('status-results');
@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
         WARNING: 'WARNING',
         CRITICAL: 'CRITICAL'
     };
+    
+    // Mapeamento de códigos de status para textos amigáveis
+    const statusTextMap = {
+        200: "OK",
+        404: "Not Found",
+        500: "Internal Server Error"
+    };
 
     // Lista de componentes a serem verificados com o tipo de verificação.
     const checks = [
@@ -27,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' },
         { name: 'Script da Busca (busca.js)', url: 'busca.js', type: 'script' },
         { name: 'Folha de Estilos (style.css)', url: 'style.css', type: 'content' },
-        { name: 'Dependência Externa (Tailwind)', url: 'https://cdn.tailwindcss.com?plugins=forms,container-queries', type: 'external' }
+        { name: 'Dependência Externa (Tailwind)', url: 'https://cdn.tailwindcss.com', type: 'external_css' }
     ];
 
     let criticalErrors = 0;
@@ -35,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para renderizar o resultado de cada verificação na tela.
     const renderResult = ({ name, status, detail, solution }) => {
-        let dotClass, borderColor, bgColor;
+        let dotClass, borderColor, bgColor, summaryTextColor;
 
         switch (status) {
             case STATUS.SUCCESS:
@@ -45,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case STATUS.WARNING:
                 dotClass = 'status-dot-yellow';
-                borderColor = 'border-yellow-400/50 dark:border-yellow-600/50';
-                bgColor = 'bg-yellow-50/50 dark:bg-yellow-900/20';
+                borderColor = 'border-yellow-500/30 dark:border-yellow-600/50';
+                bgColor = 'bg-yellow-100/50 dark:bg-yellow-900/20';
                 break;
             case STATUS.CRITICAL:
                 dotClass = 'status-dot-red';
-                borderColor = 'border-red-400/50 dark:border-red-600/50';
-                bgColor = 'bg-red-50/50 dark:bg-red-900/20';
+                borderColor = 'border-red-500/30 dark:border-red-600/50';
+                bgColor = 'bg-red-100/50 dark:bg-red-900/20';
                 break;
         }
 
@@ -73,11 +80,38 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     };
     
+    // Função que verifica se uma folha de estilo externa foi carregada.
+    const checkExternalCss = ({ name, url }) => {
+        const found = Array.from(document.styleSheets).some(sheet => sheet.href && sheet.href.startsWith(url));
+        if (found) {
+            renderResult({
+                name,
+                status: STATUS.SUCCESS,
+                detail: 'Estilo carregado com sucesso na página.',
+                solution: null
+            });
+        } else {
+            criticalErrors++;
+            renderResult({
+                name,
+                status: STATUS.CRITICAL,
+                detail: 'Folha de estilo não encontrada no documento.',
+                solution: `Verifique se a tag <link href="${url}..."> está presente no <head> do HTML e se não há bloqueios de rede.`
+            });
+        }
+    };
+    
     // Função principal que executa uma verificação detalhada.
     const runCheck = async ({ name, url, type }) => {
+        if (type === 'external_css') {
+            checkExternalCss({ name, url });
+            return;
+        }
+
         try {
             const response = await fetch(url);
-            const detail = `Status HTTP: ${response.status} (${response.statusText})`;
+            const statusText = statusTextMap[response.status] || response.statusText;
+            const detail = `Status HTTP: ${response.status} (${statusText})`;
 
             if (!response.ok) {
                 criticalErrors++;
@@ -85,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     name,
                     status: STATUS.CRITICAL,
                     detail,
-                    solution: `O arquivo não foi encontrado ou o servidor retornou um erro. Verifique se o caminho do arquivo está correto e se ele foi enviado para o servidor.`
+                    solution: `O arquivo não foi encontrado ou o servidor retornou um erro. Verifique se o caminho do arquivo ("${url}") está correto e se ele foi enviado para o servidor.`
                 });
                 return;
             }
@@ -127,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 name,
                 status: STATUS.CRITICAL,
                 detail: `Erro de rede: ${error.message}`,
-                solution: `Não foi possível acessar o arquivo. Verifique sua conexão com a internet ou possíveis bloqueios de CORS no console do navegador.`
+                solution: `Não foi possível acessar o arquivo. Verifique sua conexão com a internet ou possíveis bloqueios no console do navegador.`
             });
         }
     };
@@ -143,13 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Exibe o sumário final com base nos resultados.
         if (criticalErrors > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-red-200 text-red-900 dark:bg-red-900/30 dark:text-red-300';
             summaryContainer.innerHTML = `<h3 class="font-bold text-lg">Diagnóstico Concluído: ${criticalErrors} erro(s) crítico(s) e ${warnings} aviso(s) encontrado(s).</h3>`;
         } else if (warnings > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-yellow-200 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-300';
             summaryContainer.innerHTML = `<h3 class="font-bold text-lg">Diagnóstico Concluído: Nenhum erro crítico, mas ${warnings} aviso(s) requerem atenção.</h3>`;
         } else {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+            summaryContainer.className = 'mb-8 p-4 rounded-md text-center bg-green-200 text-green-900 dark:bg-green-900/30 dark:text-green-300';
             summaryContainer.innerHTML = '<h3 class="font-bold text-lg">Diagnóstico Concluído: Todos os sistemas estão operacionais.</h3>';
         }
     };
