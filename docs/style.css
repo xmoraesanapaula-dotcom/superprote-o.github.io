@@ -178,7 +178,7 @@ footer {
 .status-indicator.error { background-color: #EF4444; box-shadow: 0 0 8px #EF4444; }
 
 
-/* --- v1.5.2: ESTILOS PARA A ABA STORAGE INTERATIVA --- */
+/* --- v1.5.2: ESTILOS PARA AS ABAS STORAGE E NETWORK --- */
 .storage-table td.actions {
     text-align: center;
     min-width: 80px;
@@ -203,4 +203,33 @@ footer {
 }
 .storage-action-btn.delete-btn:hover {
     color: var(--color-error);
+}
+
+.network-row {
+    cursor: pointer;
+}
+.network-row:hover {
+    background-color: #374151;
+}
+.network-row.details-visible {
+    background-color: #4b5563; /* Cor de fundo para a linha ativa */
+}
+.network-details-row td {
+    background-color: #111827;
+    padding: 12px;
+}
+.network-details-content h4 {
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+}
+.headers-list {
+    font-family: var(--code-font);
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+}
+.headers-list strong {
+    color: var(--color-info);
 }
