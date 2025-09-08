@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             buildTableOfContents(contentArea, tocContainer);
             activateScrollSpy();
             enhanceCodeBlocks();
+            enhanceAlerts(); // ATUALIZADO: Chama a nova função de melhoria visual
         })
         .catch(error => {
             console.error('Erro ao carregar o documento:', error);
@@ -42,14 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
-    // NOVO: Função para criar IDs amigáveis e permanentes a partir do texto
     function slugify(text) {
         return text.toString().toLowerCase()
-            .replace(/\s+/g, '-')           // Substitui espaços por -
-            .replace(/[^\w\-]+/g, '')       // Remove caracteres que não são palavras ou hífens
-            .replace(/\-\-+/g, '-')         // Substitui múltiplos hífens por um único
-            .replace(/^-+/, '')             // Remove hífens do início
-            .replace(/-+$/, '');            // Remove hífens do fim
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
     }
 
     function buildTableOfContents(sourceElement, targetContainer) {
@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const headings = sourceElement.querySelectorAll('h2, h3, h4');
 
         headings.forEach((heading) => {
-            // ATUALIZADO: O ID agora é gerado a partir do texto do título
             const id = slugify(heading.textContent);
             heading.id = id;
             
@@ -155,6 +154,25 @@ button.className = 'copy-code-btn';
                     button.title = 'Erro ao copiar';
                 });
             });
+        });
+    }
+
+    // NOVO: Função que transforma blockquotes em alertas customizados
+    function enhanceAlerts() {
+        const blockquotes = contentArea.querySelectorAll('blockquote');
+        blockquotes.forEach(quote => {
+            const p = quote.querySelector('p');
+            if (!p) return;
+
+            if (p.innerHTML.startsWith('<strong>Nota:</strong>')) {
+                quote.classList.add('alert', 'alert-note');
+                // Remove o "Nota:" do texto para não ficar repetido
+                p.innerHTML = p.innerHTML.replace('<strong>Nota:</strong>', '').trim();
+            } else if (p.innerHTML.startsWith('<strong>Aviso:</strong>')) {
+                quote.classList.add('alert', 'alert-warn');
+                // Remove o "Aviso:" do texto
+                p.innerHTML = p.innerHTML.replace('<strong>Aviso:</strong>', '').trim();
+            }
         });
     }
 });
