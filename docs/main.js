@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DA VERSÃO ---
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.6.2';
+        versionInfo.textContent = 'v1.6.3';
     }
 
     // --- LÓGICA DO MODO ESCURO (DARK MODE) ---
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- LÓGICA DA SIDEBAR RESPONSIVA (NOVO v1.6.2) ---
+    // --- LÓGICA DA SIDEBAR RESPONSIVA (v1.6.2) ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
@@ -75,5 +75,5 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarOverlay.addEventListener('click', closeSidebar);
     }
 
-    console.log("Script principal (main.js) v1.6.2 carregado com sucesso.");
+    console.log("Script principal (main.js) v1.6.3 carregado com sucesso.");
 });
