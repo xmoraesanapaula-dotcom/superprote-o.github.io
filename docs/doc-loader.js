@@ -42,25 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
+    // NOVO: Função para criar IDs amigáveis e permanentes a partir do texto
+    function slugify(text) {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Substitui espaços por -
+            .replace(/[^\w\-]+/g, '')       // Remove caracteres que não são palavras ou hífens
+            .replace(/\-\-+/g, '-')         // Substitui múltiplos hífens por um único
+            .replace(/^-+/, '')             // Remove hífens do início
+            .replace(/-+$/, '');            // Remove hífens do fim
+    }
+
     function buildTableOfContents(sourceElement, targetContainer) {
         targetContainer.innerHTML = '';
-        // ATUALIZADO: Agora seleciona h2, h3, e h4
         const headings = sourceElement.querySelectorAll('h2, h3, h4');
 
-        headings.forEach((heading, index) => {
-            const id = `heading-${index}-${heading.tagName}`;
+        headings.forEach((heading) => {
+            // ATUALIZADO: O ID agora é gerado a partir do texto do título
+            const id = slugify(heading.textContent);
             heading.id = id;
+            
             const link = document.createElement('a');
             link.href = `#${id}`;
             link.textContent = heading.textContent;
             
             link.className = 'block rounded-md px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-color)]';
             
-            // Adiciona recuo (padding) com base no nível do título
             if (heading.tagName === 'H3') {
                 link.style.paddingLeft = '2.5rem';
             } else if (heading.tagName === 'H4') {
-                link.style.paddingLeft = '3.5rem'; // Maior recuo para H4
+                link.style.paddingLeft = '3.5rem';
             }
             
             targetContainer.appendChild(link);
@@ -68,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function activateScrollSpy() {
-        // ATUALIZADO: Agora monitora h2, h3, e h4
         const headings = [...contentArea.querySelectorAll('h2, h3, h4')];
         const tocLinks = [...tocContainer.querySelectorAll('a')];
 
@@ -121,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             langSpan.textContent = language;
 
             const button = document.createElement('button');
-            button.className = 'copy-code-btn';
+button.className = 'copy-code-btn';
             button.title = 'Copiar código';
             button.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copiar</span>';
 
