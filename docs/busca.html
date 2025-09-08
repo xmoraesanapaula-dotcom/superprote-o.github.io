@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Artigos e documentação detalhada sobre os recursos do Super Proteção, incluindo Webhooks, Alertas, Relatórios e boas práticas de segurança.">
+    <meta name="description" content="Resultados da busca na documentação do Super Proteção.">
 
-    <title>Super Proteção 3.0.0 - Documento</title>
+    <title>Super Proteção 3.0.0 - Busca</title>
 
     <script>
         (function() {
@@ -22,9 +22,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="style.css">
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 
@@ -52,7 +50,7 @@
         </div>
     </header>
 
-    <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-auto lg:translate-x-0 pt-8">
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0 pt-8">
         <div class="flex items-center justify-between mb-4 lg:hidden">
             <h2 class="text-lg font-semibold">Navegação</h2>
             <button id="sidebar-close-btn" class="p-2 rounded-md text-[var(--text-primary)]">
@@ -77,22 +75,22 @@
     </aside>
     
     <div class="main-content-wrapper">
-        <main class="flex flex-1 min-w-0">
-            <div class="flex-1 p-8 md:p-12">
-                <div class="mx-auto max-w-4xl">
-                    <article class="prose prose-lg max-w-none dark:prose-invert" id="markdown-content">
-                        </article>
+        <main class="flex-1 min-w-0 p-8 md:p-12">
+            <div class="mx-auto max-w-4xl">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Resultados da Busca</h2>
+                    <div class="relative mt-4">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <input id="main-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-3 text-base focus:border-blue-500 focus:ring-blue-500" placeholder="Digite para filtrar os resultados..." type="search" />
+                    </div>
                 </div>
+
+                <div id="results-container">
+                    </div>
             </div>
-            <aside class="hidden xl:block w-72 flex-shrink-0 p-8">
-                <div class="sticky top-[80px]">
-                    <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-4">Nesta Página</h2>
-                    <nav class="space-y-2" id="table-of-contents"></nav>
-                </div>
-            </aside>
         </main>
         
-        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
+        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)] mt-auto">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
                 <div class="flex items-center gap-2">
@@ -117,9 +115,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
-    <script src="doc-loader.js" defer></script>
+    <script src="dev-panel.js" defer></script>
+    <script src="busca.js" defer></script>
 </body>
 </html>
