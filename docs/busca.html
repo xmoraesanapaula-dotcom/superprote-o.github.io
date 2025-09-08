@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca - Super Proteção v1.6.2</title>
+    <title>Super Proteção 3.0.0 - Busca</title>
 
     <script>
         (function() {
@@ -29,9 +29,13 @@
 <body class="bg-[var(--background-primary)] text-[var(--text-primary)] transition-colors duration-500">
     <div id="error-toast" class="error-toast"></div>
 
-    <div class="flex min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-3 bg-[var(--background-primary)]">
-            <div class="flex items-center gap-8">
+    <div class="flex size-full min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
+            <div class="flex items-center gap-4">
+                <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                    <span class="sr-only">Abrir menu</span>
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
                 <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
                     <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
                     <h1 class="text-xl font-bold">Super Proteção</h1>
@@ -40,7 +44,7 @@
             <div class="flex items-center gap-4">
                 <form id="header-search-form" action="busca.html" method="GET" class="relative hidden sm:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar na documentação..." type="search" />
+                    <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar..." type="search" />
                 </form>
                 <button class="rounded-full" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
                     <span class="sr-only">Toggle theme</span>
@@ -49,87 +53,73 @@
             </div>
         </header>
 
-        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                
-                <aside class="lg:col-span-1">
-                    <div class="sticky top-8">
-                        <h2 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Filtrar Resultados</h2>
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Tópico</h3>
-                                <div id="topic-filters" class="space-y-2">
-                                    <label class="flex items-center"><input value="webhook" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Webhooks</span></label>
-                                    <label class="flex items-center"><input value="integracao" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Integrações</span></label>
-                                    <label class="flex items-center"><input value="seguranca" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Segurança</span></label>
-                                    <label class="flex items-center"><input value="api" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">API</span></label>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Nível</h3>
-                                <div id="difficulty-filters" class="space-y-2">
-                                    <label class="flex items-center"><input value="iniciante" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Iniciante</span></label>
-                                    <label class="flex items-center"><input value="intermediario" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Intermediário</span></label>
-                                    <label class="flex items-center"><input value="avancado" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Avançado</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-
-                <div class="lg:col-span-3">
-                    <div class="mb-6">
+        <div class="flex flex-1">
+            <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0 pt-8">
+                <div class="flex items-center justify-between mb-4 lg:hidden">
+                    <h2 class="text-lg font-semibold">Navegação</h2>
+                    <button id="sidebar-close-btn" class="p-2 rounded-md text-[var(--text-primary)]">
+                        <span class="sr-only">Fechar menu</span>
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <nav id="main-nav" class="space-y-2">
+                    <a href="documento.html?pagina=introducao" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">description</span>
+                        <span>Introdução</span>
+                    </a>
+                    <a href="documento.html?pagina=alertas" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">notifications_active</span>
+                        <span>Alertas</span>
+                    </a>
+                    <a href="documento.html?pagina=relatorios" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">summarize</span>
+                        <span>Relatórios</span>
+                    </a>
+                </nav>
+            </aside>
+            
+            <main class="flex-1 min-w-0 p-8 md:p-12">
+                <div class="mx-auto max-w-4xl">
+                    <h1 class="text-4xl font-extrabold tracking-tight mb-6">Busca na Documentação</h1>
+                    
+                    <div class="mb-8">
                         <label for="main-search-input" class="sr-only">Buscar</label>
                         <div class="relative">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                                 <span class="material-symbols-outlined text-gray-400">search</span>
                             </div>
-                            <input type="search" name="search" id="main-search-input" class="block w-full rounded-md border-gray-300 bg-[var(--background-secondary)] p-3 pl-10 text-base focus:border-blue-500 focus:ring-blue-500" placeholder="Digite para buscar nos artigos...">
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between border-b border-[var(--secondary-color)] pb-4 mb-6">
-                        <p id="results-count" class="text-sm text-[var(--text-secondary)]">Mostrando <span class="font-bold text-[var(--text-primary)]">0 resultados</span></p>
-                        <div>
-                            <label class="sr-only" for="sort-by">Ordenar por</label>
-                            <select id="sort-by" class="custom-select rounded-md text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="relevance">Relevância</option>
-                                <option value="date">Data</option>
-                            </select>
+                            <input type="search" name="search" id="main-search-input" class="block w-full rounded-lg border-gray-300 bg-[var(--background-secondary)] p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-[var(--secondary-color)]" placeholder="Digite para buscar nos artigos...">
                         </div>
                     </div>
                     
-                    <div id="results-container" class="space-y-6">
+                    <div id="results-container">
+                        <section id="group-webhook" class="search-results-group" data-category="webhook">
+                            <h2>Webhooks</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                        <section id="group-seguranca" class="search-results-group" data-category="seguranca">
+                            <h2>Segurança</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                        <section id="group-integracao" class="search-results-group" data-category="integracao">
+                            <h2>Integrações</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                        <section id="group-api" class="search-results-group" data-category="api">
+                            <h2>API</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                        <div id="no-results-message" class="hidden text-center text-[var(--text-secondary)] py-12">
+                            <p class="text-lg">Nenhum resultado encontrado para a sua busca.</p>
                         </div>
-
+                    </div>
                 </div>
-            </div>
-        </main>
-
-        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
-                <div class="flex items-center gap-2">
-                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
-                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
-                </div>
-            </div>
-        </footer>
-    </div>
-    
-    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
-    <div id="dev-tools-panel" class="hidden">
-        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
-        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
-        <div class="panel-content">
-            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
-            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
-            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
-            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button></div><div id="tests-output" class="tests-output"></div></div>
+            </main>
         </div>
     </div>
+    
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
-    <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
     <script src="busca.js" defer></script>
 </body>
