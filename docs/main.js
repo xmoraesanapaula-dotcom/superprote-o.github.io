@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DA VERSÃO ---
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.6.1'; // Será atualizado para 1.6.2 no final
+        versionInfo.textContent = 'v1.6.2';
     }
 
     // --- LÓGICA DO MODO ESCURO (DARK MODE) ---
@@ -75,5 +75,5 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarOverlay.addEventListener('click', closeSidebar);
     }
 
-    console.log("Script principal (main.js) v1.6.1 carregado com sucesso."); // Será atualizado para 1.6.2
+    console.log("Script principal (main.js) v1.6.2 carregado com sucesso.");
 });
