@@ -19,17 +19,39 @@ html.dark {
   --background-secondary: #1A1A1A;
 }
 
-
-/* Estilos Globais e da Página Principal */
-html, body {
-    height: 100%;
-}
+/* NOVO: Estrutura de Layout com CSS Grid */
 html {
+    height: 100%;
     scroll-behavior: smooth;
 }
 body {
+    height: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-rows: auto 1fr; /* Linha para o Header, Linha para o Conteúdo (ocupa o resto) */
+    grid-template-columns: auto 1fr; /* Coluna para a Sidebar, Coluna para o Conteúdo (ocupa o resto) */
+    grid-template-areas: 
+        "header header"
+        "sidebar main";
     background-color: var(--background-primary);
     color: var(--text-primary);
+}
+header {
+    grid-area: header;
+}
+#sidebar {
+    grid-area: sidebar;
+    /* Garante que a sidebar tenha sua própria rolagem se o conteúdo for grande */
+    overflow-y: auto;
+}
+.main-content-wrapper {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Permite que a área principal role */
+}
+.main-content-wrapper > main {
+    flex-grow: 1; /* Força o <main> a crescer e empurrar o footer para baixo */
 }
 
 .card {
