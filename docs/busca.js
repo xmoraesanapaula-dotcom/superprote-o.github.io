@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const topicFilters = document.getElementById('topic-filters');
     const difficultyFilters = document.getElementById('difficulty-filters');
     const sortByElement = document.getElementById('sort-by');
+    const mainSearchInput = document.getElementById('main-search-input'); // Campo de busca principal
     
     let allData = []; // Variável para armazenar todos os dados carregados
 
@@ -22,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         results.forEach(item => {
-            // O 'href' agora usa os anchors gerados a partir do conteúdo
             const resultCard = `
                 <div class="card bg-[var(--background-primary)] p-6 rounded-md shadow-sm border border-[var(--secondary-color)] hover:shadow-md transition-shadow">
                     <a class="block" href="documento.html?pagina=${item.page}#${item.anchor}">
@@ -44,23 +44,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateResults = () => {
         let filteredData = [...allData];
 
+        // 1. Filtro pelo campo de busca de texto
+        const searchTerm = mainSearchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+            filteredData = filteredData.filter(item => 
+                item.title.toLowerCase().includes(searchTerm) || 
+                item.description.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // 2. Filtro pelos checkboxes de Tópico
         const checkedTopics = [...topicFilters.querySelectorAll('input:checked')].map(input => input.value);
         if (checkedTopics.length > 0) {
             filteredData = filteredData.filter(item => checkedTopics.includes(item.category));
         }
 
+        // 3. Filtro pelos radio buttons de Nível
         const checkedDifficulty = difficultyFilters.querySelector('input:checked');
         if (checkedDifficulty) {
             filteredData = filteredData.filter(item => item.difficulty === checkedDifficulty.value);
         }
 
+        // 4. Ordenação
         const sortBy = sortByElement.value;
         if (sortBy === 'date') {
             filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
         
+        // 5. Atualiza a contagem e renderiza
         resultsCountElement.innerHTML = `Mostrando <span class="font-bold text-[var(--text-primary)]">${filteredData.length} resultados</span>`;
-        
         renderResults(filteredData);
     };
 
@@ -74,11 +86,19 @@ document.addEventListener('DOMContentLoaded', () => {
             allData = await response.json();
             
             // Adiciona os listeners de eventos APÓS os dados serem carregados
+            mainSearchInput.addEventListener('input', updateResults);
             topicFilters.addEventListener('change', updateResults);
             difficultyFilters.addEventListener('change', updateResults);
             sortByElement.addEventListener('change', updateResults);
 
-            // Renderiza os resultados iniciais
+            // Verifica se há um termo de busca na URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryFromUrl = urlParams.get('q');
+            if (queryFromUrl) {
+                mainSearchInput.value = queryFromUrl;
+            }
+
+            // Renderiza os resultados iniciais (já filtrados se houver query na URL)
             updateResults();
             console.log("Sistema de busca inicializado com sucesso.");
 
