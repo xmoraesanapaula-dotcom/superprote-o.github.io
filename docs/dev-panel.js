@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MÓDULO 2: INSPETOR DE ELEMENTOS ---
+    // --- MÓDULO 2: INSPETOR DE ELEMENTOS (ATUALIZADO v1.5.2) ---
     function buildDomTree(element, parentElement, depth = 0) {
         if (!element || !parentElement || element.id === 'dev-tools-panel' || element.id === 'dev-tools-trigger' || element.tagName === 'SCRIPT' || element.tagName === 'LINK') return;
 
@@ -236,16 +236,44 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (elementsSearchInput) {
         elementsSearchInput.addEventListener('keyup', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+            const searchTerm = e.target.value.trim().toLowerCase();
             const allNodes = domTreeOutput.querySelectorAll('.dom-node');
             
             allNodes.forEach(node => {
-                const tag = node.querySelector('.dom-tag');
-                if (tag && tag.textContent.toLowerCase().includes(searchTerm)) {
-                    node.style.display = 'block';
+                let isVisible = false;
+
+                if (!searchTerm) {
+                    isVisible = true;
+                } else if (searchTerm.startsWith('#')) {
+                    const idToFind = searchTerm.substring(1);
+                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
+                        if (attrName.textContent === 'id') {
+                            const attrValue = attrName.nextElementSibling;
+                            if (attrValue && attrValue.textContent === idToFind) {
+                                isVisible = true;
+                            }
+                        }
+                    });
+                } else if (searchTerm.startsWith('.')) {
+                    const classToFind = searchTerm.substring(1);
+                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
+                        if (attrName.textContent === 'class') {
+                            const attrValue = attrName.nextElementSibling;
+                            if (attrValue) {
+                                const classes = attrValue.textContent.split(' ');
+                                if (classes.includes(classToFind)) {
+                                    isVisible = true;
+                                }
+                            }
+                        }
+                    });
                 } else {
-                    node.style.display = 'none';
+                    const tag = node.querySelector('.dom-tag');
+                    if (tag && tag.textContent.toLowerCase().includes(searchTerm)) {
+                        isVisible = true;
+                    }
                 }
+                node.style.display = isVisible ? 'block' : 'none';
             });
         });
     }
@@ -361,10 +389,10 @@ document.addEventListener('DOMContentLoaded', () => {
         infoContent.innerHTML = content;
     }
     
-    // --- MÓDULO 6: NETWORK INTERCEPTOR (ATUALIZADO v1.5.2) ---
+    // --- MÓDULO 6: NETWORK INTERCEPTOR ---
     function initializeNetworkInterceptor() {
         if (!networkContent) return;
-        let networkRequests = []; // Armazena os detalhes das requisições
+        let networkRequests = [];
 
         networkContent.innerHTML = `
             <table class="network-table">
