@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.6.0 - Documento</title>
+    <title>Super Proteção v1.6.2 - Documento</title>
 
     <script>
         (function() {
@@ -31,8 +31,12 @@
 
     <div class="flex size-full min-h-screen flex-col" style='font-family: Inter, "Noto Sans", sans-serif;'>
         <div class="layout-container flex h-full grow flex-col">
-            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-3 bg-[var(--background-primary)]">
-                <div class="flex items-center gap-8">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)]">
+                <div class="flex items-center gap-4">
+                    <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                        <span class="sr-only">Abrir menu</span>
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
                     <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
                         <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
                         <h1 class="text-xl font-bold">Super Proteção</h1>
@@ -53,8 +57,14 @@
             </header>
             
             <main class="flex flex-1">
-                <aside class="sticky top-[65px] hidden h-[calc(100vh-65px)] w-80 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 lg:block">
-                    <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Nesta Página</h2>
+                <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-80 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Nesta Página</h2>
+                        <button id="sidebar-close-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                            <span class="sr-only">Fechar menu</span>
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
                     <nav class="space-y-2" id="table-of-contents"></nav>
                 </aside>
                 
@@ -77,6 +87,8 @@
             </div>
         </footer>
     </div>
+    
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
     <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
     <div id="dev-tools-panel" class="hidden">
