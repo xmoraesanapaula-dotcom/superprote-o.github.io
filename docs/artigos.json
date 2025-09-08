@@ -33,5 +33,10 @@
     "titulo": "Boas Práticas de Segurança",
     "pagina": "boas-praticas-seguranca",
     "icone": "security"
+  },
+  {
+    "titulo": "Status do Sistema",
+    "pagina": "status.html",
+    "icone": "checklist"
   }
 ]
