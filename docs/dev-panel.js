@@ -1,5 +1,6 @@
 // ARQUIVO: dev-panel.js
 // RESPONSABILIDADE: Controlar toda a lógica do Painel de Diagnóstico.
+// VERSÃO: 3.0.2 (Com sugestões inteligentes)
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -497,19 +498,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- MÓDULO 7: TESTES AUTOMATIZADOS ---
+    // --- MÓDULO 7: TESTES AUTOMATIZADOS (COM SUGESTÕES) ---
 
-    function addTestResult(message, type = 'info') {
+    function addTestResult(message, type = 'info', solution = null) {
         if (!testsOutput) return;
         const line = document.createElement('div');
-        line.className = `console-line ${type}`; 
-        
+        line.className = `console-line ${type}`;
+    
         let icon = 'info';
         if (type === 'success') icon = 'check_circle';
         if (type === 'warn') icon = 'warning';
         if (type === 'error') icon = 'error';
-
-        line.innerHTML = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+    
+        let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+    
+        if (solution) {
+            html += `<div style="margin-left: 32px; margin-top: 4px; font-size: 12px; color: var(--color-info);">
+                        <strong>Sugestão:</strong> ${solution.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                     </div>`;
+        }
+    
+        line.innerHTML = html;
         testsOutput.appendChild(line);
     }
 
@@ -519,7 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imagensSemAlt.length === 0) {
             addTestResult("PASSOU: Todas as imagens possuem o atributo 'alt'.", "success");
         } else {
-            addTestResult(`AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`, "warn");
+            const msg = `AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`;
+            const solucao = "Adicione o atributo `alt` com uma descrição útil do conteúdo da imagem. Ex: `&lt;img src='...' alt='Logotipo do Super Proteção'&gt;`";
+            addTestResult(msg, "warn", solucao);
             imagensSemAlt.forEach(img => {
                 const imgSrc = img.src || 'Fonte da imagem não encontrada';
                 addTestResult(`&nbsp;&nbsp;&nbsp;- <code>${imgSrc.length > 80 ? '...' + imgSrc.slice(-77) : imgSrc}</code>`, "warn");
@@ -538,11 +549,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(url);
                 if (!response.ok) {
                     brokenLinks++;
-                    addTestResult(`FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Status: ${response.status})`, "error");
+                    const msg = `FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Status: ${response.status})`;
+                    const solucao = `Verifique se o arquivo existe no caminho especificado ou se há algum erro de digitação no atributo 'href'.`;
+                    addTestResult(msg, "error", solucao);
                 }
             } catch (error) {
                 brokenLinks++;
-                addTestResult(`FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Erro de rede)`, "error");
+                const msg = `FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Erro de rede)`;
+                const solucao = `O navegador não conseguiu acessar o link. Verifique o console de rede para mais detalhes sobre o erro.`;
+                addTestResult(msg, "error", solucao);
             }
         });
         await Promise.all(promises);
@@ -566,7 +581,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (badButtons.length === 0) {
             addTestResult("PASSOU: Todos os botões têm um nome acessível.", "success");
         } else {
-            addTestResult(`AVISO: Encontrado(s) ${badButtons.length} botão(ões) sem texto ou aria-label.`, "warn");
+            const msg = `AVISO: Encontrado(s) ${badButtons.length} botão(ões) sem texto ou aria-label.`;
+            const solucao = `Botões apenas com ícones devem ter um 'aria-label' para descrever sua função a leitores de tela. Ex: &lt;button aria-label='Fechar janela'&gt;...&lt;/button&gt;`;
+            addTestResult(msg, "warn", solucao);
             badButtons.forEach(btn => {
                 addTestResult(`&nbsp;&nbsp;&nbsp;- Botão: <code>${btn.outerHTML.split('>')[0]}></code>`, "warn");
             });
@@ -588,7 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const naturalWidth = tempImg.naturalWidth;
                 if (naturalWidth > renderedWidth * 2 && renderedWidth > 0) {
                     oversizedImages++;
-                    addTestResult(`AVISO: Imagem grande para a área exibida. (Exibida: ${renderedWidth}px, Original: ${naturalWidth}px)<br>&nbsp;&nbsp;&nbsp;- src: <code>${img.src}</code>`, "warn");
+                    const msg = `AVISO: Imagem grande para a área exibida. (Exibida: ${renderedWidth}px, Original: ${naturalWidth}px)<br>&nbsp;&nbsp;&nbsp;- src: <code>${img.src}</code>`;
+                    const solucao = `Redimensione a imagem para um tamanho mais próximo do que é exibido na tela para economizar dados e acelerar o carregamento.`;
+                    addTestResult(msg, "warn", solucao);
                 }
                 resolve();
             };
@@ -606,7 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (capturedErrors.length === 0) {
             addTestResult("PASSOU: Nenhum erro de JavaScript foi detectado.", "success");
         } else {
-            addTestResult(`FALHOU: Foram detectados ${capturedErrors.length} erro(s). Veja o console para detalhes.`, "error");
+            const msg = `FALHOU: Foram detectados ${capturedErrors.length} erro(s). Veja o console para detalhes.`;
+            const solucao = `Abra o console do navegador (F12) e procure pelas mensagens de erro em vermelho para depurar o código JavaScript.`;
+            addTestResult(msg, "error", solucao);
             capturedErrors.forEach(err => {
                 const shortErr = err.length > 100 ? err.substring(0, 97) + '...' : err;
                 addTestResult(`&nbsp;&nbsp;&nbsp;- <code>${shortErr}</code>`, "error");
@@ -620,24 +641,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const titleElement = document.querySelector('title');
         if (!titleElement) {
-            addTestResult("FALHOU: A página não possui uma tag <code>&lt;title&gt;</code>.", "error");
+            addTestResult("FALHOU: A página não possui uma tag <code>&lt;title&gt;</code>.", "error", "Adicione a tag &lt;title&gt; dentro do &lt;head&gt; da página. Ela é crucial para SEO.");
             issuesFound++;
         } else if (!titleElement.textContent.trim()) {
-            addTestResult("AVISO: A tag <code>&lt;title&gt;</code> está vazia.", "warn");
+            addTestResult("AVISO: A tag <code>&lt;title&gt;</code> está vazia.", "warn", "Preencha a tag &lt;title&gt; com um título descritivo sobre o conteúdo da página.");
             issuesFound++;
         }
 
         const metaDescription = document.querySelector('meta[name="description"]');
         if (!metaDescription) {
-            addTestResult("AVISO: A página não possui uma <code>&lt;meta name='description'&gt;</code>.", "warn");
+            addTestResult("AVISO: A página não possui uma <code>&lt;meta name='description'&gt;</code>.", "warn", "Adicione uma meta tag de descrição para melhorar como sua página aparece nos resultados de busca.");
             issuesFound++;
         } else if (!metaDescription.getAttribute('content')?.trim()) {
-            addTestResult("AVISO: A <code>&lt;meta name='description'&gt;</code> está vazia.", "warn");
+            addTestResult("AVISO: A <code>&lt;meta name='description'&gt;</code> está vazia.", "warn", "Escreva uma breve descrição do conteúdo da página no atributo 'content' da meta tag.");
             issuesFound++;
         }
 
         if (issuesFound === 0) {
             addTestResult("PASSOU: As tags essenciais de SEO (title e description) estão presentes e preenchidas.", "success");
+        }
+    }
+
+    function testIdsDuplicados() {
+        addTestResult("Executando: Teste de IDs Duplicados...");
+        const allIds = {};
+        const duplicates = [];
+        document.querySelectorAll('[id]').forEach(el => {
+            if (el.id) {
+                if (allIds[el.id]) {
+                    if (!duplicates.includes(el.id)) {
+                        duplicates.push(el.id);
+                    }
+                } else {
+                    allIds[el.id] = true;
+                }
+            }
+        });
+    
+        if (duplicates.length === 0) {
+            addTestResult("PASSOU: Nenhum ID duplicado foi encontrado na página.", "success");
+        } else {
+            const msg = `FALHOU: Foram encontrados ${duplicates.length} ID(s) duplicado(s): <code>${duplicates.join(', ')}</code>`;
+            const solucao = "O atributo 'id' deve ser único em toda a página. Renomeie ou remova os IDs duplicados para garantir o funcionamento correto de links âncora e scripts.";
+            addTestResult(msg, "error", solucao);
         }
     }
 
@@ -650,6 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
         testConsoleErros();
         testAcessibilidadeImagens();
         testAcessibilidadeBotoes();
+        testIdsDuplicados();
         testSeoBasico();
         await testLinksQuebrados();
         await testPerformanceImagens();
@@ -664,5 +711,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INICIALIZAÇÃO FINAL ---
     populateInfoTab();
     initializeNetworkInterceptor();
-    console.info("Painel de Diagnóstico v3.0.1 inicializado.");
+    console.info("Painel de Diagnóstico v3.0.2 inicializado.");
 });
