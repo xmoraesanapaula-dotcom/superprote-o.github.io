@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.6.2</title>
+    <title>Super Proteção v1.7.0</title>
 
     <script>
         (function() {
@@ -98,28 +98,15 @@
         </main>
         
         <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
-                <div class="flex items-center gap-2">
-                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
-                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
-                </div>
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-center text-sm text-[var(--text-secondary)]">
+                <span id="version-info">v1.7.0</span> • Documentação Super Proteção
             </div>
         </footer>
     </div>
-    
-    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
-    <div id="dev-tools-panel" class="hidden">
-        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
-        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button> <button class="tab-button" data-tab="info">Info</button></div>
-        <div class="panel-content">
-            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
-            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
-            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
-        </div>
-    </div>
 
-    <script src="dev-panel.js" defer></script>
-    <script src="main.js" defer></script>
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    <script src="dev-panel.js"></script>
+    <script src="tester.js"></script>
 </body>
 </html>
