@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.5 */
+/* CÓDIGO CSS COMPLETO v1.5.2 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -82,7 +82,6 @@ footer {
 
 
 /* --- ESTILOS PARA O PAINEL DE DIAGNÓSTICO --- */
-/* (Esta seção continua a mesma, sem alterações) */
 :root {
     --panel-bg: #1f2937;
     --panel-text: #d1d5db;
@@ -177,3 +176,31 @@ footer {
 .status-indicator { width: 12px; height: 12px; border-radius: 50%; transition: background-color 0.3s ease; }
 .status-indicator.ok { background-color: #22C55E; box-shadow: 0 0 8px #22C55E; }
 .status-indicator.error { background-color: #EF4444; box-shadow: 0 0 8px #EF4444; }
+
+
+/* --- v1.5.2: ESTILOS PARA A ABA STORAGE INTERATIVA --- */
+.storage-table td.actions {
+    text-align: center;
+    min-width: 80px;
+}
+.storage-action-btn {
+    background: none;
+    border: none;
+    color: var(--panel-text);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+.storage-action-btn:hover {
+    background-color: #374151;
+}
+.storage-action-btn .material-symbols-outlined {
+    font-size: 18px;
+    vertical-align: middle;
+}
+.storage-action-btn.edit-btn:hover {
+    color: var(--color-info);
+}
+.storage-action-btn.delete-btn:hover {
+    color: var(--color-error);
+}
