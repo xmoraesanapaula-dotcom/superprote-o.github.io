@@ -29,19 +29,25 @@ body {
     color: var(--text-primary);
 }
 
-/* ATUALIZADO: Versão final com borda e sombra visíveis por padrão */
+/* ATUALIZADO: Abordagem direta com CSS explícito para a sombra */
 .card {
-    /* Garante uma borda sutil e uma sombra visível no modo claro */
-    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0.5rem; /* rounded-lg */
+    border: 1px solid #e5e7eb; /* border-gray-200 */
+    background-color: #fff; /* bg-white */
+    transition: all 0.3s ease-in-out;
+    /* Sombra explícita para o modo claro */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
 }
 html.dark .card {
     background-color: var(--background-secondary);
     border-color: var(--secondary-color);
-    /* No modo escuro, a borda sutil funciona melhor */
-    box-shadow: none;
+    box-shadow: none; /* No modo escuro, a borda é suficiente */
 }
 .card:hover {
-    @apply transform -translate-y-1;
+    transform: translateY(-0.25rem);
     border-color: var(--primary-color);
     box-shadow: 0 0 20px 0 rgba(19, 127, 236, 0.25);
 }
