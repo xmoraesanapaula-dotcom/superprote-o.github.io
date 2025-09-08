@@ -1,6 +1,6 @@
 // ARQUIVO: main.js
 // RESPONSABILIDADE: Controlar a lógica e interações globais.
-// VERSÃO: 4.1.0 (Correção do listener do botão de fechar menu)
+// VERSÃO: 4.2.0 (Melhoria no menu dinâmico e destaque de links)
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -69,12 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const articles = await response.json();
             
-            navContainer.innerHTML = articles.map(article => `
-                <a href="documento.html?pagina=${article.pagina}" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
-                    <span class="material-symbols-outlined">${article.icone}</span>
-                    <span>${article.titulo}</span>
-                </a>
-            `).join('');
+            navContainer.innerHTML = articles.map(article => {
+                if (!article?.pagina || !article?.titulo) {
+                    console.warn("Artigo inválido no JSON:", article);
+                    return '';
+                }
+
+                const linkHref = article.pagina.endsWith('.html') 
+                    ? article.pagina 
+                    : `documento.html?pagina=${article.pagina}`;
+
+                return `
+                    <a href="${linkHref}" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined">${article.icone || 'article'}</span>
+                        <span>${article.titulo}</span>
+                    </a>
+                `;
+            }).join('');
             
             highlightActiveNavLink();
 
@@ -86,19 +97,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para destacar o link ativo na navegação
     function highlightActiveNavLink() {
-        const currentPage = new URLSearchParams(window.location.search).get('pagina');
+        const currentUrl = new URL(window.location.href);
+
+        const currentPage = currentUrl.searchParams.get('pagina') 
+            || currentUrl.pathname.split('/').pop(); // pega o arquivo atual (ex: "sobre.html")
+
         const navLinks = document.querySelectorAll('#main-nav a');
+
         navLinks.forEach(link => {
-            const linkPage = new URL(link.href).searchParams.get('pagina');
+            const linkUrl = new URL(link.href, window.location.origin);
+
+            const linkPage = linkUrl.searchParams.get('pagina') 
+                || linkUrl.pathname.split('/').pop();
+
             if (linkPage === currentPage) {
                 link.classList.add('active-nav-link');
+                link.setAttribute('aria-current', 'page'); // acessibilidade
             }
         });
     }
 
     // Função para carregar conteúdo da página inicial
     async function loadHomePageContent() {
-        // Esta função só roda na index.html, então não há problema em mantê-la
         if (!document.getElementById('hero-titulo')) return; 
 
         try {
@@ -149,5 +169,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMainMenu();
     loadHomePageContent(); // Irá rodar apenas onde for relevante
 
-    console.log("Script principal (main.js) v4.1.0 carregado com sucesso.");
+    console.log("Script principal (main.js) v4.2.0 carregado com sucesso.");
 });
