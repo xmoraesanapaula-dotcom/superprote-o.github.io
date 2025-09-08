@@ -29,25 +29,19 @@ body {
     color: var(--text-primary);
 }
 
-/* ATUALIZADO: Abordagem direta com CSS explícito para a sombra */
+/* ATUALIZADO: Versão final com borda e sombra visíveis por padrão */
 .card {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 0.5rem; /* rounded-lg */
-    border: 1px solid #e5e7eb; /* border-gray-200 */
-    background-color: #fff; /* bg-white */
-    transition: all 0.3s ease-in-out;
-    /* Sombra explícita para o modo claro */
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+    /* Garante uma borda sutil e uma sombra visível no modo claro */
+    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 ease-in-out;
 }
 html.dark .card {
     background-color: var(--background-secondary);
+    /* No modo escuro, a borda sutil é mais eficaz que a sombra */
     border-color: var(--secondary-color);
-    box-shadow: none; /* No modo escuro, a borda é suficiente */
+    box-shadow: none;
 }
 .card:hover {
-    transform: translateY(-0.25rem);
+    @apply transform -translate-y-1;
     border-color: var(--primary-color);
     box-shadow: 0 0 20px 0 rgba(19, 127, 236, 0.25);
 }
@@ -253,4 +247,24 @@ body.sidebar-open #sidebar {
     background-color: var(--secondary-color);
     color: var(--text-primary);
     font-weight: 600;
+}
+
+/* NOVO: Estilos para a seção de Novidades */
+.news-item {
+    @apply block border-b border-[var(--secondary-color)] py-4 transition-colors;
+}
+.news-item:last-child {
+    @apply border-b-0;
+}
+.news-item:hover {
+    @apply bg-gray-50 dark:bg-gray-900/50;
+}
+.news-item .date {
+    @apply text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400;
+}
+.news-item .title {
+    @apply block font-semibold text-[var(--text-primary)] mt-1;
+}
+.news-item .description {
+    @apply text-sm text-[var(--text-secondary)] mt-1;
 }
