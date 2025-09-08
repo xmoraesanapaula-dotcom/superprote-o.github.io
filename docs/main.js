@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DA VERSÃO ---
     const versionInfo = document.getElementById('version-info');
     if (versionInfo) {
-        versionInfo.textContent = 'v1.6.3';
+        versionInfo.textContent = 'v1.6.2';
     }
 
     // --- LÓGICA DO MODO ESCURO (DARK MODE) ---
@@ -47,33 +47,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- LÓGICA DA SIDEBAR RESPONSIVA (v1.6.2) ---
+    // --- LÓGICA DA SIDEBAR RESPONSIVA (CORRIGIDO v1.6.2) ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-    const openSidebar = () => {
-        if (sidebar && sidebarOverlay) {
-            document.body.classList.add('sidebar-open');
+    // Executa a lógica da sidebar APENAS se a sidebar existir na página atual
+    if (sidebar) {
+        const openSidebar = () => {
+            if (sidebarOverlay) {
+                document.body.classList.add('sidebar-open');
+            }
+        };
+
+        const closeSidebar = () => {
+            if (sidebarOverlay) {
+                document.body.classList.remove('sidebar-open');
+            }
+        };
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', openSidebar);
         }
-    };
-
-    const closeSidebar = () => {
-        if (sidebar && sidebarOverlay) {
-            document.body.classList.remove('sidebar-open');
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', closeSidebar);
         }
-    };
-
-    if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', openSidebar);
-    }
-    if (sidebarCloseBtn) {
-        sidebarCloseBtn.addEventListener('click', closeSidebar);
-    }
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
     }
 
-    console.log("Script principal (main.js) v1.6.3 carregado com sucesso.");
+    console.log("Script principal (main.js) v1.6.2 carregado com sucesso.");
 });
