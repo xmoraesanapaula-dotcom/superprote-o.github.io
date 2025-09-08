@@ -30,7 +30,7 @@ body {
 }
 
 .card {
-    @apply group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out; /* Adicionado 'relative' */
+    @apply group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out;
 }
 html.dark .card {
     background-color: var(--background-secondary);
@@ -276,7 +276,7 @@ html.dark .hero-bg {
     @apply bg-blue-700 transform -translate-y-0.5;
 }
 
-/* NOVO: Estilos para Melhorias nos Cards */
+/* Estilos para Melhorias nos Cards */
 .icon-gradient-blue { @apply bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600; }
 .icon-gradient-green { @apply bg-gradient-to-br from-green-100 to-green-200 text-green-600; }
 .icon-gradient-purple { @apply bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600; }
@@ -289,3 +289,29 @@ html.dark .badge-new { @apply bg-green-900 text-green-200; }
 .card-featured { @apply md:col-span-2; }
 .card-featured .card-content { @apply md:flex md:flex-row md:items-center md:gap-6; }
 .card-featured .card-text { @apply md:text-left; }
+
+/* NOVO: Estilos para a nova página de busca */
+.search-card {
+    @apply flex flex-col rounded-lg border border-[var(--secondary-color)] bg-[var(--background-primary)] p-4 transition-all duration-200;
+}
+.search-card:hover {
+    @apply border-blue-500 shadow-md transform -translate-y-1;
+}
+.search-card-header {
+    @apply flex items-center gap-4;
+}
+.search-card-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg;
+}
+.search-card-title {
+    @apply font-semibold text-[var(--text-primary)];
+}
+.search-card-description {
+    @apply mt-2 text-sm text-[var(--text-secondary)];
+}
+.search-card-footer {
+    @apply mt-4 flex items-center justify-end text-sm font-medium text-blue-600;
+}
+.search-results-group h2 {
+    @apply text-xl font-bold mb-4 mt-8 border-b border-[var(--secondary-color)] pb-2;
+}
