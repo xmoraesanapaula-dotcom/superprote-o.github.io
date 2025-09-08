@@ -1,49 +1,70 @@
 # Autenticação na API
 
-Para garantir que apenas aplicações autorizadas possam interagir com seus dados, todas as requisições à API da **Super Proteção** devem ser autenticadas. A autenticação é feita através de chaves de API secretas.
+Para garantir que apenas aplicações autorizadas possam interagir com seus dados, todas as requisições à API da **Super Proteção** devem ser autenticadas.  
 
-Trate suas chaves de API como senhas. Elas concedem acesso total à sua conta e devem ser mantidas em segurança.
+A autenticação é feita através de **chaves de API secretas**.  
+Trate essas chaves como senhas: elas concedem acesso total à sua conta e devem ser mantidas em segurança.
 
 ---
 
 ## Suas Chaves de API
 
-Você pode gerar e gerenciar suas chaves de API no seu Painel de Controle, na seção **Desenvolvedores > Chaves de API**.
+Você pode gerar e gerenciar suas chaves no **Painel de Controle**, na seção **Desenvolvedores > Chaves de API**.  
 
-Existem dois tipos de chaves:
+Existem dois tipos principais:
 
-* **Chave Publicável (`sp_pk_...`):** Destinada a ser usada em código de frontend (navegador). Possui permissões limitadas.
-* **Chave Secreta (`sp_sk_...`):** Destinada a ser usada em seu servidor de backend. **Nunca exponha esta chave publicamente.** Ela possui plenos poderes para interagir com a API.
+- **Chave Publicável (`sp_pk_...`)**  
+  - Usada em código de **frontend** (navegador, aplicativos móveis).  
+  - Possui permissões limitadas.  
+  - Pode ser exposta em ambientes públicos.  
 
-Para todas as operações de backend, você usará a Chave Secreta.
+- **Chave Secreta (`sp_sk_...`)**  
+  - Usada apenas no **backend**.  
+  - Nunca deve ser exposta publicamente.  
+  - Possui acesso total à API.  
+
+> Para todas as operações de backend, você deve usar a **Chave Secreta**.
 
 ---
 
 ## Como Autenticar Requisições
 
-A autenticação é feita pelo método **Bearer Token**. Você deve incluir sua chave secreta em um cabeçalho `Authorization` em todas as suas requisições.
+A autenticação é feita pelo método **Bearer Token**.  
+Inclua sua chave secreta em todas as requisições no cabeçalho **Authorization**:
 
-O formato do cabeçalho é:
-`Authorization: Bearer <SUA_CHAVE_SECRETA>`
+```
 
-Substitua `<SUA_CHAVE_SECRETA>` pela sua chave `sp_sk_...`.
+Authorization: Bearer \<SUA\_CHAVE\_SECRETA>
 
-### Exemplo Prático com `curl`
+````
 
-Abaixo está um exemplo de como listar os últimos eventos da sua conta usando a ferramenta de linha de comando `curl`.
+Substitua `<SUA_CHAVE_SECRETA>` pela chave secreta real (`sp_sk_...`).  
 
-```shell
-curl [https://api.superprotecao.com/v1/eventos](https://api.superprotecao.com/v1/eventos) \
+---
+
+## Exemplo com `curl`
+
+A seguir, um exemplo de como listar os últimos eventos da conta utilizando `curl`:
+
+```bash
+curl https://api.superprotecao.com/v1/eventos \
   -H "Authorization: Bearer sp_sk_suaChaveSecretaDeExemplo"
-```
+````
 
-Se a autenticação for bem-sucedida, a API retornará uma resposta 200 OK com os dados solicitados.
-Tratamento de Erros de Autenticação
-Se uma requisição for feita com uma chave inválida, ausente ou com permissões insuficientes, a API retornará um erro.
- * 401 Unauthorized: A chave de API está ausente, é inválida ou foi revogada.
+Se a autenticação for bem-sucedida, a API responderá com **200 OK** e retornará os dados solicitados.
 
-```
-   {
+---
+
+## Tratamento de Erros de Autenticação
+
+Se a autenticação falhar, a API retornará um erro apropriado.
+
+### 401 Unauthorized
+
+A chave está ausente, inválida ou foi revogada.
+
+```json
+{
   "error": {
     "type": "authentication_error",
     "message": "Chave de API inválida fornecida."
@@ -51,10 +72,12 @@ Se uma requisição for feita com uma chave inválida, ausente ou com permissõe
 }
 ```
 
- * 403 Forbidden: A chave de API é válida, mas não tem permissão para realizar a ação solicitada.
+### 403 Forbidden
 
-```
-   {
+A chave é válida, mas não possui permissão suficiente para executar a operação solicitada.
+
+```json
+{
   "error": {
     "type": "permission_error",
     "message": "Esta chave de API não tem permissão para acessar este recurso."
@@ -62,12 +85,28 @@ Se uma requisição for feita com uma chave inválida, ausente ou com permissõe
 }
 ```
 
-> Nota:
-> Sua aplicação deve ser capaz de tratar esses erros de forma adequada, por exemplo, registrando o erro e notificando um administrador.
-> 
-Segurança das Chaves
- * Não versione suas chaves: Nunca armazene suas chaves de API diretamente no código-fonte ou em repositórios Git.
- * Use variáveis de ambiente: A melhor prática é carregar as chaves a partir de variáveis de ambiente no seu servidor.
- * Rotacione suas chaves: Crie uma política para rotacionar (revogar as antigas e gerar novas) suas chaves de API periodicamente para limitar o dano caso uma delas seja comprometida.
-<!-- end list -->
+> Sua aplicação deve tratar esses erros adequadamente, registrando-os e notificando um administrador quando necessário.
 
+---
+
+## Boas Práticas de Segurança
+
+* **Não versione suas chaves**
+  Nunca armazene chaves diretamente no código-fonte ou em repositórios Git.
+
+* **Use variáveis de ambiente**
+  Configure suas chaves via variáveis de ambiente ou serviços de gerenciamento de segredos (ex.: Vault, AWS Secrets Manager).
+
+* **Rotacione suas chaves periodicamente**
+  Revogue chaves antigas e gere novas regularmente, reduzindo o risco em caso de comprometimento.
+
+* **Restrinja permissões quando possível**
+  Sempre prefira usar a chave mais limitada necessária para a operação.
+
+---
+
+## Próximos Passos
+
+* Gere suas chaves no painel da Super Proteção.
+* Configure variáveis de ambiente para armazená-las.
+* Teste sua autenticação utilizando `curl` ou bibliotecas de cliente HTTP (Axios, Requests, etc.).
