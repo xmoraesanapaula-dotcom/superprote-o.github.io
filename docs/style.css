@@ -10,7 +10,7 @@
   --background-secondary: #f8fafc;
 }
 
-.dark {
+html.dark {
   --primary-color: #137fec;
   --secondary-color: #1f2937;
   --text-primary: #ffffff;
@@ -32,7 +32,7 @@ body {
 .card {
     @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out;
 }
-.dark .card {
+html.dark .card {
     background-color: var(--background-secondary);
     border-color: var(--secondary-color);
 }
@@ -41,20 +41,20 @@ body {
 }
 
 /* v1.4.2: CORREÇÃO DE COR DE TEXTO NO MODO ESCURO */
-.dark .text-gray-900 { color: var(--text-primary); }
-.dark .text-gray-600 { color: var(--text-secondary); }
-.dark .card h4 { color: var(--text-primary); }
-.dark .card p { color: var(--text-secondary); }
-.dark h2, .dark h3 { color: var(--text-primary); }
+html.dark .text-gray-900 { color: var(--text-primary); }
+html.dark .text-gray-600 { color: var(--text-secondary); }
+html.dark .card h4 { color: var(--text-primary); }
+html.dark .card p { color: var(--text-secondary); }
+html.dark h2, html.dark h3 { color: var(--text-primary); }
 
 
 .link-card {
     @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
 }
-.dark .link-card {
+html.dark .link-card {
     color: var(--primary-color);
 }
-.dark .link-card:hover {
+html.dark .link-card:hover {
     color: #60a5fa;
 }
 
@@ -63,7 +63,7 @@ body {
 footer {
     background-color: #f9fafb;
 }
-.dark footer {
+html.dark footer {
     background-color: #0b111e;
 }
 
@@ -238,7 +238,7 @@ footer {
     font-weight: 600;
     color: var(--primary-color);
 }
-.dark #table-of-contents a.active-toc-link {
+html.dark #table-of-contents a.active-toc-link {
     color: #60a5fa;
 }
 
@@ -269,6 +269,6 @@ footer {
 }
 
 /* --- CLASSE PARA TRANSIÇÃO DE TEMA SUAVE --- */
-.no-transitions * {
+html.no-transitions * {
     transition: none !important;
 }
