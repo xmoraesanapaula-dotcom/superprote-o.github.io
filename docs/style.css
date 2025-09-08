@@ -38,6 +38,9 @@ html.dark .card {
 }
 .card:hover {
     @apply shadow-lg transform -translate-y-1;
+    /* NOVO: Efeito de borda brilhante */
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px 0 rgba(19, 127, 236, 0.3);
 }
 
 /* v1.4.2: CORREÇÃO DE COR DE TEXTO NO MODO ESCURO */
@@ -244,46 +247,33 @@ body.sidebar-open #sidebar {
     padding: 5px;
 }
 
-/* NOVO: Estilos para Melhorias Visuais do Conteúdo Markdown */
+/* Estilos para Melhorias Visuais do Conteúdo Markdown */
+.prose table { @apply w-full border-collapse text-sm; }
+.prose th, .prose td { @apply border border-[var(--secondary-color)] px-4 py-3 text-left; }
+.prose th { @apply bg-gray-50 font-semibold; }
+.prose tr:nth-child(even) { @apply bg-gray-50/50; }
+html.dark .prose th { @apply bg-[var(--background-secondary)] text-[var(--text-primary)]; }
+html.dark .prose tr:nth-child(even) { @apply bg-[var(--background-secondary)]/50; }
+.prose .alert { @apply mt-6 rounded-lg border p-4 text-sm not-italic; }
+.prose .alert > p:first-child { @apply mt-0; }
+.prose .alert > p:last-child { @apply mb-0; }
+.prose .alert.alert-note { @apply border-blue-300 bg-blue-50 text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200; }
+.prose .alert.alert-warn { @apply border-yellow-300 bg-yellow-50 text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200; }
+.prose hr { @apply my-8 border-t border-dashed border-[var(--secondary-color)]; }
 
-/* Tabelas */
-.prose table {
-    @apply w-full border-collapse text-sm;
+/* NOVO: Estilos para a página inicial (index.html) */
+.hero-bg {
+    background-color: var(--background-secondary);
+    background-image: radial-gradient(var(--secondary-color) 1px, transparent 1px);
+    background-size: 20px 20px;
 }
-.prose th, .prose td {
-    @apply border border-[var(--secondary-color)] px-4 py-3 text-left;
-}
-.prose th {
-    @apply bg-gray-50 font-semibold;
-}
-.prose tr:nth-child(even) {
-    @apply bg-gray-50/50;
-}
-html.dark .prose th {
-    @apply bg-[var(--background-secondary)] text-[var(--text-primary)];
-}
-html.dark .prose tr:nth-child(even) {
-    @apply bg-[var(--background-secondary)]/50;
-}
-
-/* Alertas Customizados (a partir de blockquotes) */
-.prose .alert {
-    @apply mt-6 rounded-lg border p-4 text-sm not-italic;
-}
-.prose .alert > p:first-child {
-    @apply mt-0;
-}
-.prose .alert > p:last-child {
-    @apply mb-0;
-}
-.prose .alert.alert-note {
-    @apply border-blue-300 bg-blue-50 text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200;
-}
-.prose .alert.alert-warn {
-    @apply border-yellow-300 bg-yellow-50 text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200;
+html.dark .hero-bg {
+    background-image: radial-gradient(var(--secondary-color) 1px, transparent 1px);
 }
 
-/* Linhas Horizontais */
-.prose hr {
-    @apply my-8 border-t border-dashed border-[var(--secondary-color)];
+.cta-button {
+    @apply inline-block rounded-lg bg-blue-600 px-5 py-3 text-base font-medium text-white shadow-md transition-transform duration-200;
+}
+.cta-button:hover {
+    @apply bg-blue-700 transform -translate-y-0.5;
 }
