@@ -78,36 +78,61 @@
                 </nav>
             </aside>
             
-            <main class="flex-1 min-w-0 p-8 md:p-12">
-                <div class="mx-auto max-w-5xl">
-                    <div class="mb-12">
-                        <h2 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-[var(--text-primary)]">Documentação Super Proteção</h2>
-                        <p class="mt-4 max-w-3xl text-lg text-gray-600 dark:text-[var(--text-secondary)]">Tudo o que você precisa saber para integrar e utilizar nossos recursos de segurança com eficiência.</p>
-                    </div>
+            <div class="flex flex-1 flex-col">
+                <main class="flex-1 min-w-0 p-8 md:p-12">
+                    <div class="mx-auto max-w-5xl">
+                        <div class="mb-12">
+                            <h2 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-[var(--text-primary)]">Documentação Super Proteção</h2>
+                            <p class="mt-4 max-w-3xl text-lg text-gray-600 dark:text-[var(--text-secondary)]">Tudo o que você precisa saber para integrar e utilizar nossos recursos de segurança com eficiência.</p>
+                        </div>
 
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <a href="documento.html?pagina=introducao" class="card p-6">
-                            <div class="mb-4 flex items-center gap-4">
-                                <div class="icon-gradient-blue flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">description</span></div>
-                                <h4 class="flex-1 text-lg font-semibold text-gray-900">Comece por aqui</h4>
-                            </div>
-                            <p class="mb-4 text-sm text-gray-600">Uma visão geral do projeto, seus recursos e os primeiros passos para começar a usar.</p>
-                        </a>
-                        <a href="busca.html" class="card p-6">
-                             <div class="mb-4 flex items-center gap-4">
-                                <div class="icon-gradient-green flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">search</span></div>
-                                <h4 class="flex-1 text-lg font-semibold text-gray-900">Buscar em Artigos</h4>
-                            </div>
-                            <p class="mb-4 text-sm text-gray-600">Encontre rapidamente o que você precisa em nossa base de conhecimento.</p>
-                        </a>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <a href="documento.html?pagina=introducao" class="card p-6">
+                                <div class="mb-4 flex items-center gap-4">
+                                    <div class="icon-gradient-blue flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">description</span></div>
+                                    <h4 class="flex-1 text-lg font-semibold text-gray-900">Comece por aqui</h4>
+                                </div>
+                                <p class="mb-4 text-sm text-gray-600">Uma visão geral do projeto, seus recursos e os primeiros passos para começar a usar.</p>
+                            </a>
+                            <a href="busca.html" class="card p-6">
+                                 <div class="mb-4 flex items-center gap-4">
+                                    <div class="icon-gradient-green flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"><span class="material-symbols-outlined">search</span></div>
+                                    <h4 class="flex-1 text-lg font-semibold text-gray-900">Buscar em Artigos</h4>
+                                </div>
+                                <p class="mb-4 text-sm text-gray-600">Encontre rapidamente o que você precisa em nossa base de conhecimento.</p>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </main>
+                </main>
+
+                <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
+                    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                        <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                        <div class="flex items-center gap-2">
+                            <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                            <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]">3.0.0</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
         </div>
     </div>
     
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
+    <div id="dev-tools-panel" class="hidden">
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
+        <div class="panel-content">
+            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span> Limpar</button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS..."></div></div>
+            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span> Iniciar Testes</button></div><div id="tests-output" class="tests-output"></div></div>
+        </div>
+    </div>
+
+    <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
 </body>
 </html>
