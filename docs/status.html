@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verificação da saúde e status operacional dos componentes do site de documentação Super Proteção.">
+    <title>Super Proteção 3.0.0 - Status do Sistema</title>
+
+    <script>
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) { console.error("Erro ao aplicar o tema inicial:", e); }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body style='font-family: Inter, sans-serif;'>
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                <span class="sr-only">Abrir menu</span>
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
+                <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
+                <h1 class="text-xl font-bold">Super Proteção</h1>
+            </a>
+        </div>
+        <div class="flex items-center gap-4">
+            <form id="header-search-form" action="busca.html" method="GET" class="relative hidden sm:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar..." type="search" />
+            </form>
+            <button class="rounded-full" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
+                <span class="sr-only">Toggle theme</span>
+                <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0 pt-8">
+        <div class="flex items-center justify-between mb-4 lg:hidden">
+            <h2 class="text-lg font-semibold">Navegação</h2>
+            <button id="sidebar-close-btn" class="p-2 rounded-md text-[var(--text-primary)]">
+                <span class="sr-only">Fechar menu</span>
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <nav id="main-nav" class="space-y-2">
+            <a href="documento.html?pagina=introducao" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                <span class="material-symbols-outlined">description</span>
+                <span>Introdução</span>
+            </a>
+            <a href="documento.html?pagina=alertas" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                <span class="material-symbols-outlined">notifications_active</span>
+                <span>Alertas</span>
+            </a>
+            <a href="documento.html?pagina=relatorios" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
+                <span class="material-symbols-outlined">summarize</span>
+                <span>Relatórios</span>
+            </a>
+        </nav>
+    </aside>
+    
+    <div class="main-content-wrapper">
+        <main class="p-8 md:p-12">
+            <div class="mx-auto max-w-4xl">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Status do Sistema</h2>
+                    <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Verificação em tempo real da saúde dos componentes do site de documentação.</p>
+                </div>
+                
+                <div id="status-summary" class="mb-8 p-4 rounded-md text-center">
+                    </div>
+
+                <div id="status-results" class="space-y-4">
+                    </div>
+            </div>
+        </main>
+        
+        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                <div class="flex items-center gap-2">
+                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]">3.0.0</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+    <script src="main.js" defer></script>
+    <script src="status-checker.js" defer></script>
+</body>
+</html>
