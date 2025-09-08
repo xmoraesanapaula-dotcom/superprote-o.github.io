@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.6.2 */
+/* CÓDIGO CSS COMPLETO E CORRIGIDO */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -22,7 +22,7 @@ html.dark {
 
 /* Estilos Globais e da Página Principal */
 html, body {
-    height: 100%; /* NOVO: Garante que os containers raiz ocupem toda a altura */
+    height: 100%; /* CORREÇÃO: Garante que os containers raiz ocupem toda a altura */
 }
 html {
     scroll-behavior: smooth;
@@ -32,6 +32,7 @@ body {
     color: var(--text-primary);
 }
 
+/* CORREÇÃO: Versão final com borda e sombra visíveis por padrão */
 .card {
     @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 ease-in-out;
 }
