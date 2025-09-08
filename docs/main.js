@@ -110,11 +110,36 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('hero-subtitulo').textContent = data.hero_subtitulo;
             
             const cardsContainer = document.getElementById('cards-container');
-            if (cardsContainer) cardsContainer.innerHTML = data.cards.map(card => `...`).join(''); // Lógica dos cards
+            if (cardsContainer && data.cards) {
+                cardsContainer.innerHTML = data.cards.map(card => `
+                    <a href="${card.link}" class="card p-6">
+                        <div class="mb-4 flex items-center gap-4">
+                            <div class="icon-gradient-${card.cor} flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                                <span class="material-symbols-outlined">${card.icone}</span>
+                            </div>
+                            <h4 class="flex-1 text-lg font-semibold text-gray-900">${card.titulo}</h4>
+                        </div>
+                        <p class="mb-4 text-sm text-gray-600">${card.descricao}</p>
+                    </a>
+                `).join('');
+            }
+
+            const novidadesContainer = document.getElementById('novidades-container');
+            if (novidadesContainer && data.novidades) {
+                novidadesContainer.innerHTML = data.novidades.map(item => `
+                    <a href="${item.link}" class="news-item">
+                        <p class="date">${item.data}</p>
+                        <h4 class="title">${item.titulo}</h4>
+                        <p class="description">${item.descricao}</p>
+                    </a>
+                `).join('');
+            }
 
         } catch (error) {
             console.error("Erro ao carregar conteúdo da página inicial:", error);
-            document.getElementById('hero-titulo').textContent = "Erro ao carregar conteúdo";
+            if(document.getElementById('hero-titulo')) {
+                document.getElementById('hero-titulo').textContent = "Erro ao carregar conteúdo";
+            }
         }
     }
 
@@ -126,4 +151,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log("Script principal (main.js) v4.1.0 carregado com sucesso.");
 });
-
