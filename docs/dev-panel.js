@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createLogMessage('info', 'info', args);
     };
     
-    // O botão de limpar console foi removido do HTML na v1.4, mas mantemos a lógica caso volte.
     if(consoleClearBtn) consoleClearBtn.addEventListener('click', () => {
         if(consoleOutput) consoleOutput.innerHTML = '';
         console.info("Console limpo.");
@@ -129,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.5 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.5.2 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -276,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
     
-    // --- MÓDULO 4: STORAGE ---
+    // --- MÓDULO 4: STORAGE (ATUALIZADO v1.5.2) ---
     function populateStorageTab() {
         if (!storageContent) return;
         storageContent.innerHTML = ''; 
@@ -288,11 +287,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 return tableHTML;
             }
 
-            tableHTML += `<table class="storage-table"><thead><tr><th>Chave (Key)</th><th>Valor (Value)</th></tr></thead><tbody>`;
+            tableHTML += `<table class="storage-table"><thead><tr><th>Chave (Key)</th><th>Valor (Value)</th><th>Ações</th></tr></thead><tbody>`;
             for (let i = 0; i < storage.length; i++) {
                 const key = storage.key(i);
                 const value = storage.getItem(key);
-                tableHTML += `<tr><td class="key">${key}</td><td class="value">${value}</td></tr>`;
+                tableHTML += `
+                    <tr>
+                        <td class="key">${key}</td>
+                        <td class="value">${value}</td>
+                        <td class="actions">
+                            <button class="storage-action-btn edit-btn" data-storage-type="${title}" data-key="${key}" title="Editar Valor">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="storage-action-btn delete-btn" data-storage-type="${title}" data-key="${key}" title="Excluir Chave">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </td>
+                    </tr>`;
             }
             tableHTML += `</tbody></table></div>`;
             return tableHTML;
@@ -302,6 +313,37 @@ document.addEventListener('DOMContentLoaded', () => {
         storageContent.innerHTML += createStorageTable('Session Storage', window.sessionStorage);
     }
     
+    // Event listener para as ações de storage (usando delegação de eventos)
+    if (storageContent) {
+        storageContent.addEventListener('click', (e) => {
+            const target = e.target.closest('.storage-action-btn');
+            if (!target) return;
+
+            const storageType = target.dataset.storageType;
+            const key = target.dataset.key;
+            const storage = storageType === 'Local Storage' ? window.localStorage : window.sessionStorage;
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm(`Tem certeza que deseja excluir a chave "${key}" do ${storageType}?`)) {
+                    storage.removeItem(key);
+                    populateStorageTab(); // Atualiza a visualização
+                    console.info(`Chave "${key}" removida do ${storageType}.`);
+                }
+            }
+
+            if (target.classList.contains('edit-btn')) {
+                const currentValue = storage.getItem(key);
+                const newValue = prompt(`Digite o novo valor para a chave "${key}":`, currentValue);
+                
+                if (newValue !== null && newValue !== currentValue) {
+                    storage.setItem(key, newValue);
+                    populateStorageTab(); // Atualiza a visualização
+                    console.info(`Chave "${key}" atualizada no ${storageType}.`);
+                }
+            }
+        });
+    }
+
     // --- MÓDULO 5: INFORMAÇÕES DA PÁGINA ---
     function populateInfoTab() {
         if (!infoContent) return;
@@ -309,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.5',
+            'Versão do Projeto': '1.5.2',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -320,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         infoContent.innerHTML = content;
     }
     
-    // --- MÓDULO 6: NETWORK INTERCEPTOR (NOVO v1.5) ---
+    // --- MÓDULO 6: NETWORK INTERCEPTOR ---
     function initializeNetworkInterceptor() {
         if (!networkContent) return;
 
@@ -345,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const startTime = performance.now();
             const url = args[0] instanceof Request ? args[0].url : args[0];
             const method = args[0] instanceof Request ? args[0].method : (args[1]?.method || 'GET');
-            const shortUrl = url.split('/').pop().split('?')[0] || url; // Fallback para a URL completa
+            const shortUrl = url.split('/').pop().split('?')[0] || url;
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -387,5 +429,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializa todos os módulos no final
     populateInfoTab();
     initializeNetworkInterceptor();
-    console.info("Painel de Diagnóstico v1.5 (com aba Network) inicializado.");
+    console.info("Painel de Diagnóstico v1.5.2 inicializado.");
 });
