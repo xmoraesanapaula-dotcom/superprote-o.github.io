@@ -29,15 +29,20 @@ body {
     color: var(--text-primary);
 }
 
+/* ATUALIZADO: Sombra padrão mais forte e efeito de hover aprimorado */
 .card {
-    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out;
+    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 ease-in-out;
 }
 html.dark .card {
     background-color: var(--background-secondary);
     border-color: var(--secondary-color);
+    /* Sombra sutil para o modo escuro, quase uma borda interna */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 .card:hover {
-    @apply shadow-lg transform -translate-y-1;
+    @apply transform -translate-y-1;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px 0 rgba(19, 127, 236, 0.25);
 }
 
 /* v1.4.2: CORREÇÃO DE COR DE TEXTO NO MODO ESCURO */
@@ -235,7 +240,7 @@ body.sidebar-open #sidebar {
     transform: translateX(0);
 }
 
-/* NOVO: Estilo para o link ativo na navegação principal (v3.0.0) */
+/* Estilo para o link ativo na navegação principal (v3.0.0) */
 #main-nav a.active-nav-link {
     background-color: var(--secondary-color);
     color: var(--text-primary);
