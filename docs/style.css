@@ -49,7 +49,8 @@ html.dark h2, html.dark h3 { color: var(--text-primary); }
 
 
 .link-card {
-    @apply flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
+    /* ALTERAÇÃO AQUI: trocado 'items-center' por 'items-baseline' */
+    @apply flex items-baseline justify-between text-sm font-medium text-blue-600 hover:text-blue-700;
 }
 html.dark .link-card {
     color: var(--primary-color);
@@ -58,11 +59,7 @@ html.dark .link-card:hover {
     color: #60a5fa;
 }
 
-/* --- CORREÇÃO DE ALINHAMENTO DO ÍCONE v1.5.3 --- */
-.link-card .material-symbols-outlined {
-    position: relative;
-    top: 1.5px; /* Ajuste fino para descer o ícone */
-}
+/* A REGRA ANTERIOR FOI REMOVIDA DAQUI */
 
 
 /* --- v1.4.1: CORREÇÃO PARA O RODAPÉ --- */
