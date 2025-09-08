@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Objeto para mapear categorias a ícones e cores, para o novo design
     const categoryStyles = {
-        webhook: { icon: 'webhook', color: 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300' },
-        seguranca: { icon: 'security', color: 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300' },
-        integracao: { icon: 'integration_instructions', color: 'bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300' },
-        api: { icon: 'code', color: 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300' }
+        webhook: { icon: 'webhook', color: 'search-icon-bg-red' },
+        seguranca: { icon: 'security', color: 'search-icon-bg-orange' },
+        integracao: { icon: 'integration_instructions', color: 'search-icon-bg-teal' },
+        api: { icon: 'code', color: 'search-icon-bg-purple' }
     };
 
-    // Função para renderizar os resultados na tela (completamente refeita)
+    // Função para renderizar os resultados na tela
     const renderResults = (results) => {
         // 1. Limpa o conteúdo de todos os grupos
         categoryGroups.forEach(group => {
@@ -28,19 +28,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Preenche os grupos com os cards correspondentes
         results.forEach(item => {
-            const style = categoryStyles[item.category] || { icon: 'article', color: 'bg-gray-100' };
+            const style = categoryStyles[item.category] || { icon: 'article', color: 'search-icon-bg-blue' };
             const groupContainer = document.querySelector(`#group-${item.category} .grid`);
             
             if (groupContainer) {
+                // ATUALIZADO: A estrutura interna do card foi ajustada com um 'div' flex-grow
                 const resultCard = `
                     <a href="documento.html?pagina=${item.page}#${item.anchor}" class="search-card">
-                        <div class="search-card-header">
-                            <div class="search-card-icon ${style.color}">
-                                <span class="material-symbols-outlined">${style.icon}</span>
+                        <div class="search-card-content">
+                            <div class="search-card-header">
+                                <div class="search-card-icon ${style.color}">
+                                    <span class="material-symbols-outlined">${style.icon}</span>
+                                </div>
+                                <h3 class="search-card-title">${item.title}</h3>
                             </div>
-                            <h3 class="search-card-title">${item.title}</h3>
+                            <p class="search-card-description">${item.description}</p>
                         </div>
-                        <p class="search-card-description">${item.description}</p>
                         <div class="search-card-footer">
                             <span>Leia o artigo</span>
                             <span class="material-symbols-outlined ml-2">arrow_forward</span>
