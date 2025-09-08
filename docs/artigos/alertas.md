@@ -1,104 +1,53 @@
-# Alertas Instantâneos
+# Alertas
+Versão: v1.7.0
 
-O sistema de **Alertas Instantâneos** do **Super Proteção** é projetado para notificar o usuário em tempo real sobre qualquer atividade que exija atenção imediata.
-Esses alertas garantem que possíveis ameaças sejam detectadas rapidamente, permitindo que ações preventivas ou corretivas sejam tomadas sem atraso.
-
-Os alertas são enviados por múltiplos canais e podem ser configurados de acordo com a necessidade de cada usuário ou organização, oferecendo flexibilidade e confiabilidade.
-
----
-
-## Configuração
-
-Para receber alertas, é necessário configurar previamente os canais de notificação desejados. Atualmente, o sistema suporta:
-
-* **E-mail:** Notificações enviadas para endereços de e-mail autorizados.
-* **SMS:** Mensagens curtas enviadas para números de telefone cadastrados.
-* **Webhooks:** Chamadas automáticas para URLs específicas, integrando com outros sistemas.
-* **Integrações:** Compatibilidade com serviços de mensagens como **Slack** e **Telegram**.
-
-A configuração é realizada no **Painel de Controle**, dentro da seção **Alertas**, onde é possível:
-
-* Ativar ou desativar canais de comunicação.
-* Definir contatos principais e secundários.
-* Ajustar regras de prioridade (por exemplo, enviar SMS apenas em casos críticos).
+O Super Proteção envia notificações em tempo real quando atividades suspeitas ou eventos importantes são detectados.  
+Esses alertas ajudam você a **agir rápido** e manter a segurança da sua infraestrutura.
 
 ---
 
-## Tipos de Alerta
-
-O sistema permite customizar quais eventos devem disparar notificações.
-Os mais comuns são:
-
-* **`login_suspeito`:** Tentativa de login a partir de um IP, localização ou dispositivo não reconhecido.
-* **`falha_multiplas_tentativas`:** Diversas tentativas de login falhas em curto período, sugerindo ataque de força bruta.
-* **`alteracao_sensivel`:** Alterações críticas de conta, como troca de senha, alteração de e-mail ou mudança nas configurações de segurança.
-* **`bloqueio_automatico`:** Usuário bloqueado automaticamente após exceder o limite de tentativas de acesso.
-* **`acesso_novo_dispositivo`:** Login realizado a partir de um dispositivo nunca utilizado anteriormente.
-* **`token_revogado`:** Um token de autenticação foi invalidado manualmente ou por política de segurança.
+## 📌 Tipos de alertas
+- **Críticos** ⚠️ → eventos graves que exigem atenção imediata (ex.: tentativas de invasão).  
+- **Avisos** ℹ️ → situações anômalas que podem se tornar problemas (ex.: login fora do horário normal).  
+- **Informativos** 📢 → atualizações gerais do sistema (ex.: atualização de software concluída).  
 
 ---
 
-## Níveis de Prioridade
+## 📡 Canais suportados
+Você pode configurar múltiplos canais para receber os alertas:
 
-Cada alerta pode ser classificado em um nível de prioridade:
-
-* **Informativo:** Eventos de rotina que não exigem ação imediata (ex.: login válido em novo dispositivo autorizado).
-* **Atenção:** Situações que podem indicar comportamento suspeito e exigem monitoramento (ex.: várias falhas de login em sequência).
-* **Crítico:** Incidentes que requerem resposta imediata (ex.: alteração não autorizada em configurações de segurança).
-
-O usuário pode definir quais níveis devem acionar quais canais. Por exemplo:
-
-* **Informativo → apenas e-mail.**
-* **Crítico → SMS + Webhook + Integração em tempo real.**
+- **E-mail** → útil para registros formais.  
+- **Telegram** → velocidade e simplicidade.  
+- **Slack** → ideal para times de TI e suporte.  
+- **WhatsApp** → canal para alertas críticos e imediatos.  
 
 ---
 
-## Exemplos de Notificações
+## 🛠️ Configuração básica
+1. Acesse o painel de configurações.  
+2. Escolha o canal desejado (ex.: WhatsApp).  
+3. Informe o token/chave de API fornecido pelo serviço.  
+4. Salve e faça um **teste de envio**.  
 
-### Exemplo em E-mail
+---
 
-```
-Assunto: Alerta de Segurança - Tentativa de Login Suspeita
+## 📑 Estrutura de um alerta
+Um alerta possui sempre os seguintes campos:
 
-Detectamos uma tentativa de login suspeita em sua conta.
+| Campo      | Tipo      | Exemplo                                    |
+|------------|-----------|--------------------------------------------|
+| tipo       | string    | `"crítico"`, `"aviso"`, `"informativo"`   |
+| mensagem   | string    | `"Acesso não autorizado detectado"`        |
+| hora       | datetime  | `"2025-09-08 14:35:22"`                    |
+| origem     | string    | `"servidor-web-01"`                        |
 
-Data/Hora: 2025-09-07 21:10:22 (UTC)
-Usuário: joao@example.com
-IP: 45.112.33.90
-Localização: São Paulo, Brasil
-Status: Tentativa de login falhou
+---
 
-Se não foi você, recomendamos alterar sua senha imediatamente.
-```
-
-### Exemplo em JSON (para Webhook)
-
+## 📤 Exemplo de alerta em JSON
 ```json
 {
-  "evento": "login_suspeito",
-  "data": "2025-09-07T21:10:22Z",
-  "usuario": "joao@example.com",
-  "ip": "45.112.33.90",
-  "localizacao": "São Paulo, Brasil",
-  "status": "falha"
+  "tipo": "crítico",
+  "mensagem": "Acesso não autorizado detectado no servidor X",
+  "hora": "2025-09-08 14:35:22",
+  "origem": "servidor-web-01"
 }
-```
-
----
-
-## Boas Práticas
-
-* Configurar múltiplos canais para redundância.
-* Utilizar Webhooks para integração com sistemas de monitoramento em tempo real.
-* Definir diferentes contatos para alertas informativos e críticos.
-* Revisar periodicamente a lista de contatos e canais ativos.
-* Ativar relatórios complementares para acompanhar tendências dos alertas.
-
----
-
-## Futuras Melhorias
-
-* Suporte a **push notifications** em aplicativos móveis.
-* Integração com **Microsoft Teams** e outros sistemas corporativos.
-* Inteligência de contexto: correlação de eventos para evitar falsos positivos.
-* Central de alertas dentro do painel, com histórico completo e filtros avançados.
