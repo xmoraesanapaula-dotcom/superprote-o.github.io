@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca - Super Proteção v1.6.0</title>
+    <title>Busca - Super Proteção v1.6.2</title>
 
     <script>
         (function() {
@@ -30,14 +30,20 @@
     <div id="error-toast" class="error-toast"></div>
 
     <div class="flex min-h-screen flex-col" style='font-family: Inter, sans-serif;'>
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-3 bg-[var(--background-primary)]">
-            <div class="flex items-center gap-8">
-                <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)]">
+            <div class="flex items-center gap-4">
+                <div class="lg:hidden w-10 h-10"></div> <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
                     <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
                     <h1 class="text-xl font-bold">Super Proteção</h1>
                 </a>
             </div>
             <div class="flex items-center gap-4">
+                <div class="relative hidden sm:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <a href="busca.html" class="block w-full">
+                        <input class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer" placeholder="Buscar na documentação..." type="text" onfocus="window.location.href='busca.html';" />
+                    </a>
+                </div>
                 <button class="rounded-full" id="theme-toggle" title="Alternar tema">
                     <span class="sr-only">Toggle theme</span>
                     <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
@@ -116,5 +122,6 @@
 
     <script src="dev-panel.js" defer></script>
     <script src="main.js" defer></script>
-    <script src="busca.js" defer></script> </body>
+    <script src="busca.js" defer></script>
+</body>
 </html>
