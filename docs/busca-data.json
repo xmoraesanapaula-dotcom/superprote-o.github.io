@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "title": "Webhooks",
+    "description": "Aprenda como sua aplicação pode ser notificada em tempo real sobre eventos importantes através de Webhooks.",
+    "category": "webhook",
+    "difficulty": "iniciante",
+    "date": "2025-09-08",
+    "page": "introducao",
+    "anchor": "webhooks"
+  },
+  {
+    "id": 2,
+    "title": "Integrações Externas",
+    "description": "Veja como o Super Proteção se conecta com ferramentas de comunicação como Telegram, Slack e WhatsApp.",
+    "category": "integracao",
+    "difficulty": "intermediario",
+    "date": "2025-09-07",
+    "page": "introducao",
+    "anchor": "integracoes-externas"
+  },
+  {
+    "id": 3,
+    "title": "Boas Práticas de Segurança Digital",
+    "description": "Garanta a confiabilidade de suas integrações seguindo as melhores práticas para armazenamento de credenciais e proteção de endpoints.",
+    "category": "seguranca",
+    "difficulty": "avancado",
+    "date": "2025-09-06",
+    "page": "introducao",
+    "anchor": "boas-praticas-de-seguranca-digital"
+  },
+  {
+    "id": 4,
+    "title": "Configuração de Alertas",
+    "description": "Para receber alertas, é necessário configurar previamente os canais de notificação desejados, como E-mail, SMS e Webhooks.",
+    "category": "webhook",
+    "difficulty": "iniciante",
+    "date": "2025-09-05",
+    "page": "alertas",
+    "anchor": "configuracao"
+  },
+  {
+    "id": 5,
+    "title": "Tipos de Alerta",
+    "description": "O sistema permite customizar quais eventos devem disparar notificações, como login suspeito, falha de múltiplas tentativas e mais.",
+    "category": "seguranca",
+    "difficulty": "intermediario",
+    "date": "2025-09-04",
+    "page": "alertas",
+    "anchor": "tipos-de-alerta"
+  },
+  {
+    "id": 6,
+    "title": "Níveis de Prioridade",
+    "description": "Cada alerta pode ser classificado em um nível de prioridade: Informativo, Atenção ou Crítico, permitindo flexibilidade nas notificações.",
+    "category": "api",
+    "difficulty": "intermediario",
+    "date": "2025-09-03",
+    "page": "alertas",
+    "anchor": "niveis-de-prioridade"
+  },
+  {
+    "id": 7,
+    "title": "Relatório Diário de Atividades",
+    "description": "Exemplos de relatórios apresentados em tabelas Markdown, representando visualizações que podem ser exportadas em PDF ou CSV.",
+    "category": "api",
+    "difficulty": "iniciante",
+    "date": "2025-09-02",
+    "page": "relatorios",
+    "anchor": "relatorio-diario-de-atividades"
+  },
+  {
+    "id": 8,
+    "title": "Exemplo Completo de Integração com Node.js",
+    "description": "Um exemplo prático de como receber um Webhook de alerta em um backend Node.js utilizando Express.",
+    "category": "integracao",
+    "difficulty": "avancado",
+    "date": "2025-09-01",
+    "page": "introducao",
+    "anchor": "exemplo-completo-de-integracao"
+  }
+]
