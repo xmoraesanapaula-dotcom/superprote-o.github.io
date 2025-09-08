@@ -50,39 +50,58 @@
         </header>
 
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="mx-auto max-w-4xl">
-                <h1 class="text-4xl font-extrabold tracking-tight mb-6">Busca na Documentação</h1>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 
-                <div class="mb-8">
-                    <label for="main-search-input" class="sr-only">Buscar</label>
-                    <div class="relative">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                            <span class="material-symbols-outlined text-gray-400">search</span>
+                <aside class="lg:col-span-1">
+                    <div class="sticky top-8">
+                        <h2 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Filtrar Resultados</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Tópico</h3>
+                                <div id="topic-filters" class="space-y-2">
+                                    <label class="flex items-center"><input value="webhook" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Webhooks</span></label>
+                                    <label class="flex items-center"><input value="integracao" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Integrações</span></label>
+                                    <label class="flex items-center"><input value="seguranca" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Segurança</span></label>
+                                    <label class="flex items-center"><input value="api" class="form-checkbox rounded text-blue-600 focus:ring-blue-500" type="checkbox"/><span class="ml-2 text-sm text-[var(--text-secondary)]">API</span></label>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-medium mb-2 text-[var(--text-primary)]">Nível</h3>
+                                <div id="difficulty-filters" class="space-y-2">
+                                    <label class="flex items-center"><input value="iniciante" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Iniciante</span></label>
+                                    <label class="flex items-center"><input value="intermediario" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Intermediário</span></label>
+                                    <label class="flex items-center"><input value="avancado" class="form-radio text-blue-600 focus:ring-blue-500" name="difficulty" type="radio"/><span class="ml-2 text-sm text-[var(--text-secondary)]">Avançado</span></label>
+                                </div>
+                            </div>
                         </div>
-                        <input type="search" name="search" id="main-search-input" class="block w-full rounded-lg border-gray-300 bg-[var(--background-secondary)] p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-[var(--secondary-color)]" placeholder="Digite para buscar nos artigos...">
                     </div>
-                </div>
-                
-                <div id="results-container">
-                    <section id="group-webhook" class="search-results-group" data-category="webhook">
-                        <h2>Webhooks</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    </section>
-                    <section id="group-seguranca" class="search-results-group" data-category="seguranca">
-                        <h2>Segurança</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    </section>
-                    <section id="group-integracao" class="search-results-group" data-category="integracao">
-                        <h2>Integrações</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    </section>
-                    <section id="group-api" class="search-results-group" data-category="api">
-                        <h2>API</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    </section>
-                    <div id="no-results-message" class="hidden text-center text-[var(--text-secondary)] py-12">
-                        <p class="text-lg">Nenhum resultado encontrado para a sua busca.</p>
+                </aside>
+
+                <div class="lg:col-span-3">
+                    <div class="mb-6">
+                        <label for="main-search-input" class="sr-only">Buscar</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="material-symbols-outlined text-gray-400">search</span>
+                            </div>
+                            <input type="search" name="search" id="main-search-input" class="block w-full rounded-md border-gray-300 bg-[var(--background-secondary)] p-3 pl-10 text-base focus:border-blue-500 focus:ring-blue-500" placeholder="Digite para buscar nos artigos...">
+                        </div>
                     </div>
+
+                    <div class="flex items-center justify-between border-b border-[var(--secondary-color)] pb-4 mb-6">
+                        <p id="results-count" class="text-sm text-[var(--text-secondary)]">Mostrando <span class="font-bold text-[var(--text-primary)]">0 resultados</span></p>
+                        <div>
+                            <label class="sr-only" for="sort-by">Ordenar por</label>
+                            <select id="sort-by" class="custom-select rounded-md text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="relevance">Relevância</option>
+                                <option value="date">Data</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="results-container" class="space-y-6">
+                        </div>
+
                 </div>
             </div>
         </main>
