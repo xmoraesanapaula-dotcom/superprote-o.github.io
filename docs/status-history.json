@@ -1,0 +1,39 @@
+{
+  "uptime_history": [
+    { "date": "2025-09-08", "status": "operational" },
+    { "date": "2025-09-07", "status": "operational" },
+    { "date": "2025-09-06", "status": "degraded" },
+    { "date": "2025-09-05", "status": "operational" },
+    { "date": "2025-09-04", "status": "maintenance" },
+    { "date": "2025-09-03", "status": "outage" }
+  ],
+  "incidents": [
+    {
+      "date": "2025-09-06",
+      "status": "resolved",
+      "title": "Degradação de Performance na API de Relatórios",
+      "updates": [
+        { "timestamp": "15:30 -03", "description": "O problema foi identificado e uma correção está sendo implementada." },
+        { "timestamp": "14:00 -03", "description": "Estamos investigando relatos de lentidão e erros 503 na API de relatórios." }
+      ]
+    },
+    {
+      "date": "2025-09-04",
+      "status": "completed",
+      "title": "Manutenção Programada nos Servidores",
+      "updates": [
+        { "timestamp": "04:00 -03", "description": "A manutenção foi concluída com sucesso." },
+        { "timestamp": "02:00 -03", "description": "Iniciamos a janela de manutenção programada. Inatividade intermitente é esperada." }
+      ]
+    },
+    {
+        "date": "2025-09-03",
+        "status": "resolved",
+        "title": "Interrupção Total do Serviço de Autenticação",
+        "updates": [
+          { "timestamp": "11:00 -03", "description": "O serviço foi restaurado. A causa raiz foi uma falha de configuração no balanceador de carga." },
+          { "timestamp": "10:15 -03", "description": "Identificamos a falha e estamos trabalhando para restaurar o serviço." }
+        ]
+      }
+  ]
+}
