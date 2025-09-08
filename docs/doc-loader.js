@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(markdownText => {
             contentArea.innerHTML = marked.parse(markdownText);
             buildTableOfContents(contentArea, tocContainer);
-            activateScrollSpy(); // Nova função para o Scroll Spy
+            activateScrollSpy();
+            addCopyButtonsToCodeBlocks(); // Nova função para botão de copiar
         })
         .catch(error => {
             console.error('Erro ao carregar o documento:', error);
@@ -69,13 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let timeout;
         const highlightTocLink = () => {
-            // Otimização para não executar a lógica em cada pixel de rolagem
             if (timeout) {
                 clearTimeout(timeout);
             }
             timeout = setTimeout(() => {
                 let activeHeadingId = '';
-                const headerOffset = 80; // Espaço para o cabeçalho fixo
+                const headerOffset = 80;
 
                 headings.forEach(heading => {
                     const rect = heading.getBoundingClientRect();
@@ -90,10 +90,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         link.classList.add('active-toc-link');
                     }
                 });
-            }, 100); // Executa a verificação a cada 100ms durante a rolagem
+            }, 100);
         };
         
         window.addEventListener('scroll', highlightTocLink);
-        highlightTocLink(); // Executa uma vez ao carregar a página
+        highlightTocLink();
+    }
+
+    function addCopyButtonsToCodeBlocks() {
+        const codeBlocks = contentArea.querySelectorAll('pre');
+        codeBlocks.forEach(block => {
+            const button = document.createElement('button');
+            button.className = 'copy-code-btn';
+            button.title = 'Copiar código';
+            button.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.querySelector('code');
+                if (!code) return;
+
+                navigator.clipboard.writeText(code.innerText).then(() => {
+                    button.innerHTML = '<span class="material-symbols-outlined">done</span>';
+                    button.title = 'Copiado!';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+                        button.title = 'Copiar código';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Falha ao copiar o texto:', err);
+                    button.title = 'Erro ao copiar';
+                });
+            });
+        });
     }
 });
