@@ -32,19 +32,31 @@ body {
     color: var(--text-primary);
 }
 
-/* CORREÇÃO: Versão final com borda e sombra visíveis por padrão */
+/* CORREÇÃO DEFINITIVA: Estilos explícitos para o card, sem @apply */
 .card {
-    @apply group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--background-primary);
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    /* Sombra explícita para o modo claro */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+}
+.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 15px -3px rgb(19 127 236 / 0.15), 0 4px 6px -4px rgb(19 127 236 / 0.15);
 }
 html.dark .card {
     background-color: var(--background-secondary);
     border-color: var(--secondary-color);
-    box-shadow: none;
+    box-shadow: none; /* No modo escuro, a borda é suficiente */
 }
-.card:hover {
-    @apply transform -translate-y-1;
+html.dark .card:hover {
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px 0 rgba(19, 127, 236, 0.25);
+    box-shadow: 0 0 20px 0 rgba(19, 127, 236, 0.2);
 }
 
 
