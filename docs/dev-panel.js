@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const commandHistory = [];
     let historyIndex = 0;
-    let capturedErrors = []; // NOVO: Array para armazenar erros
+    let capturedErrors = []; // Array para armazenar erros
 
     if (!panel) return;
 
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.onerror = function(message, source, lineno, colno, error) {
         const sourceFile = source ? source.split('/').pop() : 'script';
         const errorMessage = `${message} em ${sourceFile}:${lineno}`;
-        capturedErrors.push(errorMessage); // ATUALIZADO: Captura o erro
+        capturedErrors.push(errorMessage); // Captura o erro
         handleVisualError(errorMessage);
         console.error(errorMessage, error); // console.error agora é o nosso customizado
         return true; 
@@ -117,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createLogMessage('warn', 'warning', args);
     };
     console.error = function(...args) {
-        // ATUALIZADO: Captura o erro para o teste
         const errorString = args.map(a => a.toString()).join(' ');
         capturedErrors.push(errorString);
         
@@ -615,6 +614,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function testSeoBasico() {
+        addTestResult("Executando: Teste de SEO Básico...");
+        let issuesFound = 0;
+
+        const titleElement = document.querySelector('title');
+        if (!titleElement) {
+            addTestResult("FALHOU: A página não possui uma tag <code>&lt;title&gt;</code>.", "error");
+            issuesFound++;
+        } else if (!titleElement.textContent.trim()) {
+            addTestResult("AVISO: A tag <code>&lt;title&gt;</code> está vazia.", "warn");
+            issuesFound++;
+        }
+
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (!metaDescription) {
+            addTestResult("AVISO: A página não possui uma <code>&lt;meta name='description'&gt;</code>.", "warn");
+            issuesFound++;
+        } else if (!metaDescription.getAttribute('content')?.trim()) {
+            addTestResult("AVISO: A <code>&lt;meta name='description'&gt;</code> está vazia.", "warn");
+            issuesFound++;
+        }
+
+        if (issuesFound === 0) {
+            addTestResult("PASSOU: As tags essenciais de SEO (title e description) estão presentes e preenchidas.", "success");
+        }
+    }
+
     async function runAllTests() {
         if (!testsOutput) return;
         testsOutput.innerHTML = ''; 
@@ -624,6 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         testConsoleErros();
         testAcessibilidadeImagens();
         testAcessibilidadeBotoes();
+        testSeoBasico();
         await testLinksQuebrados();
         await testPerformanceImagens();
 
