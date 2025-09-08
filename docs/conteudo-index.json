@@ -30,5 +30,25 @@
       "descricao": "Acesse relatórios completos e fáceis de entender sobre todos os eventos de segurança.",
       "link": "documento.html?pagina=relatorios"
     }
+  ],
+  "novidades": [
+    {
+      "data": "08 SET, 2025",
+      "titulo": "Lançamento da Versão 3.0.0",
+      "descricao": "Introduzimos um novo layout com navegação global para uma experiência de usuário mais coesa e intuitiva em todo o site.",
+      "link": "#"
+    },
+    {
+      "data": "05 SET, 2025",
+      "titulo": "Ferramentas de Desenvolvedor Aprimoradas",
+      "descricao": "A aba 'Testes' no painel de diagnóstico agora verifica automaticamente a acessibilidade, links quebrados e performance.",
+      "link": "#"
+    },
+    {
+      "data": "02 SET, 2025",
+      "titulo": "Novo Artigo: Documentação de Relatórios",
+      "descricao": "A documentação completa para a seção de Relatórios já está disponível, incluindo exemplos de tabelas e exportação.",
+      "link": "documento.html?pagina=relatorios"
+    }
   ]
 }
