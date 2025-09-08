@@ -12,12 +12,12 @@
 
 html.dark {
   --primary-color: #137fec;
-  --secondary-color: #1f2937;
+  /* ATUALIZADO: Cor secundária bem escura para bordas e códigos */
+  --secondary-color: #222222;
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
-  /* ATUALIZADO: Cores de fundo mais escuras (próximas ao preto) */
-  --background-primary: #0A0A0A; /* Preto mais suave para o fundo principal */
-  --background-secondary: #1A1A1A; /* Cinza escuro para elementos secundários */
+  --background-primary: #0A0A0A;
+  --background-secondary: #1A1A1A;
 }
 
 
@@ -64,8 +64,9 @@ html.dark .link-card:hover {
 footer {
     background-color: #f9fafb;
 }
+/* ATUALIZADO: Fundo do rodapé agora é um preto suave */
 html.dark footer {
-    background-color: #0b111e;
+    background-color: #050505;
 }
 
 
