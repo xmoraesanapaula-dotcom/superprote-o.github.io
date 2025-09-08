@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Proteção v1.6.2 - Documento</title>
+
+    <script>
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) { console.error("Erro ao aplicar o tema inicial:", e); }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+
+<body class="bg-[var(--background-primary)] text-[var(--text-primary)] transition-colors duration-500">
+    <div id="error-toast" class="error-toast"></div>
+
+    <div class="flex size-full min-h-screen flex-col" style='font-family: Inter, "Noto Sans", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)]">
+                <div class="flex items-center gap-4">
+                    <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                        <span class="sr-only">Abrir menu</span>
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
+                        <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
+                        <h1 class="text-xl font-bold">Super Proteção</h1>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative hidden sm:block">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <a href="busca.html" class="block w-full">
+                            <input class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer" placeholder="Buscar na documentação..." type="text" onfocus="window.location.href='busca.html';" />
+                        </a>
+                    </div>
+                    <button class="rounded-full" id="theme-toggle" title="Alternar tema">
+                        <span class="sr-only">Toggle theme</span>
+                        <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
+                    </button>
+                </div>
+            </header>
+            
+            <main class="flex flex-1">
+                <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-80 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Nesta Página</h2>
+                        <button id="sidebar-close-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                            <span class="sr-only">Fechar menu</span>
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <nav class="space-y-2" id="table-of-contents"></nav>
+                </aside>
+                
+                <div class="flex-1 min-w-0 p-8 md:p-12">
+                    <div class="mx-auto max-w-4xl">
+                        <article class="prose prose-lg max-w-none dark:prose-invert" id="markdown-content">
+                        </article>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)]">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                <div class="flex items-center gap-2">
+                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+    <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
+    <div id="dev-tools-panel" class="hidden">
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button> <button class="tab-button" data-tab="info">Info</button></div>
+        <div class="panel-content">
+            <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
+            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script src="dev-panel.js" defer></script>
+    <script src="main.js" defer></script>
+    <script src="doc-loader.js" defer></script>
+</body>
+</html>
