@@ -58,6 +58,12 @@ html.dark .link-card:hover {
     color: #60a5fa;
 }
 
+/* --- CORREÇÃO DE ALINHAMENTO DO ÍCONE v1.5.3 --- */
+.link-card .material-symbols-outlined {
+    position: relative;
+    top: 1.5px; /* Ajuste fino para descer o ícone */
+}
+
 
 /* --- v1.4.1: CORREÇÃO PARA O RODAPÉ --- */
 footer {
