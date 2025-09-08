@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.6.1 */
+/* CÓDIGO CSS COMPLETO v1.6.2 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -77,15 +77,13 @@ html.dark footer {
 .prose li { margin-bottom: 0.5em; }
 .prose blockquote { border-left: 4px solid var(--primary-color); padding-left: 1em; font-style: italic; color: var(--text-secondary); }
 .prose code { background-color: var(--secondary-color); color: var(--primary-color); padding: 0.2em 0.4em; border-radius: 4px; font-family: var(--code-font); }
-
-/* ATUALIZADO v1.6.1: Padding modificado para acomodar o cabeçalho */
 .prose pre {
     position: relative;
     background-color: #1e293b;
     color: #e2e8f0;
-    padding: 0 1em 1em 1em; /* Removido padding do topo */
+    padding: 0 1em 1em 1em;
     border-radius: 8px;
-    overflow: hidden; /* Alterado de 'auto' para 'hidden' para conter o cabeçalho */
+    overflow: hidden;
 }
 .prose pre code { background-color: transparent; color: inherit; padding: 0; display: block; overflow-x: auto; padding-top: 1em; }
 
@@ -171,11 +169,11 @@ html.dark footer {
     color: var(--color-log);
 }
 .network-table .status-ok {
-    color: #6ee7b7; /* Verde */
+    color: #6ee7b7;
     font-weight: bold;
 }
 .network-table .status-error {
-    color: var(--color-error); /* Vermelho */
+    color: var(--color-error);
     font-weight: bold;
 }
 
@@ -188,91 +186,26 @@ html.dark footer {
 
 
 /* --- v1.5.2: ESTILOS PARA AS ABAS STORAGE E NETWORK --- */
-.storage-table td.actions {
-    text-align: center;
-    min-width: 80px;
-}
-.storage-action-btn {
-    background: none;
-    border: none;
-    color: var(--panel-text);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-}
-.storage-action-btn:hover {
-    background-color: #374151;
-}
-.storage-action-btn .material-symbols-outlined {
-    font-size: 18px;
-    vertical-align: middle;
-}
-.storage-action-btn.edit-btn:hover {
-    color: var(--color-info);
-}
-.storage-action-btn.delete-btn:hover {
-    color: var(--color-error);
-}
-.network-row {
-    cursor: pointer;
-}
-.network-row:hover {
-    background-color: #374151;
-}
-.network-row.details-visible {
-    background-color: #4b5563;
-}
-.network-details-row td {
-    background-color: #111827;
-    padding: 12px;
-}
-.network-details-content h4 {
-    font-weight: bold;
-    color: white;
-    margin-bottom: 8px;
-}
-.headers-list {
-    font-family: var(--code-font);
-    font-size: 12px;
-    white-space: pre-wrap;
-    word-break: break-all;
-    line-height: 1.6;
-}
-.headers-list strong {
-    color: var(--color-info);
-}
+.storage-table td.actions { text-align: center; min-width: 80px; }
+.storage-action-btn { background: none; border: none; color: var(--panel-text); cursor: pointer; padding: 4px; border-radius: 4px; }
+.storage-action-btn:hover { background-color: #374151; }
+.storage-action-btn .material-symbols-outlined { font-size: 18px; vertical-align: middle; }
+.storage-action-btn.edit-btn:hover { color: var(--color-info); }
+.storage-action-btn.delete-btn:hover { color: var(--color-error); }
+.network-row { cursor: pointer; }
+.network-row:hover { background-color: #374151; }
+.network-row.details-visible { background-color: #4b5563; }
+.network-details-row td { background-color: #111827; padding: 12px; }
+.network-details-content h4 { font-weight: bold; color: white; margin-bottom: 8px; }
+.headers-list { font-family: var(--code-font); font-size: 12px; white-space: pre-wrap; word-break: break-all; line-height: 1.6; }
+.headers-list strong { color: var(--color-info); }
 
 /* --- v1.5.3: ESTILOS PARA A UX --- */
-#table-of-contents a.active-toc-link {
-    font-weight: 600;
-    color: var(--primary-color);
-}
-html.dark #table-of-contents a.active-toc-link {
-    color: #60a5fa;
-}
-
-/* ATUALIZADO v1.6.1: Estilos do botão de cópia ajustados para o cabeçalho */
-.copy-code-btn {
-    background-color: transparent;
-    border: 1px solid transparent;
-    color: #9ca3af; /* Cinza claro para o ícone e texto */
-    padding: 2px 6px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px; /* Espaço entre ícone e texto */
-    font-size: 12px;
-}
-.copy-code-btn:hover {
-    background-color: #374151;
-    border-color: var(--panel-border);
-    color: var(--panel-text);
-}
-.copy-code-btn .material-symbols-outlined {
-    font-size: 16px;
-}
+#table-of-contents a.active-toc-link { font-weight: 600; color: var(--primary-color); }
+html.dark #table-of-contents a.active-toc-link { color: #60a5fa; }
+.copy-code-btn { position: relative; background-color: transparent; border: 1px solid transparent; color: #9ca3af; padding: 2px 6px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.copy-code-btn:hover { background-color: #374151; border-color: var(--panel-border); color: var(--panel-text); }
+.copy-code-btn .material-symbols-outlined { font-size: 16px; }
 
 
 /* --- CLASSE PARA TRANSIÇÃO DE TEMA SUAVE --- */
@@ -306,4 +239,19 @@ html.dark .custom-select {
     font-size: 12px;
     color: #9ca3af;
     text-transform: uppercase;
+}
+
+/* --- v1.6.2: ESTILOS PARA SIDEBAR RESPONSIVA --- */
+body.sidebar-open {
+    overflow: hidden; /* Impede o scroll do conteúdo principal quando a sidebar está aberta */
+}
+
+@media (max-width: 1023px) { /* Aplica apenas em telas menores que 'lg' do Tailwind */
+    body.sidebar-open #sidebar-overlay {
+        display: block;
+        opacity: 1;
+    }
+    body.sidebar-open #sidebar {
+        transform: translateX(0);
+    }
 }
