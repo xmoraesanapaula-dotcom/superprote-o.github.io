@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentArea.innerHTML = marked.parse(markdownText);
             buildTableOfContents(contentArea, tocContainer);
             activateScrollSpy();
-            enhanceCodeBlocks(); // Função atualizada para v1.6.1
+            enhanceCodeBlocks();
         })
         .catch(error => {
             console.error('Erro ao carregar o documento:', error);
@@ -44,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function buildTableOfContents(sourceElement, targetContainer) {
         targetContainer.innerHTML = '';
-        const headings = sourceElement.querySelectorAll('h2, h3');
+        // ATUALIZADO: Agora seleciona h2, h3, e h4
+        const headings = sourceElement.querySelectorAll('h2, h3, h4');
 
         headings.forEach((heading, index) => {
             const id = `heading-${index}-${heading.tagName}`;
@@ -54,8 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
             link.textContent = heading.textContent;
             
             link.className = 'block rounded-md px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-color)]';
+            
+            // Adiciona recuo (padding) com base no nível do título
             if (heading.tagName === 'H3') {
                 link.style.paddingLeft = '2.5rem';
+            } else if (heading.tagName === 'H4') {
+                link.style.paddingLeft = '3.5rem'; // Maior recuo para H4
             }
             
             targetContainer.appendChild(link);
@@ -63,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function activateScrollSpy() {
-        const headings = [...contentArea.querySelectorAll('h2, h3')];
+        // ATUALIZADO: Agora monitora h2, h3, e h4
+        const headings = [...contentArea.querySelectorAll('h2, h3, h4')];
         const tocLinks = [...tocContainer.querySelectorAll('a')];
 
         if (headings.length === 0 || tocLinks.length === 0) return;
@@ -101,35 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const codeBlocks = contentArea.querySelectorAll('pre');
         codeBlocks.forEach(block => {
             const code = block.querySelector('code');
-            let language = 'shell'; // Padrão se nenhuma linguagem for especificada
+            let language = 'shell';
 
             if (code && code.className.startsWith('language-')) {
                 language = code.className.replace('language-', '').trim();
             }
 
-            // Cria o cabeçalho
             const header = document.createElement('div');
             header.className = 'code-block-header';
 
-            // Cria o span para o nome da linguagem
             const langSpan = document.createElement('span');
             langSpan.className = 'language-name';
             langSpan.textContent = language;
 
-            // Cria o botão de copiar
             const button = document.createElement('button');
             button.className = 'copy-code-btn';
             button.title = 'Copiar código';
             button.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copiar</span>';
 
-            // Adiciona os elementos ao cabeçalho
             header.appendChild(langSpan);
             header.appendChild(button);
 
-            // Insere o cabeçalho no início do bloco <pre>
             block.prepend(header);
 
-            // Adiciona a lógica de clique ao botão
             button.addEventListener('click', () => {
                 if (!code) return;
 
