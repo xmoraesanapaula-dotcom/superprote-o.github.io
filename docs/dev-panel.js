@@ -288,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MÓDULO 7: TESTES AUTOMATIZADOS ---
 
-    // Função auxiliar para adicionar linhas de resultado na aba de Testes
     function addTestResult(message, type = 'info') {
         if (!testsOutput) return;
         const line = document.createElement('div');
@@ -303,11 +302,9 @@ document.addEventListener('DOMContentLoaded', () => {
         testsOutput.appendChild(line);
     }
 
-    // Teste 1: Verifica se todas as imagens possuem o atributo 'alt'
     function testAcessibilidadeImagens() {
         addTestResult("Executando: Teste de Acessibilidade (Imagens)...");
         const imagensSemAlt = document.querySelectorAll('img:not([alt])');
-        
         if (imagensSemAlt.length === 0) {
             addTestResult("PASSOU: Todas as imagens possuem o atributo 'alt'.", "success");
         } else {
@@ -319,12 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Teste 2: Verifica links internos quebrados
     async function testLinksQuebrados() {
         addTestResult("Executando: Teste de Links Quebrados...");
         const links = document.querySelectorAll('a[href*=".html"]');
         let brokenLinks = 0;
-
         const promises = Array.from(links).map(async (link) => {
             const url = link.href;
             if (new URL(url).origin !== window.location.origin) { return; }
@@ -340,32 +335,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         await Promise.all(promises);
-
         if (brokenLinks === 0) {
             addTestResult("PASSOU: Nenhum link interno quebrado foi encontrado.", "success");
         }
     }
 
-    // NOVO: Teste 3: Verifica botões sem texto ou 'aria-label'
     function testAcessibilidadeBotoes() {
         addTestResult("Executando: Teste de Acessibilidade (Botões)...");
         const botoes = document.querySelectorAll('button');
         let badButtons = [];
-
         botoes.forEach(btn => {
-            // Ignora botões que estão dentro do próprio painel de diagnóstico
-            if (btn.closest('#dev-tools-panel')) {
-                return;
-            }
-
+            if (btn.closest('#dev-tools-panel')) { return; }
             const hasAriaLabel = btn.hasAttribute('aria-label') || btn.hasAttribute('aria-labelledby');
             const hasText = btn.textContent.trim() !== '';
-
             if (!hasAriaLabel && !hasText) {
                 badButtons.push(btn);
             }
         });
-
         if (badButtons.length === 0) {
             addTestResult("PASSOU: Todos os botões têm um nome acessível.", "success");
         } else {
@@ -373,6 +359,45 @@ document.addEventListener('DOMContentLoaded', () => {
             badButtons.forEach(btn => {
                 addTestResult(`&nbsp;&nbsp;&nbsp;- Botão: <code>${btn.outerHTML.split('>')[0]}></code>`, "warn");
             });
+        }
+    }
+
+    // NOVO: Teste 4: Verifica se as imagens têm dimensões apropriadas
+    async function testPerformanceImagens() {
+        addTestResult("Executando: Teste de Performance (Imagens)...");
+        const images = document.querySelectorAll('img');
+        let oversizedImages = 0;
+
+        const promises = Array.from(images).map(img => new Promise(resolve => {
+            if (!img.src || img.src.startsWith('data:')) {
+                resolve();
+                return;
+            }
+            
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                const renderedWidth = img.clientWidth;
+                const naturalWidth = tempImg.naturalWidth;
+                
+                // Alerta se a largura original da imagem for mais que o dobro da largura exibida
+                // Isso ajuda a encontrar imagens que poderiam ser redimensionadas para economizar dados
+                if (naturalWidth > renderedWidth * 2 && renderedWidth > 0) {
+                    oversizedImages++;
+                    addTestResult(`AVISO: Imagem grande para a área exibida. (Exibida: ${renderedWidth}px, Original: ${naturalWidth}px)<br>&nbsp;&nbsp;&nbsp;- src: <code>${img.src}</code>`, "warn");
+                }
+                resolve();
+            };
+            tempImg.onerror = () => {
+                // Erros de carregamento já são pegos pelo teste de links quebrados, então apenas resolvemos.
+                resolve();
+            };
+            tempImg.src = img.src;
+        }));
+        
+        await Promise.all(promises);
+
+        if (oversizedImages === 0) {
+            addTestResult("PASSOU: Nenhuma imagem com dimensões desproporcionais foi encontrada.", "success");
         }
     }
 
@@ -385,8 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Execute todos os módulos de teste aqui
         testAcessibilidadeImagens();
-        testAcessibilidadeBotoes(); // Teste síncrono, não precisa de await
-        await testLinksQuebrados(); // 'await' garante que este teste termine antes da mensagem final
+        testAcessibilidadeBotoes();
+        await testLinksQuebrados();
+        await testPerformanceImagens();
 
         addTestResult("Verificação concluída.", "success");
     }
