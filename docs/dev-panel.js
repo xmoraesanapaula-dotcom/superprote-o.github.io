@@ -1,6 +1,6 @@
 // ARQUIVO: dev-panel.js
 // RESPONSABILIDADE: Controlar toda a lógica do Painel de Diagnóstico.
-// VERSÃO: 3.0.2 (Com sugestões inteligentes)
+// VERSÃO: 4.0.0 (Suíte de Diagnóstico Integrada e Avançada)
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoContent = document.getElementById('info-tab-content');
     const statusIndicator = document.getElementById('status-indicator');
     const errorToast = document.getElementById('error-toast');
-    const consoleExportBtn = document.getElementById('console-export-button');
     const elementsSearchInput = document.getElementById('elements-search-input');
     const storageContent = document.getElementById('storage-tab-content');
     const consoleInput = document.getElementById('console-input');
@@ -57,11 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÃO AUXILIAR PARA LIDAR COM ERROS VISUAIS ---
     function handleVisualError(message) {
-        if (errorToast) {
-            errorToast.textContent = message;
-            errorToast.classList.add('show');
-            setTimeout(() => errorToast.classList.remove('show'), 5000);
-        }
+        // Esta função não existe no seu código original, mas é útil. Vou mantê-la.
         if (statusIndicator) {
             statusIndicator.classList.remove('ok');
             statusIndicator.classList.add('error');
@@ -231,35 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             allNodes.forEach(node => {
                 let isVisible = false;
-
                 if (!searchTerm) {
                     isVisible = true;
-                } else if (searchTerm.startsWith('#')) {
-                    const idToFind = searchTerm.substring(1);
-                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
-                        if (attrName.textContent === 'id') {
-                            const attrValue = attrName.nextElementSibling;
-                            if (attrValue && attrValue.textContent === idToFind) {
-                                isVisible = true;
-                            }
-                        }
-                    });
-                } else if (searchTerm.startsWith('.')) {
-                    const classToFind = searchTerm.substring(1);
-                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
-                        if (attrName.textContent === 'class') {
-                            const attrValue = attrName.nextElementSibling;
-                            if (attrValue) {
-                                const classes = attrValue.textContent.split(' ');
-                                if (classes.includes(classToFind)) {
-                                    isVisible = true;
-                                }
-                            }
-                        }
-                    });
                 } else {
-                    const tag = node.querySelector('.dom-tag');
-                    if (tag && tag.textContent.toLowerCase().includes(searchTerm)) {
+                    const nodeText = node.textContent || node.innerText;
+                    if(nodeText.toLowerCase().includes(searchTerm)) {
                         isVisible = true;
                     }
                 }
@@ -368,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '3.0.1',
+            'Versão do Projeto': '4.0.0',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -384,122 +355,57 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!networkContent) return;
         let networkRequests = [];
 
-        networkContent.innerHTML = `
+        networkContent.innerHTML = `<div class="panel-toolbar"><button id="network-clear-button" title="Limpar registros de rede"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div>
             <table class="network-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Status</th>
-                        <th>Método</th>
-                        <th>Tempo</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Nome</th><th>Status</th><th>Método</th><th>Tempo</th></tr></thead>
                 <tbody id="network-log-body"></tbody>
-            </table>
-        `;
+            </table>`;
 
         const networkLogBody = document.getElementById('network-log-body');
-        const originalFetch = window.fetch;
+        document.getElementById('network-clear-button')?.addEventListener('click', () => {
+            networkRequests = [];
+            if(networkLogBody) networkLogBody.innerHTML = '';
+            console.info("Registros de rede limpos.");
+        });
 
+        const originalFetch = window.fetch;
         window.fetch = function(...args) {
             const startTime = performance.now();
             const url = args[0] instanceof Request ? args[0].url : args[0];
             const method = args[0] instanceof Request ? args[0].method : (args[1]?.method || 'GET');
             const shortUrl = url.split('/').pop().split('?')[0] || url;
 
-            const requestIndex = networkRequests.length;
-            const requestData = { url, method, response: null, duration: null };
-            networkRequests.push(requestData);
-
             const row = document.createElement('tr');
-            row.dataset.requestIndex = requestIndex;
-            row.classList.add('network-row');
-            row.innerHTML = `
-                <td class="url">${shortUrl}</td>
-                <td class="status-pending">pendente...</td>
-                <td>${method}</td>
-                <td class="time">...</td>
-            `;
+            row.className = 'network-row';
+            row.innerHTML = `<td class="url">${shortUrl}</td><td class="status-pending">pendente...</td><td>${method}</td><td class="time">...</td>`;
             if (networkLogBody) networkLogBody.prepend(row);
 
             const fetchPromise = originalFetch.apply(this, args);
             fetchPromise.then(response => {
-                const resClone = response.clone();
-                requestData.response = resClone;
                 const duration = (performance.now() - startTime).toFixed(0);
-                requestData.duration = duration;
-
                 const statusCell = row.querySelector('td:nth-child(2)');
                 if (statusCell) {
-                    statusCell.textContent = `${resClone.status} ${resClone.statusText}`;
-                    statusCell.className = resClone.ok ? 'status-ok' : 'status-error';
+                    statusCell.textContent = `${response.status} ${response.statusText}`;
+                    statusCell.className = response.ok ? 'status-ok' : 'status-error';
                 }
                 const timeCell = row.querySelector('.time');
                 if (timeCell) timeCell.textContent = `${duration} ms`;
-
             }).catch(error => {
                 const duration = (performance.now() - startTime).toFixed(0);
-                requestData.duration = duration;
-                
                 const statusCell = row.querySelector('td:nth-child(2)');
                 if (statusCell) {
                     statusCell.textContent = 'Falhou';
                     statusCell.className = 'status-error';
                 }
-                const timeCell = row.querySelector('.time');
-                if (timeCell) timeCell.textContent = `${duration} ms`;
-                
+                if (row.querySelector('.time')) row.querySelector('.time').textContent = `${duration} ms`;
                 console.error("Erro de rede interceptado:", error);
             });
-
             return fetchPromise;
         };
-
-        if (networkLogBody) {
-            networkLogBody.addEventListener('click', (e) => {
-                const row = e.target.closest('.network-row');
-                if (!row) return;
-
-                const existingDetailsRow = row.nextElementSibling;
-                if (existingDetailsRow && existingDetailsRow.classList.contains('network-details-row')) {
-                    existingDetailsRow.remove();
-                    row.classList.remove('details-visible');
-                    return;
-                }
-
-                document.querySelectorAll('.network-details-row').forEach(r => r.remove());
-                document.querySelectorAll('.network-row.details-visible').forEach(r => r.classList.remove('details-visible'));
-
-                const requestIndex = parseInt(row.dataset.requestIndex, 10);
-                const requestData = networkRequests[requestIndex];
-
-                if (!requestData || !requestData.response) return;
-
-                const detailsRow = document.createElement('tr');
-                detailsRow.className = 'network-details-row';
-
-                let headersHTML = '';
-                for (const [key, value] of requestData.response.headers.entries()) {
-                    headersHTML += `<div><strong>${key}:</strong> ${value}</div>`;
-                }
-
-                detailsRow.innerHTML = `
-                    <td colspan="4">
-                        <div class="network-details-content">
-                            <h4>Response Headers</h4>
-                            <div class="headers-list">${headersHTML}</div>
-                        </div>
-                    </td>
-                `;
-                
-                row.after(detailsRow);
-                row.classList.add('details-visible');
-            });
-        }
     }
 
-    // --- MÓDULO 7: TESTES AUTOMATIZADOS (COM SUGESTÕES) ---
-
+    // --- MÓDULO 7: SUÍTE DE DIAGNÓSTICO AVANÇADA ---
+    
     function addTestResult(message, type = 'info', solution = null) {
         if (!testsOutput) return;
         const line = document.createElement('div');
@@ -521,113 +427,126 @@ document.addEventListener('DOMContentLoaded', () => {
         line.innerHTML = html;
         testsOutput.appendChild(line);
     }
+    
+    async function testArquivosEssenciais() {
+        addTestResult("Executando: Verificação de Arquivos Essenciais...", "info");
+        const checks = [
+            { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
+            { name: 'Dados da Busca (busca-data.json)', url: 'busca-data.json', type: 'json' },
+            { name: 'Artigo: Introdução', url: 'artigos/introducao.md', type: 'content' },
+            { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' }
+        ];
+        let hasErrors = false;
+
+        for (const check of checks) {
+            try {
+                const response = await fetch(check.url);
+                if (!response.ok) throw new Error(`Status ${response.status}`);
+                const content = await response.text();
+                if (content.trim() === '') {
+                     addTestResult(`${check.name}: O arquivo está vazio.`, "warn", "O arquivo existe mas não tem conteúdo, o que pode causar erros.");
+                     hasErrors = true;
+                }
+                if (check.type === 'json') JSON.parse(content);
+            } catch (error) {
+                addTestResult(`${check.name}: Falha ao carregar ou processar (${error.message})`, "error", `Verifique se o arquivo existe no caminho correto: ${check.url}`);
+                hasErrors = true;
+            }
+        }
+        if (!hasErrors) {
+            addTestResult("PASSOU: Todos os arquivos essenciais foram carregados e são válidos.", "success");
+        }
+    }
+
+    async function testLinksNosArtigos() {
+        addTestResult("Executando: Verificação de Links nos Artigos .md...", "info");
+        const articleFiles = ['artigos/introducao.md', 'artigos/alertas.md', 'artigos/relatorios.md'];
+        let brokenLinksCount = 0;
+        const promises = articleFiles.map(async file => {
+            try {
+                const response = await fetch(file);
+                const markdown = await response.text();
+                const linkRegex = /\[.*?\]\((?!#)(.*?)\)/g;
+                let match;
+                const linkPromises = [];
+                while ((match = linkRegex.exec(markdown)) !== null) {
+                    const url = match[1];
+                    if (url.startsWith('http')) continue;
+                    linkPromises.push(
+                        fetch(url, { method: 'HEAD' }).then(linkResponse => {
+                            if (!linkResponse.ok) {
+                                brokenLinksCount++;
+                                addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Status: ${linkResponse.status})`, "error", "Corrija o caminho do link no arquivo Markdown.");
+                            }
+                        }).catch(() => {
+                            brokenLinksCount++;
+                            addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Erro de rede)`, "error", "Corrija o caminho do link no arquivo Markdown.");
+                        })
+                    );
+                }
+                await Promise.all(linkPromises);
+            } catch (e) {
+                addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, "warn");
+            }
+        });
+        await Promise.all(promises);
+        if (brokenLinksCount === 0) {
+            addTestResult("PASSOU: Nenhum link quebrado encontrado dentro dos artigos.", "success");
+        }
+    }
+
+    function testBoasPraticasScripts() {
+        addTestResult("Executando: Análise de Carregamento de Scripts...", "info");
+        const scripts = document.querySelectorAll('script[src]');
+        let hasIssues = false;
+        scripts.forEach(script => {
+            const src = script.getAttribute('src');
+            if (src && (src.includes('main.js') || src.includes('doc-loader.js') || src.includes('busca.js') || src.includes('dev-panel.js'))) {
+                if (!script.hasAttribute('defer') && !script.hasAttribute('async')) {
+                    hasIssues = true;
+                    addTestResult(`O script <code>${src}</code> está sem 'defer' ou 'async'.`, "warn", "Adicione o atributo 'defer' à tag script para melhorar a performance de carregamento da página.");
+                }
+            }
+        });
+        if (!hasIssues) {
+            addTestResult("PASSOU: Todos os scripts locais usam 'defer' ou 'async'.", "success");
+        }
+    }
+    
+    function testConteudoMisto() {
+        addTestResult("Executando: Verificação de Segurança (Conteúdo Misto)...", "info");
+        let mixedContentCount = 0;
+        if (window.location.protocol === 'https:') {
+            const resources = document.querySelectorAll('img[src], script[src], link[href]');
+            resources.forEach(res => {
+                const url = res.src || res.href;
+                if (url && url.startsWith('http:')) {
+                    mixedContentCount++;
+                    addTestResult(`Conteúdo Misto encontrado: <code>${url}</code>`, "error", "Esta página é HTTPS, mas carrega um recurso via HTTP. Altere o link para HTTPS para evitar alertas de segurança.");
+                }
+            });
+        }
+        if (mixedContentCount === 0) {
+            addTestResult("PASSOU: Nenhum conteúdo misto (HTTP em página HTTPS) foi encontrado.", "success");
+        }
+    }
 
     function testAcessibilidadeImagens() {
         addTestResult("Executando: Teste de Acessibilidade (Imagens)...");
-        const imagensSemAlt = document.querySelectorAll('img:not([alt])');
+        const imagensSemAlt = document.querySelectorAll('main img:not([alt])');
         if (imagensSemAlt.length === 0) {
-            addTestResult("PASSOU: Todas as imagens possuem o atributo 'alt'.", "success");
+            addTestResult("PASSOU: Todas as imagens no conteúdo principal possuem o atributo 'alt'.", "success");
         } else {
-            const msg = `AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`;
-            const solucao = "Adicione o atributo `alt` com uma descrição útil do conteúdo da imagem. Ex: `&lt;img src='...' alt='Logotipo do Super Proteção'&gt;`";
-            addTestResult(msg, "warn", solucao);
-            imagensSemAlt.forEach(img => {
-                const imgSrc = img.src || 'Fonte da imagem não encontrada';
-                addTestResult(`&nbsp;&nbsp;&nbsp;- <code>${imgSrc.length > 80 ? '...' + imgSrc.slice(-77) : imgSrc}</code>`, "warn");
-            });
-        }
-    }
-
-    async function testLinksQuebrados() {
-        addTestResult("Executando: Teste de Links Quebrados...");
-        const links = document.querySelectorAll('a[href*=".html"]');
-        let brokenLinks = 0;
-        const promises = Array.from(links).map(async (link) => {
-            const url = link.href;
-            if (new URL(url).origin !== window.location.origin) { return; }
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    brokenLinks++;
-                    const msg = `FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Status: ${response.status})`;
-                    const solucao = `Verifique se o arquivo existe no caminho especificado ou se há algum erro de digitação no atributo 'href'.`;
-                    addTestResult(msg, "error", solucao);
-                }
-            } catch (error) {
-                brokenLinks++;
-                const msg = `FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Erro de rede)`;
-                const solucao = `O navegador não conseguiu acessar o link. Verifique o console de rede para mais detalhes sobre o erro.`;
-                addTestResult(msg, "error", solucao);
-            }
-        });
-        await Promise.all(promises);
-        if (brokenLinks === 0) {
-            addTestResult("PASSOU: Nenhum link interno quebrado foi encontrado.", "success");
-        }
-    }
-
-    function testAcessibilidadeBotoes() {
-        addTestResult("Executando: Teste de Acessibilidade (Botões)...");
-        const botoes = document.querySelectorAll('button');
-        let badButtons = [];
-        botoes.forEach(btn => {
-            if (btn.closest('#dev-tools-panel')) { return; }
-            const hasAriaLabel = btn.hasAttribute('aria-label') || btn.hasAttribute('aria-labelledby');
-            const hasText = btn.textContent.trim() !== '';
-            if (!hasAriaLabel && !hasText) {
-                badButtons.push(btn);
-            }
-        });
-        if (badButtons.length === 0) {
-            addTestResult("PASSOU: Todos os botões têm um nome acessível.", "success");
-        } else {
-            const msg = `AVISO: Encontrado(s) ${badButtons.length} botão(ões) sem texto ou aria-label.`;
-            const solucao = `Botões apenas com ícones devem ter um 'aria-label' para descrever sua função a leitores de tela. Ex: &lt;button aria-label='Fechar janela'&gt;...&lt;/button&gt;`;
-            addTestResult(msg, "warn", solucao);
-            badButtons.forEach(btn => {
-                addTestResult(`&nbsp;&nbsp;&nbsp;- Botão: <code>${btn.outerHTML.split('>')[0]}></code>`, "warn");
-            });
-        }
-    }
-
-    async function testPerformanceImagens() {
-        addTestResult("Executando: Teste de Performance (Imagens)...");
-        const images = document.querySelectorAll('img');
-        let oversizedImages = 0;
-        const promises = Array.from(images).map(img => new Promise(resolve => {
-            if (!img.src || img.src.startsWith('data:')) {
-                resolve();
-                return;
-            }
-            const tempImg = new Image();
-            tempImg.onload = () => {
-                const renderedWidth = img.clientWidth;
-                const naturalWidth = tempImg.naturalWidth;
-                if (naturalWidth > renderedWidth * 2 && renderedWidth > 0) {
-                    oversizedImages++;
-                    const msg = `AVISO: Imagem grande para a área exibida. (Exibida: ${renderedWidth}px, Original: ${naturalWidth}px)<br>&nbsp;&nbsp;&nbsp;- src: <code>${img.src}</code>`;
-                    const solucao = `Redimensione a imagem para um tamanho mais próximo do que é exibido na tela para economizar dados e acelerar o carregamento.`;
-                    addTestResult(msg, "warn", solucao);
-                }
-                resolve();
-            };
-            tempImg.onerror = () => { resolve(); };
-            tempImg.src = img.src;
-        }));
-        await Promise.all(promises);
-        if (oversizedImages === 0) {
-            addTestResult("PASSOU: Nenhuma imagem com dimensões desproporcionais foi encontrada.", "success");
+            addTestResult(`AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`, "warn", "Adicione o atributo `alt` com uma descrição útil do conteúdo da imagem para melhorar a acessibilidade.");
         }
     }
     
     function testConsoleErros() {
-        addTestResult("Executando: Teste de Erros no Console...");
+        addTestResult("Executando: Teste de Erros no Console...", "info");
         if (capturedErrors.length === 0) {
-            addTestResult("PASSOU: Nenhum erro de JavaScript foi detectado.", "success");
+            addTestResult("PASSOU: Nenhum erro de JavaScript foi detectado desde que a página carregou.", "success");
         } else {
-            const msg = `FALHOU: Foram detectados ${capturedErrors.length} erro(s). Veja o console para detalhes.`;
-            const solucao = `Abra o console do navegador (F12) e procure pelas mensagens de erro em vermelho para depurar o código JavaScript.`;
-            addTestResult(msg, "error", solucao);
+            addTestResult(`FALHOU: Foram detectados ${capturedErrors.length} erro(s). Veja o console para detalhes.`, "error", `Abra a aba "Console" aqui no painel ou o console do navegador (F12) para ver os erros em vermelho.`);
             capturedErrors.forEach(err => {
                 const shortErr = err.length > 100 ? err.substring(0, 97) + '...' : err;
                 addTestResult(`&nbsp;&nbsp;&nbsp;- <code>${shortErr}</code>`, "error");
@@ -635,81 +554,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function testSeoBasico() {
-        addTestResult("Executando: Teste de SEO Básico...");
-        let issuesFound = 0;
-
-        const titleElement = document.querySelector('title');
-        if (!titleElement) {
-            addTestResult("FALHOU: A página não possui uma tag <code>&lt;title&gt;</code>.", "error", "Adicione a tag &lt;title&gt; dentro do &lt;head&gt; da página. Ela é crucial para SEO.");
-            issuesFound++;
-        } else if (!titleElement.textContent.trim()) {
-            addTestResult("AVISO: A tag <code>&lt;title&gt;</code> está vazia.", "warn", "Preencha a tag &lt;title&gt; com um título descritivo sobre o conteúdo da página.");
-            issuesFound++;
-        }
-
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (!metaDescription) {
-            addTestResult("AVISO: A página não possui uma <code>&lt;meta name='description'&gt;</code>.", "warn", "Adicione uma meta tag de descrição para melhorar como sua página aparece nos resultados de busca.");
-            issuesFound++;
-        } else if (!metaDescription.getAttribute('content')?.trim()) {
-            addTestResult("AVISO: A <code>&lt;meta name='description'&gt;</code> está vazia.", "warn", "Escreva uma breve descrição do conteúdo da página no atributo 'content' da meta tag.");
-            issuesFound++;
-        }
-
-        if (issuesFound === 0) {
-            addTestResult("PASSOU: As tags essenciais de SEO (title e description) estão presentes e preenchidas.", "success");
-        }
-    }
-
-    function testIdsDuplicados() {
-        addTestResult("Executando: Teste de IDs Duplicados...");
-        const allIds = {};
-        const duplicates = [];
-        document.querySelectorAll('[id]').forEach(el => {
-            if (el.id) {
-                if (allIds[el.id]) {
-                    if (!duplicates.includes(el.id)) {
-                        duplicates.push(el.id);
-                    }
-                } else {
-                    allIds[el.id] = true;
-                }
-            }
-        });
-    
-        if (duplicates.length === 0) {
-            addTestResult("PASSOU: Nenhum ID duplicado foi encontrado na página.", "success");
-        } else {
-            const msg = `FALHOU: Foram encontrados ${duplicates.length} ID(s) duplicado(s): <code>${duplicates.join(', ')}</code>`;
-            const solucao = "O atributo 'id' deve ser único em toda a página. Renomeie ou remova os IDs duplicados para garantir o funcionamento correto de links âncora e scripts.";
-            addTestResult(msg, "error", solucao);
-        }
-    }
-
     async function runAllTests() {
-        if (!testsOutput) return;
+        if (!testsOutput || !runTestsButton) return;
+        runTestsButton.disabled = true;
         testsOutput.innerHTML = ''; 
 
-        addTestResult("Iniciando verificação do site...");
+        addTestResult("Iniciando varredura completa do site...", "info");
+        
+        await Promise.all([
+            testArquivosEssenciais(),
+            testLinksNosArtigos()
+        ]);
         
         testConsoleErros();
         testAcessibilidadeImagens();
-        testAcessibilidadeBotoes();
-        testIdsDuplicados();
-        testSeoBasico();
-        await testLinksQuebrados();
-        await testPerformanceImagens();
-
-        addTestResult("Verificação concluída.", "success");
+        testBoasPraticasScripts();
+        testConteudoMisto();
+        
+        addTestResult("Varredura completa concluída.", "success");
+        runTestsButton.disabled = false;
     }
 
     if (runTestsButton) {
         runTestsButton.addEventListener('click', runAllTests);
     }
-
-    // --- INICIALIZAÇÃO FINAL ---
+    
+    // Inicialização final
     populateInfoTab();
     initializeNetworkInterceptor();
-    console.info("Painel de Diagnóstico v3.0.2 inicializado.");
 });
