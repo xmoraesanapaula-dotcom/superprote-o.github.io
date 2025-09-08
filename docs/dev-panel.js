@@ -319,8 +319,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // NOVO: Teste 2: Verifica links internos quebrados
+    async function testLinksQuebrados() {
+        addTestResult("Executando: Teste de Links Quebrados...");
+        // Seleciona todos os links que apontam para arquivos .html locais
+        const links = document.querySelectorAll('a[href*=".html"]');
+        let brokenLinks = 0;
+
+        // Cria uma lista de promessas para verificar todos os links em paralelo
+        const promises = Array.from(links).map(async (link) => {
+            const url = link.href;
+
+            // Evita testar links externos
+            if (new URL(url).origin !== window.location.origin) {
+                return;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    brokenLinks++;
+                    addTestResult(`FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Status: ${response.status})`, "error");
+                }
+            } catch (error) {
+                brokenLinks++;
+                addTestResult(`FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Erro de rede)`, "error");
+            }
+        });
+
+        await Promise.all(promises);
+
+        if (brokenLinks === 0) {
+            addTestResult("PASSOU: Nenhum link interno quebrado foi encontrado.", "success");
+        }
+    }
+
     // Função principal que executa todos os testes em sequência
-    function runAllTests() {
+    async function runAllTests() {
         if (!testsOutput) return;
         testsOutput.innerHTML = ''; 
 
@@ -328,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Execute todos os módulos de teste aqui
         testAcessibilidadeImagens();
-        // Futuros testes serão adicionados aqui...
+        await testLinksQuebrados(); // 'await' garante que este teste termine antes da mensagem final
 
         addTestResult("Verificação concluída.", "success");
     }
@@ -339,8 +374,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INICIALIZAÇÃO FINAL ---
     populateInfoTab();
-    // A inicialização do Network Interceptor foi removida daqui para evitar problemas de compatibilidade
-    // e será chamada apenas quando a aba for clicada, se necessário.
-    // initializeNetworkInterceptor(); 
     console.info("Painel de Diagnóstico v1.6.3 inicializado.");
 });
