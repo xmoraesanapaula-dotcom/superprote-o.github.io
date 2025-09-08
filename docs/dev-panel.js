@@ -89,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let message = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>`;
         args.forEach(arg => {
-            if (typeof arg === 'object' && arg !== null) {
+            if (arg instanceof Error) {
+                const errorText = `${arg.name}: ${arg.message}\n${arg.stack || '(no stack trace)'}`;
+                message += `<pre style="white-space: pre-wrap; margin: 0; font-family: inherit;">${errorText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
+            } else if (typeof arg === 'object' && arg !== null) {
                 message += JSON.stringify(arg, null, 2).replace(/</g, "&lt;").replace(/>/g, "&gt;");
             } else {
                 message += String(arg).replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -113,7 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error = function(...args) {
         originalConsole.error.apply(console, args);
         createLogMessage('error', 'error', args);
-        if (args.length > 0) handleVisualError(String(args[0]));
+        if (args.length > 0) {
+            const firstArg = args[0];
+            handleVisualError(firstArg instanceof Error ? firstArg.message : String(firstArg));
+        }
     };
     console.info = function(...args) {
         originalConsole.info.apply(console, args);
