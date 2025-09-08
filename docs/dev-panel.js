@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (consoleExportBtn) {
         consoleExportBtn.addEventListener('click', () => {
             if (!consoleOutput) return;
-            let logText = `--- Log do Console - Super Proteção v1.6.1 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
+            let logText = `--- Log do Console - Super Proteção v1.6.2 ---\nGerado em: ${new Date().toLocaleString()}\n\n`;
             
             consoleOutput.querySelectorAll('.console-line').forEach(line => {
                 const type = line.classList[1] ? `[${line.classList[1].toUpperCase()}]` : '[LOG]';
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '1.6.1',
+            'Versão do Projeto': '1.6.2',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -517,5 +517,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializa todos os módulos no final
     populateInfoTab();
     initializeNetworkInterceptor();
-    console.info("Painel de Diagnóstico v1.6.1 inicializado.");
+    console.info("Painel de Diagnóstico v1.6.2 inicializado.");
 });
