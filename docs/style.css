@@ -290,15 +290,24 @@ html.dark .badge-new { @apply bg-green-900 text-green-200; }
 .card-featured .card-content { @apply md:flex md:flex-row md:items-center md:gap-6; }
 .card-featured .card-text { @apply md:text-left; }
 
-/* NOVO: Estilos para a nova página de busca */
+/* ATUALIZADO: Estilos para a nova página de busca (busca.html) */
 .search-card {
-    @apply flex flex-col rounded-lg border border-[var(--secondary-color)] bg-[var(--background-primary)] p-4 transition-all duration-200;
+    @apply flex h-full flex-col rounded-xl border border-transparent bg-[var(--background-primary)] p-6 shadow-sm transition-all duration-200;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+html.dark .search-card {
+    border: 1px solid var(--secondary-color);
+    box-shadow: none;
 }
 .search-card:hover {
-    @apply border-blue-500 shadow-md transform -translate-y-1;
+    @apply border-blue-400 shadow-lg transform -translate-y-1;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+}
+.search-card-content {
+    @apply flex-grow;
 }
 .search-card-header {
-    @apply flex items-center gap-4;
+    @apply flex items-center gap-3;
 }
 .search-card-icon {
     @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg;
@@ -307,11 +316,18 @@ html.dark .badge-new { @apply bg-green-900 text-green-200; }
     @apply font-semibold text-[var(--text-primary)];
 }
 .search-card-description {
-    @apply mt-2 text-sm text-[var(--text-secondary)];
+    @apply mt-3 text-sm text-[var(--text-secondary)];
 }
 .search-card-footer {
-    @apply mt-4 flex items-center justify-end text-sm font-medium text-blue-600;
+    @apply mt-4 flex items-center text-sm font-medium text-blue-600;
 }
 .search-results-group h2 {
     @apply text-xl font-bold mb-4 mt-8 border-b border-[var(--secondary-color)] pb-2;
 }
+/* Cores Pastel para os Ícones da Busca */
+.search-icon-bg-blue { @apply bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300; }
+.search-icon-bg-green { @apply bg-green-50 text-green-600 dark:bg-green-900/50 dark:text-green-300; }
+.search-icon-bg-purple { @apply bg-purple-50 text-purple-600 dark:bg-purple-900/50 dark:text-purple-300; }
+.search-icon-bg-red { @apply bg-red-50 text-red-600 dark:bg-red-900/50 dark:text-red-300; }
+.search-icon-bg-orange { @apply bg-orange-50 text-orange-600 dark:bg-orange-900/50 dark:text-orange-300; }
+.search-icon-bg-teal { @apply bg-teal-50 text-teal-600 dark:bg-teal-900/50 dark:text-teal-300; }
