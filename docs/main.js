@@ -9,51 +9,46 @@ document.addEventListener('DOMContentLoaded', () => {
         versionInfo.textContent = 'v1.5.3';
     }
 
-    // --- LÓGICA DO MODO ESCURO (DARK MODE) - ATUALIZADO v1.5.3 ---
+    // --- LÓGICA DO MODO ESCURO (DARK MODE) - ATUALIZADO ---
     const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
     const themeIcon = themeToggle ? themeToggle.querySelector('.material-symbols-outlined') : null;
 
     // Função para aplicar o tema (claro ou escuro)
+    // Agora opera no <html> (documentElement) para consistência com o script de bloqueio
     const applyTheme = (theme) => {
         if (theme === 'dark') {
-            body.classList.add('dark');
+            document.documentElement.classList.add('dark');
             if (themeIcon) themeIcon.textContent = 'light_mode'; // Mostra o ícone do sol
         } else {
-            body.classList.remove('dark');
+            document.documentElement.classList.remove('dark');
             if (themeIcon) themeIcon.textContent = 'dark_mode'; // Mostra o ícone da lua
         }
     };
 
-    // Verifica se há um tema salvo no localStorage ao carregar a página
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        applyTheme(savedTheme);
+    // A lógica de transição suave que implementamos anteriormente
+    const smoothThemeTransition = (newTheme) => {
+        document.documentElement.classList.add('no-transitions');
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        console.log(`Tema alterado para: ${newTheme === 'dark' ? 'Escuro' : 'Claro'}`);
+        document.documentElement.offsetHeight;
+        document.documentElement.classList.remove('no-transitions');
+    };
+
+    // Garante que o ícone do botão esteja correto no carregamento da página
+    const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    if (currentTheme === 'dark') {
+        if (themeIcon) themeIcon.textContent = 'light_mode';
     } else {
-        // Garante que o tema claro seja aplicado se nada estiver salvo
-        applyTheme('light');
+        if (themeIcon) themeIcon.textContent = 'dark_mode';
     }
 
-    // Adiciona o evento de clique ao botão de toggle com a lógica de transição suave
+    // Adiciona o evento de clique ao botão de toggle
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            const isDarkMode = body.classList.contains('dark');
+            const isDarkMode = document.documentElement.classList.contains('dark');
             const newTheme = isDarkMode ? 'light' : 'dark';
-
-            // 1. Adiciona classe para desativar transições
-            document.documentElement.classList.add('no-transitions');
-
-            // 2. Aplica o novo tema
-            applyTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-            console.log(`Tema alterado para: ${newTheme === 'dark' ? 'Escuro' : 'Claro'}`);
-
-            // 3. Força o navegador a aplicar as mudanças (reflow)
-            // A leitura de uma propriedade como offsetHeight é uma forma de garantir isso.
-            document.documentElement.offsetHeight; 
-
-            // 4. Remove a classe para reativar as transições
-            document.documentElement.classList.remove('no-transitions');
+            smoothThemeTransition(newTheme);
         });
     }
 
