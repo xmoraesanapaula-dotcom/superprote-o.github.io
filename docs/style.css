@@ -15,8 +15,9 @@ html.dark {
   --secondary-color: #1f2937;
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
-  --background-primary: #0f172a;
-  --background-secondary: #1e293b;
+  /* ATUALIZADO: Cores de fundo mais escuras (próximas ao preto) */
+  --background-primary: #0A0A0A; /* Preto mais suave para o fundo principal */
+  --background-secondary: #1A1A1A; /* Cinza escuro para elementos secundários */
 }
 
 
