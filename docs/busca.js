@@ -8,74 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const topicFilters = document.getElementById('topic-filters');
     const difficultyFilters = document.getElementById('difficulty-filters');
     const sortByElement = document.getElementById('sort-by');
-
-    // Dados de exemplo (simulando um banco de dados)
-    // ATUALIZADO: Adicionado 'page' e 'anchor' para criar links funcionais
-    const mockData = [
-        {
-            id: 1,
-            title: 'Introdução aos Webhooks',
-            description: 'Aprenda o básico sobre como os webhooks funcionam e como podem notificar seus sistemas em tempo real.',
-            category: 'webhook',
-            difficulty: 'iniciante',
-            date: '2025-09-01',
-            page: 'introducao',
-            anchor: 'heading-1-H2' // ID da seção 'Webhooks'
-        },
-        {
-            id: 2,
-            title: 'Boas Práticas de Segurança para APIs',
-            description: 'Proteja seus endpoints com as melhores práticas de segurança do mercado, incluindo autenticação e autorização.',
-            category: 'seguranca',
-            difficulty: 'avancado',
-            date: '2025-08-15',
-            page: 'introducao',
-            anchor: 'heading-6-H2' // ID da seção 'Boas Práticas de Segurança Digital'
-        },
-        {
-            id: 3,
-            title: 'Integrando com a API do Telegram',
-            description: 'Um guia passo a passo para configurar notificações e alertas automáticos diretamente no Telegram.',
-            category: 'integracao',
-            difficulty: 'intermediario',
-            date: '2025-07-20',
-            page: 'introducao',
-            anchor: 'heading-3-H3' // ID da subseção 'Integração com Telegram'
-        },
-        {
-            id: 4,
-            title: 'Validando Payloads de Webhooks com Assinaturas',
-            description: 'Um tutorial avançado sobre como garantir que as requisições de webhooks são autênticas e seguras.',
-            category: 'webhook',
-            difficulty: 'avancado',
-            date: '2025-09-05',
-            page: 'introducao',
-            anchor: 'heading-8-H3' // ID da subseção 'Uso Correto de Webhooks'
-        },
-        {
-            id: 5,
-            title: 'Referência Completa da API REST',
-            description: 'Documentação detalhada de todos os endpoints disponíveis na nossa API, com exemplos de requisição e resposta.',
-            category: 'api',
-            difficulty: 'intermediario',
-            date: '2025-06-30',
-            page: 'relatorios', // Exemplo apontando para outra página
-            anchor: 'heading-0-H1'
-        },
-        {
-            id: 6,
-            title: 'Conceitos Fundamentais de Segurança Digital',
-            description: 'Entenda os princípios de confidencialidade, integridade e disponibilidade para criar sistemas mais robustos.',
-            category: 'seguranca',
-            difficulty: 'iniciante',
-            date: '2025-08-25',
-            page: 'introducao',
-            anchor: 'heading-6-H2' // ID da seção 'Boas Práticas de Segurança Digital'
-        }
-    ];
+    
+    let allData = []; // Variável para armazenar todos os dados carregados
 
     // Função para renderizar os resultados na tela
     const renderResults = (results) => {
+        if (!resultsContainer) return;
         resultsContainer.innerHTML = '';
 
         if (results.length === 0) {
@@ -84,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         results.forEach(item => {
-            // ATUALIZADO: O 'href' agora é construído dinamicamente
+            // O 'href' agora usa os anchors gerados a partir do conteúdo
             const resultCard = `
                 <div class="card bg-[var(--background-primary)] p-6 rounded-md shadow-sm border border-[var(--secondary-color)] hover:shadow-md transition-shadow">
                     <a class="block" href="documento.html?pagina=${item.page}#${item.anchor}">
@@ -104,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função principal que filtra, ordena e renderiza os resultados
     const updateResults = () => {
-        let filteredData = [...mockData];
+        let filteredData = [...allData];
 
         const checkedTopics = [...topicFilters.querySelectorAll('input:checked')].map(input => input.value);
         if (checkedTopics.length > 0) {
@@ -126,9 +64,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderResults(filteredData);
     };
 
-    topicFilters.addEventListener('change', updateResults);
-    difficultyFilters.addEventListener('change', updateResults);
-    sortByElement.addEventListener('change', updateResults);
+    // Função para carregar os dados e iniciar a página
+    async function initializeSearch() {
+        try {
+            const response = await fetch('busca-data.json');
+            if (!response.ok) {
+                throw new Error('Falha ao carregar o arquivo de dados da busca.');
+            }
+            allData = await response.json();
+            
+            // Adiciona os listeners de eventos APÓS os dados serem carregados
+            topicFilters.addEventListener('change', updateResults);
+            difficultyFilters.addEventListener('change', updateResults);
+            sortByElement.addEventListener('change', updateResults);
 
-    updateResults();
+            // Renderiza os resultados iniciais
+            updateResults();
+            console.log("Sistema de busca inicializado com sucesso.");
+
+        } catch (error) {
+            console.error(error);
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar os dados da busca. Tente recarregar a página.</p>';
+            }
+        }
+    }
+
+    // Inicia todo o processo
+    initializeSearch();
 });
