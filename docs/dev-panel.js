@@ -319,22 +319,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // NOVO: Teste 2: Verifica links internos quebrados
+    // Teste 2: Verifica links internos quebrados
     async function testLinksQuebrados() {
         addTestResult("Executando: Teste de Links Quebrados...");
-        // Seleciona todos os links que apontam para arquivos .html locais
         const links = document.querySelectorAll('a[href*=".html"]');
         let brokenLinks = 0;
 
-        // Cria uma lista de promessas para verificar todos os links em paralelo
         const promises = Array.from(links).map(async (link) => {
             const url = link.href;
-
-            // Evita testar links externos
-            if (new URL(url).origin !== window.location.origin) {
-                return;
-            }
-
+            if (new URL(url).origin !== window.location.origin) { return; }
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -346,11 +339,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 addTestResult(`FALHOU: Link quebrado para <code>${link.getAttribute('href')}</code> (Erro de rede)`, "error");
             }
         });
-
         await Promise.all(promises);
 
         if (brokenLinks === 0) {
             addTestResult("PASSOU: Nenhum link interno quebrado foi encontrado.", "success");
+        }
+    }
+
+    // NOVO: Teste 3: Verifica botões sem texto ou 'aria-label'
+    function testAcessibilidadeBotoes() {
+        addTestResult("Executando: Teste de Acessibilidade (Botões)...");
+        const botoes = document.querySelectorAll('button');
+        let badButtons = [];
+
+        botoes.forEach(btn => {
+            // Ignora botões que estão dentro do próprio painel de diagnóstico
+            if (btn.closest('#dev-tools-panel')) {
+                return;
+            }
+
+            const hasAriaLabel = btn.hasAttribute('aria-label') || btn.hasAttribute('aria-labelledby');
+            const hasText = btn.textContent.trim() !== '';
+
+            if (!hasAriaLabel && !hasText) {
+                badButtons.push(btn);
+            }
+        });
+
+        if (badButtons.length === 0) {
+            addTestResult("PASSOU: Todos os botões têm um nome acessível.", "success");
+        } else {
+            addTestResult(`AVISO: Encontrado(s) ${badButtons.length} botão(ões) sem texto ou aria-label.`, "warn");
+            badButtons.forEach(btn => {
+                addTestResult(`&nbsp;&nbsp;&nbsp;- Botão: <code>${btn.outerHTML.split('>')[0]}></code>`, "warn");
+            });
         }
     }
 
@@ -363,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Execute todos os módulos de teste aqui
         testAcessibilidadeImagens();
+        testAcessibilidadeBotoes(); // Teste síncrono, não precisa de await
         await testLinksQuebrados(); // 'await' garante que este teste termine antes da mensagem final
 
         addTestResult("Verificação concluída.", "success");
