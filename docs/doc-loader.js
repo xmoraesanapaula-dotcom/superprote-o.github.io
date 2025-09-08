@@ -1,4 +1,4 @@
-// ARQUIVO: doc-loader.js (CORRIGIDO PARA A ESTRUTURA /docs)
+// ARQUIVO: doc-loader.js
 // RESPONSABILIDADE: Carregar, converter e exibir documentos Markdown na página 'documento.html'.
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- LINHA CORRIGIDA ---
-    // Agora busca na subpasta 'artigos', relativo à raiz do site (que é a pasta /docs)
     const markdownFile = `artigos/${pageName}.md`;
 
     fetch(markdownFile)
@@ -32,13 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(markdownText => {
             contentArea.innerHTML = marked.parse(markdownText);
             buildTableOfContents(contentArea, tocContainer);
+            activateScrollSpy(); // Nova função para o Scroll Spy
         })
         .catch(error => {
             console.error('Erro ao carregar o documento:', error);
             contentArea.innerHTML = `
                 <h1 style="color: var(--color-error);">Erro ao carregar documento</h1>
                 <p>O arquivo <code>${markdownFile}</code> não pôde ser encontrado ou lido.</p>
-                <p>Verifique se o arquivo existe na pasta '/docs/artigos/' e se o nome na URL está correto.</p>
+                <p>Verifique se o arquivo existe na pasta 'artigos/' e se o nome na URL está correto.</p>
             `;
         });
 
@@ -60,5 +59,41 @@ document.addEventListener('DOMContentLoaded', () => {
             
             targetContainer.appendChild(link);
         });
+    }
+
+    function activateScrollSpy() {
+        const headings = [...contentArea.querySelectorAll('h2, h3')];
+        const tocLinks = [...tocContainer.querySelectorAll('a')];
+
+        if (headings.length === 0 || tocLinks.length === 0) return;
+
+        let timeout;
+        const highlightTocLink = () => {
+            // Otimização para não executar a lógica em cada pixel de rolagem
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                let activeHeadingId = '';
+                const headerOffset = 80; // Espaço para o cabeçalho fixo
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    if (rect.top <= headerOffset) {
+                        activeHeadingId = heading.id;
+                    }
+                });
+
+                tocLinks.forEach(link => {
+                    link.classList.remove('active-toc-link');
+                    if (link.href.endsWith(`#${activeHeadingId}`)) {
+                        link.classList.add('active-toc-link');
+                    }
+                });
+            }, 100); // Executa a verificação a cada 100ms durante a rolagem
+        };
+        
+        window.addEventListener('scroll', highlightTocLink);
+        highlightTocLink(); // Executa uma vez ao carregar a página
     }
 });
