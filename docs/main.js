@@ -1,14 +1,8 @@
 // ARQUIVO: main.js
-// RESPONSABILIDADE: Controlar a lógica e interações da página principal e globais (como o tema).
+// RESPONSABILIDADE: Controlar a lógica e interações globais.
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- LÓGICA DA VERSÃO ---
-    const versionInfo = document.getElementById('version-info');
-    if (versionInfo) {
-        versionInfo.textContent = 'v1.6.2';
-    }
-
     // --- LÓGICA DO MODO ESCURO (DARK MODE) ---
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle ? themeToggle.querySelector('.material-symbols-outlined') : null;
@@ -27,56 +21,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.classList.add('no-transitions');
         applyTheme(newTheme);
         localStorage.setItem('theme', newTheme);
-        console.log(`Tema alterado para: ${newTheme === 'dark' ? 'Escuro' : 'Claro'}`);
         document.documentElement.offsetHeight;
         document.documentElement.classList.remove('no-transitions');
     };
 
     const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-    if (currentTheme === 'dark') {
-        if (themeIcon) themeIcon.textContent = 'light_mode';
-    } else {
-        if (themeIcon) themeIcon.textContent = 'dark_mode';
-    }
+    applyTheme(currentTheme);
 
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const newTheme = isDarkMode ? 'light' : 'dark';
+            const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
             smoothThemeTransition(newTheme);
         });
     }
 
-    // --- LÓGICA DA SIDEBAR RESPONSIVA (CORRIGIDO v1.6.2) ---
+    // --- ATUALIZADO: LÓGICA DA SIDEBAR RESPONSIVA (MEGA ATUALIZAÇÃO 3.0.0) ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-    // Executa a lógica da sidebar APENAS se a sidebar existir na página atual
-    if (sidebar) {
+    if (sidebar && hamburgerBtn && sidebarCloseBtn && sidebarOverlay) {
         const openSidebar = () => {
-            if (sidebarOverlay) {
-                document.body.classList.add('sidebar-open');
-            }
+            document.body.classList.add('sidebar-open');
         };
 
         const closeSidebar = () => {
-            if (sidebarOverlay) {
-                document.body.classList.remove('sidebar-open');
-            }
+            document.body.classList.remove('sidebar-open');
         };
 
-        if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', openSidebar);
-        }
-        if (sidebarCloseBtn) {
-            sidebarCloseBtn.addEventListener('click', closeSidebar);
-        }
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        }
+        hamburgerBtn.addEventListener('click', openSidebar);
+        sidebarCloseBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
     }
 
-    console.log("Script principal (main.js) v1.6.2 carregado com sucesso.");
+    // --- LÓGICA DE NAVEGAÇÃO ATIVA ---
+    // Destaca o link na navegação principal que corresponde à página atual.
+    const currentPage = window.location.search; // Ex: "?pagina=introducao"
+    const navLinks = document.querySelectorAll('#main-nav a');
+
+    navLinks.forEach(link => {
+        if (link.href.includes(currentPage)) {
+            link.classList.add('active-nav-link');
+        }
+    });
+
+    console.log("Script principal (main.js) v3.0.0 carregado com sucesso.");
 });
