@@ -1,4 +1,4 @@
-/* CÓDIGO CSS COMPLETO v1.6.2 */
+/* CÓDIGO CSS COMPLETO v1.6.3 */
 
 /* --- v1.4: VARIÁVEIS DE COR E MODO ESCURO --- */
 :root {
@@ -45,7 +45,8 @@ html.dark .text-gray-900 { color: var(--text-primary); }
 html.dark .text-gray-600 { color: var(--text-secondary); }
 html.dark .card h4 { color: var(--text-primary); }
 html.dark .card p { color: var(--text-secondary); }
-html.dark h2, html.dark h3 { color: var(--text-primary); }
+/* ATUALIZADO: Adicionado h4 à regra de cor do título */
+html.dark h2, html.dark h3, html.dark h4 { color: var(--text-primary); }
 
 
 .link-card {
@@ -239,19 +240,4 @@ html.dark .custom-select {
     font-size: 12px;
     color: #9ca3af;
     text-transform: uppercase;
-}
-
-/* --- v1.6.2: ESTILOS PARA SIDEBAR RESPONSIVA --- */
-body.sidebar-open {
-    overflow: hidden; /* Impede o scroll do conteúdo principal quando a sidebar está aberta */
-}
-
-@media (max-width: 1023px) { /* Aplica apenas em telas menores que 'lg' do Tailwind */
-    body.sidebar-open #sidebar-overlay {
-        display: block;
-        opacity: 1;
-    }
-    body.sidebar-open #sidebar {
-        transform: translateX(0);
-    }
 }
