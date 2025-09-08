@@ -1,16 +1,16 @@
 {
   "uptime_history": [
-    { "date": "2025-09-08", "status": "operational" },
-    { "date": "2025-09-07", "status": "operational" },
-    { "date": "2025-09-06", "status": "degraded" },
-    { "date": "2025-09-05", "status": "operational" },
-    { "date": "2025-09-04", "status": "maintenance" },
-    { "date": "2025-09-03", "status": "outage" }
+    { "date": "2025-09-08", "status": "operacional" },
+    { "date": "2025-09-07", "status": "operacional" },
+    { "date": "2025-09-06", "status": "degradacao" },
+    { "date": "2025-09-05", "status": "operacional" },
+    { "date": "2025-09-04", "status": "manutencao" },
+    { "date": "2025-09-03", "status": "interrupcao" }
   ],
   "incidents": [
     {
       "date": "2025-09-06",
-      "status": "resolved",
+      "status": "resolvido",
       "title": "Degradação de Performance na API de Relatórios",
       "updates": [
         { "timestamp": "15:30 -03", "description": "O problema foi identificado e uma correção está sendo implementada." },
@@ -19,7 +19,7 @@
     },
     {
       "date": "2025-09-04",
-      "status": "completed",
+      "status": "concluido",
       "title": "Manutenção Programada nos Servidores",
       "updates": [
         { "timestamp": "04:00 -03", "description": "A manutenção foi concluída com sucesso." },
@@ -28,7 +28,7 @@
     },
     {
         "date": "2025-09-03",
-        "status": "resolved",
+        "status": "resolvido",
         "title": "Interrupção Total do Serviço de Autenticação",
         "updates": [
           { "timestamp": "11:00 -03", "description": "O serviço foi restaurado. A causa raiz foi uma falha de configuração no balanceador de carga." },
