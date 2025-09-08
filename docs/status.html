@@ -82,18 +82,6 @@
             </button>
         </div>
         <nav id="main-nav" class="space-y-2">
-            <a href="documento.html?pagina=introducao" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
-                <span class="material-symbols-outlined">description</span>
-                <span>Introdução</span>
-            </a>
-            <a href="documento.html?pagina=alertas" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
-                <span class="material-symbols-outlined">notifications_active</span>
-                <span>Alertas</span>
-            </a>
-            <a href="documento.html?pagina=relatorios" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-[var(--text-primary)]">
-                <span class="material-symbols-outlined">summarize</span>
-                <span>Relatórios</span>
-            </a>
         </nav>
     </aside>
     
@@ -106,10 +94,10 @@
                 </div>
                 
                 <div id="status-summary" class="mb-8 p-4 rounded-md text-center">
-                    </div>
+                </div>
 
                 <div class="space-y-3" id="status-results">
-                    </div>
+                </div>
             </div>
         </main>
         
@@ -132,7 +120,18 @@
         <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
         <div class="panel-content">
             <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
-            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
+            <div id="elements-tab-content" class="tab-content" style="flex-direction: row; align-items: stretch;">
+                <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+                    <div class="panel-toolbar">
+                        <button id="element-picker-button" title="Selecionar um elemento na página"><span class="material-symbols-outlined">ads_click</span></button>
+                        <input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe...">
+                    </div>
+                    <div id="dom-tree-output" class="dom-tree-output" style="flex-grow: 1; overflow-y: auto;"></div>
+                </div>
+                <div id="style-inspector-output" style="flex-basis: 40%; border-left: 1px solid var(--panel-border); padding: 8px; overflow-y: auto; font-family: var(--code-font); font-size: 13px;">
+                    <div class="style-placeholder">Selecione um elemento na árvore para inspecionar seus estilos.</div>
+                </div>
+            </div>
             <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
             <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button></div><div id="tests-output" class="tests-output"></div></div>
         </div>
