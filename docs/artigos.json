@@ -1,0 +1,17 @@
+[
+  {
+    "titulo": "Introdução",
+    "pagina": "introducao",
+    "icone": "description"
+  },
+  {
+    "titulo": "Alertas",
+    "pagina": "alertas",
+    "icone": "notifications_active"
+  },
+  {
+    "titulo": "Relatórios",
+    "pagina": "relatorios",
+    "icone": "summarize"
+  }
+]
