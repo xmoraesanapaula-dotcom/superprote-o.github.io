@@ -161,7 +161,6 @@
 
       if (btnTop) btnTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-      // Esses botões atuam sobre âncoras/itens gerados pelo doc-loader.js.
       if (btnExpand) btnExpand.addEventListener('click', () => {
         toc?.querySelectorAll('details').forEach(d => d.open = true);
       });
@@ -169,7 +168,6 @@
         toc?.querySelectorAll('details').forEach(d => d.open = false);
       });
 
-      // Recolher/Mostrar o bloco inteiro do TOC
       if (btnCollapseToc && toc) {
         let collapsed = false;
         btnCollapseToc.addEventListener('click', () => {
@@ -180,7 +178,7 @@
       }
     })();
 
-    // Navegação Anterior/Próximo simples entre os docs principais
+    // Navegação Anterior/Próximo simples
     (function () {
       const ordem = ['introducao', 'alertas', 'relatorios'];
       const params = new URLSearchParams(location.search);
@@ -190,7 +188,6 @@
       const prev = document.getElementById('prev-link');
       const next = document.getElementById('next-link');
 
-      // Prev
       if (idx > 0) {
         const p = ordem[idx - 1];
         prev.href = `documento.html?pagina=${p}`;
@@ -199,7 +196,6 @@
         prev.href = '#';
       }
 
-      // Next
       if (idx < ordem.length - 1) {
         const n = ordem[idx + 1];
         next.href = `documento.html?pagina=${n}`;
