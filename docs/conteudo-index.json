@@ -15,6 +15,20 @@
       "titulo": "Buscar em Artigos",
       "descricao": "Encontre rapidamente o que você precisa em nossa base de conhecimento.",
       "link": "busca.html"
+    },
+    {
+      "icone": "notifications_active",
+      "cor": "orange",
+      "titulo": "Alertas Instantâneos",
+      "descricao": "Receba notificações em tempo real sobre atividades suspeitas para proteger sua conta.",
+      "link": "documento.html?pagina=alertas"
+    },
+    {
+      "icone": "summarize",
+      "cor": "purple",
+      "titulo": "Relatórios Detalhados",
+      "descricao": "Acesse relatórios completos e fáceis de entender sobre todos os eventos de segurança.",
+      "link": "documento.html?pagina=relatorios"
     }
   ]
 }
