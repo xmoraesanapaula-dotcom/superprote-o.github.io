@@ -64,14 +64,14 @@ Este é o log detalhado de eventos, útil para investigações forenses e para e
 
 #### Tabela de Eventos com Status Visual
 
-A tabela abaixo foi aprimorada com um indicador visual de status para facilitar a rápida identificação de problemas.
+A tabela abaixo foi aprimorada com um indicador textual de status para facilitar a rápida identificação de problemas.
 
-| Data/Hora           | Usuário            | Evento          | IP             | Status   |
-| ------------------- | ------------------ | --------------- | -------------- | -------- |
-| 2025-09-07 08:12:34 | joao@example.com   | login_ok        | 187.100.55.200 | ✅ Sucesso |
-| 2025-09-07 08:15:10 | maria@example.com  | login_falhou    | 200.160.23.45  | ❌ Falha   |
-| 2025-09-07 09:01:22 | admin@example.com  | usuario_criado  | 10.0.0.5       | ✅ Sucesso |
-| 2025-09-07 09:22:47 | joao@example.com   | login_suspeito  | 45.112.33.90   | ⚠️ Alerta  |
+| Data/Hora           | Usuário            | Evento          | IP             | Status     |
+| ------------------- | ------------------ | --------------- | -------------- | ---------- |
+| 2025-09-07 08:12:34 | joao@example.com   | login_ok        | 187.100.55.200 | (Sucesso)  |
+| 2025-09-07 08:15:10 | maria@example.com  | login_falhou    | 200.160.23.45  | (Falha)    |
+| 2025-09-07 09:01:22 | admin@example.com  | usuario_criado  | 10.0.0.5       | (Sucesso)  |
+| 2025-09-07 09:22:47 | joao@example.com   | login_suspeito  | 45.112.33.90   | (Alerta)   |
 
 > **Análise de Incidente:**
 > O evento de **`login_suspeito`** às 09:22:47 para o usuário `joao@example.com` é um ponto de atenção imediata. Ele ocorreu a partir de um endereço de IP (`45.112.33.90`) diferente do seu login bem-sucedido anterior (`187.100.55.200`). Isso pode indicar uma tentativa de acesso não autorizado e justifica uma investigação mais aprofundada.
