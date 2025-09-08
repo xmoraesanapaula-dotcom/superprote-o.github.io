@@ -15,6 +15,11 @@
     "icone": "summarize"
   },
   {
+    "titulo": "Relatórios Visuais",
+    "pagina": "relatorios-visuais",
+    "icone": "monitoring"
+  },
+  {
     "titulo": "Webhooks",
     "pagina": "webhooks",
     "icone": "webhook"
