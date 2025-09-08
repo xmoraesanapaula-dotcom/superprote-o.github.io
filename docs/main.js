@@ -1,5 +1,6 @@
 // ARQUIVO: main.js
 // RESPONSABILIDADE: Controlar a lógica e interações globais.
+// VERSÃO: 3.0.5
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ATUALIZADO: LÓGICA DA SIDEBAR RESPONSIVA (MEGA ATUALIZAÇÃO 3.0.0) ---
+    // --- LÓGICA DA SIDEBAR RESPONSIVA (3.0.0) ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
@@ -56,15 +57,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- LÓGICA DE NAVEGAÇÃO ATIVA ---
-    // Destaca o link na navegação principal que corresponde à página atual.
-    const currentPage = window.location.search; // Ex: "?pagina=introducao"
+    const currentPage = window.location.search;
     const navLinks = document.querySelectorAll('#main-nav a');
-
     navLinks.forEach(link => {
         if (link.href.includes(currentPage)) {
             link.classList.add('active-nav-link');
         }
     });
 
-    console.log("Script principal (main.js) v3.0.0 carregado com sucesso.");
+    // --- NOVO: LÓGICA PARA CARREGAR CONTEÚDO DA PÁGINA INICIAL ---
+    
+    // Função para analisar o texto com Front Matter (formato simples)
+    function parseIndexContent(text) {
+        const frontMatterRegex = /---([\s\S]*?)---/;
+        const match = frontMatterRegex.exec(text);
+        if (!match) return null;
+
+        const data = {};
+        const lines = match[1].split('\n');
+        let currentList = null;
+        let currentObject = null;
+
+        lines.forEach(line => {
+            if (line.trim() === '') return;
+            const indent = line.search(/\S/);
+
+            if (indent === 0) { // Propriedade de nível superior
+                const [key, value] = line.split(':');
+                if (value.trim() === '') {
+                    data[key.trim()] = [];
+                    currentList = data[key.trim()];
+                } else {
+                    data[key.trim()] = value.trim().replace(/"/g, '');
+                }
+            } else if (line.trim().startsWith('-')) { // Item de uma lista
+                currentObject = {};
+                currentList.push(currentObject);
+            } else if (currentObject) { // Propriedade de um item da lista
+                const [key, value] = line.trim().split(':');
+                currentObject[key.trim()] = value.trim().replace(/"/g, '');
+            }
+        });
+        return data;
+    }
+
+    async function loadHomePageContent() {
+        // Esta função só executa se encontrar os elementos da página inicial
+        const heroTitulo = document.getElementById('hero-titulo');
+        const cardsContainer = document.getElementById('cards-container');
+        if (!heroTitulo || !cardsContainer) return;
+
+        try {
+            const response = await fetch('conteudo-index.md');
+            if (!response.ok) throw new Error('Arquivo de conteúdo não encontrado.');
+            
+            const text = await response.text();
+            const data = parseIndexContent(text);
+
+            if (!data) throw new Error('Erro ao ler o conteúdo do arquivo.');
+
+            // Preenche o Título e Subtítulo
+            heroTitulo.textContent = data.hero_titulo;
+            document.getElementById('hero-subtitulo').textContent = data.hero_subtitulo;
+
+            // Cria os Cards
+            let cardsHTML = '';
+            data.cards.forEach(card => {
+                cardsHTML += `
+                    <a href="${card.link}" class="card p-6">
+                        <div class="mb-4 flex items-center gap-4">
+                            <div class="icon-gradient-${card.cor} flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                                <span class="material-symbols-outlined">${card.icone}</span>
+                            </div>
+                            <h4 class="flex-1 text-lg font-semibold text-gray-900">${card.titulo}</h4>
+                        </div>
+                        <p class="mb-4 text-sm text-gray-600">${card.descricao}</p>
+                    </a>
+                `;
+            });
+            cardsContainer.innerHTML = cardsHTML;
+
+        } catch (error) {
+            console.error("Erro ao carregar conteúdo da página inicial:", error);
+            heroTitulo.textContent = "Erro ao carregar conteúdo";
+        }
+    }
+
+    // Executa a nova função
+    loadHomePageContent();
+
+    console.log("Script principal (main.js) v3.0.5 carregado com sucesso.");
 });
