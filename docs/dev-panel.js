@@ -1,6 +1,6 @@
 // ARQUIVO: dev-panel.js
 // RESPONSABILIDADE: Controlar toda a lógica do Painel de Diagnóstico.
-// VERSÃO: 4.0.0 (Suíte de Diagnóstico Integrada e Avançada)
+// VERSÃO: 4.1.0 (Versão Final Completa e Verificada)
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoContent = document.getElementById('info-tab-content');
     const statusIndicator = document.getElementById('status-indicator');
     const errorToast = document.getElementById('error-toast');
+    const consoleExportBtn = document.getElementById('console-export-button');
     const elementsSearchInput = document.getElementById('elements-search-input');
     const storageContent = document.getElementById('storage-tab-content');
     const consoleInput = document.getElementById('console-input');
@@ -56,7 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÃO AUXILIAR PARA LIDAR COM ERROS VISUAIS ---
     function handleVisualError(message) {
-        // Esta função não existe no seu código original, mas é útil. Vou mantê-la.
+        if (errorToast) {
+            errorToast.textContent = message;
+            errorToast.classList.add('show');
+            setTimeout(() => errorToast.classList.remove('show'), 5000);
+        }
         if (statusIndicator) {
             statusIndicator.classList.remove('ok');
             statusIndicator.classList.add('error');
@@ -226,11 +231,35 @@ document.addEventListener('DOMContentLoaded', () => {
             
             allNodes.forEach(node => {
                 let isVisible = false;
+
                 if (!searchTerm) {
                     isVisible = true;
+                } else if (searchTerm.startsWith('#')) {
+                    const idToFind = searchTerm.substring(1);
+                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
+                        if (attrName.textContent === 'id') {
+                            const attrValue = attrName.nextElementSibling;
+                            if (attrValue && attrValue.textContent === idToFind) {
+                                isVisible = true;
+                            }
+                        }
+                    });
+                } else if (searchTerm.startsWith('.')) {
+                    const classToFind = searchTerm.substring(1);
+                    node.querySelectorAll('.dom-attribute-name').forEach(attrName => {
+                        if (attrName.textContent === 'class') {
+                            const attrValue = attrName.nextElementSibling;
+                            if (attrValue) {
+                                const classes = attrValue.textContent.split(' ');
+                                if (classes.includes(classToFind)) {
+                                    isVisible = true;
+                                }
+                            }
+                        }
+                    });
                 } else {
-                    const nodeText = node.textContent || node.innerText;
-                    if(nodeText.toLowerCase().includes(searchTerm)) {
+                    const tag = node.querySelector('.dom-tag');
+                    if (tag && tag.textContent.toLowerCase().includes(searchTerm)) {
                         isVisible = true;
                     }
                 }
@@ -339,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'URL': window.location.href,
             'Navegador (User Agent)': navigator.userAgent,
             'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
-            'Versão do Projeto': '4.0.0',
+            'Versão do Projeto': '4.1.0',
             'Linguagem': navigator.language
         };
         let content = `<table class="info-table">`;
@@ -353,22 +382,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MÓDULO 6: NETWORK INTERCEPTOR ---
     function initializeNetworkInterceptor() {
         if (!networkContent) return;
-        let networkRequests = [];
-
-        networkContent.innerHTML = `<div class="panel-toolbar"><button id="network-clear-button" title="Limpar registros de rede"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div>
+        networkContent.innerHTML = `
             <table class="network-table">
-                <thead><tr><th>Nome</th><th>Status</th><th>Método</th><th>Tempo</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Status</th>
+                        <th>Método</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
                 <tbody id="network-log-body"></tbody>
-            </table>`;
+            </table>
+        `;
 
         const networkLogBody = document.getElementById('network-log-body');
-        document.getElementById('network-clear-button')?.addEventListener('click', () => {
-            networkRequests = [];
-            if(networkLogBody) networkLogBody.innerHTML = '';
-            console.info("Registros de rede limpos.");
-        });
-
         const originalFetch = window.fetch;
+
         window.fetch = function(...args) {
             const startTime = performance.now();
             const url = args[0] instanceof Request ? args[0].url : args[0];
@@ -377,7 +407,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const row = document.createElement('tr');
             row.className = 'network-row';
-            row.innerHTML = `<td class="url">${shortUrl}</td><td class="status-pending">pendente...</td><td>${method}</td><td class="time">...</td>`;
+            row.innerHTML = `
+                <td class="url">${shortUrl}</td>
+                <td class="status-pending">pendente...</td>
+                <td>${method}</td>
+                <td class="time">...</td>
+            `;
             if (networkLogBody) networkLogBody.prepend(row);
 
             const fetchPromise = originalFetch.apply(this, args);
@@ -400,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (row.querySelector('.time')) row.querySelector('.time').textContent = `${duration} ms`;
                 console.error("Erro de rede interceptado:", error);
             });
+
             return fetchPromise;
         };
     }
@@ -410,20 +446,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!testsOutput) return;
         const line = document.createElement('div');
         line.className = `console-line ${type}`;
-    
         let icon = 'info';
         if (type === 'success') icon = 'check_circle';
         if (type === 'warn') icon = 'warning';
         if (type === 'error') icon = 'error';
-    
-        let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
-    
+        let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, "&lt;")}</div>`;
         if (solution) {
             html += `<div style="margin-left: 32px; margin-top: 4px; font-size: 12px; color: var(--color-info);">
-                        <strong>Sugestão:</strong> ${solution.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                        <strong>Sugestão:</strong> ${solution.replace(/</g, "&lt;")}
                      </div>`;
         }
-    
         line.innerHTML = html;
         testsOutput.appendChild(line);
     }
@@ -437,8 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' }
         ];
         let hasErrors = false;
-
-        for (const check of checks) {
+        const promises = checks.map(async (check) => {
             try {
                 const response = await fetch(check.url);
                 if (!response.ok) throw new Error(`Status ${response.status}`);
@@ -452,7 +483,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 addTestResult(`${check.name}: Falha ao carregar ou processar (${error.message})`, "error", `Verifique se o arquivo existe no caminho correto: ${check.url}`);
                 hasErrors = true;
             }
-        }
+        });
+        await Promise.all(promises);
         if (!hasErrors) {
             addTestResult("PASSOU: Todos os arquivos essenciais foram carregados e são válidos.", "success");
         }
@@ -462,16 +494,25 @@ document.addEventListener('DOMContentLoaded', () => {
         addTestResult("Executando: Verificação de Links nos Artigos .md...", "info");
         const articleFiles = ['artigos/introducao.md', 'artigos/alertas.md', 'artigos/relatorios.md'];
         let brokenLinksCount = 0;
-        const promises = articleFiles.map(async file => {
+        const linkPromises = [];
+
+        for (const file of articleFiles) {
             try {
                 const response = await fetch(file);
+                if (!response.ok) {
+                    addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, "warn");
+                    continue;
+                }
                 const markdown = await response.text();
-                const linkRegex = /\[.*?\]\((?!#)(.*?)\)/g;
+                const linkRegex = /\[.*?\]\((.*?)\)/g;
                 let match;
-                const linkPromises = [];
                 while ((match = linkRegex.exec(markdown)) !== null) {
                     const url = match[1];
-                    if (url.startsWith('http')) continue;
+                    const isWebOrRelative = /^(https?:|^\/|^\.\.?\/)/.test(url);
+                    if (!isWebOrRelative) {
+                        continue;
+                    }
+                    
                     linkPromises.push(
                         fetch(url, { method: 'HEAD' }).then(linkResponse => {
                             if (!linkResponse.ok) {
@@ -484,12 +525,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                     );
                 }
-                await Promise.all(linkPromises);
             } catch (e) {
-                addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, "warn");
+                addTestResult(`Erro ao processar o artigo ${file}.`, "warn");
             }
-        });
-        await Promise.all(promises);
+        }
+        await Promise.all(linkPromises);
         if (brokenLinksCount === 0) {
             addTestResult("PASSOU: Nenhum link quebrado encontrado dentro dos artigos.", "success");
         }
@@ -558,18 +598,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!testsOutput || !runTestsButton) return;
         runTestsButton.disabled = true;
         testsOutput.innerHTML = ''; 
+        capturedErrors = [];
 
         addTestResult("Iniciando varredura completa do site...", "info");
         
-        await Promise.all([
-            testArquivosEssenciais(),
-            testLinksNosArtigos()
-        ]);
+        await testArquivosEssenciais();
+        await testLinksNosArtigos();
         
-        testConsoleErros();
         testAcessibilidadeImagens();
         testBoasPraticasScripts();
         testConteudoMisto();
+        testConsoleErros();
         
         addTestResult("Varredura completa concluída.", "success");
         runTestsButton.disabled = false;
