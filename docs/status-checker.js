@@ -1,6 +1,6 @@
 // ARQUIVO: status-checker.js
 // RESPONSABILIDADE: Diagnóstico de componentes, carregamento de históricos e atualização da página de status.
-// VERSÃO: 5.1.0
+// VERSÃO: 5.1.1
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES ---
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÃO PRINCIPAL ---
     async function updateAllStatusData() {
-        console.log(`[Status v5.1.0] Verificando sistemas... ${new Date().toLocaleTimeString()}`);
+        console.log(`[Status v5.1.1] Verificando sistemas... ${new Date().toLocaleTimeString()}`);
 
         // 1. Roda os checks
         const componentResults = await runAllChecks();
@@ -209,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bannerContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-warning';
             bannerContainer.innerHTML = '🟡 Alguns sistemas apresentam degradação de performance.';
         } else {
-            bannerContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-success';
-            bannerContainer.innerHTML = '🟢 Todos os sistemas estão operacionais.';
+            bannerContainer.className = 'hidden'; // Esconde o banner se tudo estiver OK
+            bannerContainer.innerHTML = '';
         }
     }
 
