@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Proteção v1.7.0 - Documento</title>
+    <meta name="description" content="Artigos e documentação detalhada sobre os recursos do Super Proteção.">
+
+    <title>Super Proteção - Documento</title>
 
     <script>
         (function() {
@@ -20,92 +22,94 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="style.css">
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 
-<body class="bg-[var(--background-primary)] text-[var(--text-primary)] transition-colors duration-500">
-    <div id="error-toast" class="error-toast"></div>
-
-    <div class="flex size-full min-h-screen flex-col" style='font-family: Inter, "Noto Sans", sans-serif;'>
-        <div class="layout-container flex h-full grow flex-col">
-            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)]">
-                <div class="flex items-center gap-4">
-                    <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
-                        <span class="sr-only">Abrir menu</span>
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                    <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
-                        <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
-                        <h1 class="text-xl font-bold">Super Proteção</h1>
-                    </a>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="relative hidden sm:block">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                        <a href="busca.html" class="block w-full">
-                            <input class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer" placeholder="Buscar na documentação..." type="text" onfocus="window.location.href='busca.html';" />
-                        </a>
-                    </div>
-                    <button class="rounded-full" id="theme-toggle" title="Alternar tema">
-                        <span class="sr-only">Toggle theme</span>
-                        <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
-                    </button>
-                </div>
-            </header>
-            
-            <main class="flex flex-1">
-                <aside class="sticky top-[65px] hidden h-[calc(100vh-65px)] w-80 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 lg:block">
-                    <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Nesta Página</h2>
-                    <nav class="space-y-2" id="table-of-contents"></nav>
-                </aside>
-                
-                <div class="flex flex-1 flex-col">
-                    <div class="flex-1 p-8 md:p-12">
-                        <div class="mx-auto max-w-4xl">
-                            <div id="breadcrumbs" class="mb-8 flex items-center space-x-2 text-sm text-[var(--text-secondary)]"></div>
-                            
-                            <article class="prose prose-lg max-w-none dark:prose-invert" id="markdown-content"></article>
-
-                            <hr class="my-12 border-[var(--secondary-color)]"/>
-                            
-                            <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                                <div class="flex items-center gap-4">
-                                    <button class="feedback-btn"><span class="material-symbols-outlined">thumb_up</span> Útil</button>
-                                    <button class="feedback-btn"><span class="material-symbols-outlined">thumb_down</span> Não foi útil</button>
-                                </div>
-                                <p id="last-updated" class="text-sm text-[var(--text-secondary)]"></p>
-                            </div>
-
-                            <div id="pagination-nav" class="mt-12 flex justify-between"></div>
-                        </div>
-                    </div>
-                    
-                    <footer class="border-t border-[var(--secondary-color)] px-10 py-6">
-                        <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-[var(--text-secondary)] sm:flex-row">
-                            <p>© 2025 Super Proteção. Todos os direitos reservados.</p>
-                            <div class="flex items-center gap-2">
-                                <div id="status-indicator" class="status-indicator" title="Status do script"></div>
-                                <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
-            </main>
+<body style='font-family: Inter, sans-serif;'>
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-4 sm:px-10 py-3 bg-[var(--background-primary)] sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <button id="hamburger-btn" class="lg:hidden p-2 rounded-md text-[var(--text-primary)]">
+                <span class="sr-only">Abrir menu</span>
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <a href="index.html" class="flex items-center gap-3 text-[var(--text-primary)]">
+                <span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">security</span>
+                <h1 class="text-xl font-bold">Super Proteção</h1>
+            </a>
         </div>
+        <div class="flex items-center gap-4">
+            <form id="header-search-form" action="busca.html" method="GET" class="relative hidden sm:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <input id="header-search-input" name="q" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-[var(--background-secondary)] pl-10 pr-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Buscar..." type="search" />
+            </form>
+            <button class="rounded-full" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
+                <span class="sr-only">Toggle theme</span>
+                <span class="material-symbols-outlined text-[var(--text-primary)]">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-72 flex-shrink-0 border-r border-[var(--secondary-color)] p-6 bg-[var(--background-primary)] transform -translate-x-full transition-transform lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:translate-x-0 pt-8">
+        <div class="flex items-center justify-between mb-4 lg:hidden">
+            <h2 class="text-lg font-semibold">Navegação</h2>
+            <button id="sidebar-close-btn" class="p-2 rounded-md text-[var(--text-primary)]">
+                <span class="sr-only">Fechar menu</span>
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <nav id="main-nav" class="space-y-2"></nav>
+    </aside>
+    
+    <div class="main-content-wrapper">
+        <main class="flex-1 min-w-0 flex">
+            <div class="flex-1 p-8 md:p-12">
+                <div class="mx-auto max-w-4xl">
+                    <article class="prose prose-lg max-w-none dark:prose-invert" id="markdown-content">
+                        </article>
+                </div>
+            </div>
+            <aside class="hidden xl:block w-72 flex-shrink-0 p-8">
+                <div class="sticky top-[80px]">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-4">Nesta Página</h2>
+                    <nav class="space-y-2" id="table-of-contents"></nav>
+                </div>
+            </aside>
+        </main>
+        
+        <footer class="border-t border-[var(--secondary-color)] bg-[var(--background-primary)] mt-auto">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                <p class="text-sm text-[var(--text-secondary)]">© 2025 Super Proteção. Todos os direitos reservados.</p>
+                <div class="flex items-center gap-2">
+                    <div id="status-indicator" class="status-indicator" title="Status do script"></div>
+                    <p id="version-info" class="text-sm font-medium text-[var(--text-secondary)]"></p>
+                </div>
+            </div>
+        </footer>
     </div>
     
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
     <div id="dev-tools-trigger" title="Abrir Painel de Diagnóstico"><span class="material-symbols-outlined">developer_mode</span></div>
     <div id="dev-tools-panel" class="hidden">
-        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico Super Proteção</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
-        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button></div>
+        <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined">neurology</span><span>Painel de Diagnóstico</span></div><button id="dev-tools-close" class="close-button" title="Fechar Painel">&times;</button></div>
+        <div class="panel-tabs"><button class="tab-button active" data-tab="console">Console</button><button class="tab-button" data-tab="elements">Elementos</button><button class="tab-button" data-tab="performance">Desempenho</button><button class="tab-button" data-tab="storage">Storage</button><button class="tab-button" data-tab="network">Network</button><button class="tab-button" data-tab="info">Info</button><button class="tab-button" data-tab="tests">Testes</button></div>
         <div class="panel-content">
             <div id="console-tab-content" class="tab-content active"><div class="panel-toolbar console-toolbar"><button id="console-clear-button" title="Limpar console"><span class="material-symbols-outlined">delete</span><span>Limpar</span></button></div><div id="console-output" class="console-output"></div><div class="console-input-area"><span class="material-symbols-outlined">chevron_right</span><input type="text" id="console-input" placeholder="Digite um comando JS e pressione Enter..."></div></div>
-            <div id="elements-tab-content" class="tab-content"><div class="panel-toolbar"><input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe..."></div><div id="dom-tree-output" class="dom-tree-output"></div></div>
-            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div><div id="info-tab-content" class="tab-content"></div>
+            <div id="elements-tab-content" class="tab-content" style="flex-direction: row; align-items: stretch;">
+                <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+                    <div class="panel-toolbar">
+                        <button id="element-picker-button" title="Selecionar um elemento na página"><span class="material-symbols-outlined">ads_click</span></button>
+                        <input type="text" id="elements-search-input" class="panel-search-input" placeholder="Buscar por tag, #id ou .classe...">
+                    </div>
+                    <div id="dom-tree-output" class="dom-tree-output" style="flex-grow: 1; overflow-y: auto;"></div>
+                </div>
+                <div id="style-inspector-output" style="flex-basis: 40%; border-left: 1px solid var(--panel-border); padding: 8px; overflow-y: auto; font-family: var(--code-font); font-size: 13px;">
+                    <div class="style-placeholder">Selecione um elemento na árvore para inspecionar seus estilos.</div>
+                </div>
+            </div>
+            <div id="performance-tab-content" class="tab-content"></div><div id="storage-tab-content" class="tab-content"></div><div id="network-tab-content" class="tab-content"></div> <div id="info-tab-content" class="tab-content"></div>
+            <div id="tests-tab-content" class="tab-content"><div class="panel-toolbar"><button id="run-tests-button"><span class="material-symbols-outlined">play_arrow</span><span>Iniciar Testes</span></button></div><div id="tests-output" class="tests-output"></div></div>
         </div>
     </div>
 
