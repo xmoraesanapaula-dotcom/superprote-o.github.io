@@ -1,119 +1,84 @@
 // ARQUIVO: dev-panel.js
-// RESPONSABILIDADE: Controlar toda a lógica do Painel de Diagnóstico (Dev Tools interno).
-// VERSÃO: 5.3.0 (Base 5.2.0 + refinamentos de UX, integração com status-checker e logs padronizados)
+// RESPONSABILIDADE: Controlar toda a lógica do Painel de Diagnóstico.
+// VERSÃO: 5.2.0 (Base 5.1.0 + Elements tab com Element Picker & Style Inspector)
+
 // -------------------------------------------------------------------------------------
-// NOTAS DE VERSÃO 5.3.0
-// - Mantém TODOS os módulos da versão 5.2.0 (Console, Elements, Performance, Storage, Network, Testes, Info).
-// - Padroniza logs com prefixo [DevPanel v5.3.0].
-// - Toast de erro e indicador de status alinhados com style.css/status-checker (classes ok/warn/error).
-// - "Elements": Element Picker e Style Inspector com edição inline, preservando outline original.
-// - "Network": intercepta fetch e XHR; inclui método HTTP, status e tempo.
-// - "Storage": edição inline, export JSON, limpeza total; eventos com feedback no console embedado.
-// - "Testes": resultados com sugestão de solução e ícone por severidade.
-// - Proteções extra (defensive checks), limpeza de listeners e acessibilidade básica.
-// - Eventos customizados para integração futura: devtools:status-change, devtools:refresh-dom-tree.
+// NOTAS DE VERSÃO 5.2.0
+// - Mantém TODOS os módulos e comportamentos da versão 5.1.0.
+// - Substituição do markup da aba #elements-tab-content para o layout com 2 colunas:
+//   * Coluna esquerda: toolbar (picker + busca) + árvore DOM (rolagem).
+//   * Coluna direita: Style Inspector com edição inline de styles (element.style).
+// - Element Picker: destaca elementos ao passar o mouse e seleciona ao clicar.
+// - Style Inspector: mostra propriedades inline editáveis e um bloco de computed styles.
+// - Mantém suíte de diagnóstico, interceptador de rede (fetch + XHR), console embutido,
+//   performance, storage editor, info tab e indicadores de status/erros.
 // -------------------------------------------------------------------------------------
 
 (function () {
   'use strict';
 
-  // -----------------------------------------------------------------------------------
-  // CONSTANTES E HELPERS GERAIS
-  // -----------------------------------------------------------------------------------
-  const VERSION = '5.3.0';
-  const LOG_PREFIX = `[DevPanel v${VERSION}]`;
-
-  /**
-   * Helper para seletores com fallback silencioso.
-   * @param {string} selector
-   * @returns {HTMLElement|null}
-   */
-  function $(selector) {
-    try { return document.querySelector(selector); } catch { return null; }
-  }
-
-  /** Formata texto de forma segura para HTML. */
-  function escapeHTML(str) {
-    return String(str).replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  /** Dispara um evento customizado para integração com outros módulos. */
-  function emit(name, detail) {
-    try { document.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* noop */ }
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
-    console.info(`${LOG_PREFIX} Inicializando…`);
 
     // ---------------------------------------------------------------------------------
     // ELEMENTOS DO DOM (seletores)
     // ---------------------------------------------------------------------------------
-    const trigger = $('#dev-tools-trigger');
-    const panel = $('#dev-tools-panel');
-    const closeButton = $('#dev-tools-close');
+    const trigger = document.getElementById('dev-tools-trigger');
+    const panel = document.getElementById('dev-tools-panel');
+    const closeButton = document.getElementById('dev-tools-close');
 
     const tabs = document.querySelectorAll('.tab-button');
     const contentAreas = document.querySelectorAll('.tab-content');
 
-    // Status/Info visual
-    const statusIndicator = $('#status-indicator');
-    const errorToast = $('#error-toast');
+    // Status/Info
+    const statusIndicator = document.getElementById('status-indicator');
+    const errorToast = document.getElementById('error-toast');
 
     // Console
-    const consoleOutput = $('#console-output');
-    const consoleClearBtn = $('#console-clear-button');
-    const consoleExportBtn = $('#console-export-button');
-    const consoleInput = $('#console-input');
+    const consoleOutput = document.getElementById('console-output');
+    const consoleClearBtn = document.getElementById('console-clear-button');
+    const consoleExportBtn = document.getElementById('console-export-button');
+    const consoleInput = document.getElementById('console-input');
 
     // Performance & Info
-    const performanceContent = $('#performance-tab-content');
-    const infoContent = $('#info-tab-content');
+    const performanceContent = document.getElementById('performance-tab-content');
+    const infoContent = document.getElementById('info-tab-content');
 
     // Storage
-    const storageContent = $('#storage-tab-content');
+    const storageContent = document.getElementById('storage-tab-content');
 
     // Network
-    const networkContent = $('#network-tab-content');
+    const networkContent = document.getElementById('network-tab-content');
 
     // Testes
-    const runTestsButton = $('#run-tests-button');
-    const testsOutput = $('#tests-output');
+    const runTestsButton = document.getElementById('run-tests-button');
+    const testsOutput = document.getElementById('tests-output');
 
     // Elements (Inspector)
-    const domTreeOutput = $('#dom-tree-output');
-    const elementsSearchInput = $('#elements-search-input');
-    const elementPickerBtn = $('#element-picker-button');
-    const styleInspectorOutput = $('#style-inspector-output');
+    const elementsTab = document.getElementById('elements-tab-content');
+    const domTreeOutput = document.getElementById('dom-tree-output');
+    const elementsSearchInput = document.getElementById('elements-search-input');
+    const elementPickerBtn = document.getElementById('element-picker-button');
+    const styleInspectorOutput = document.getElementById('style-inspector-output');
 
     // ---------------------------------------------------------------------------------
     // ESTADO INTERNO
     // ---------------------------------------------------------------------------------
-    const state = {
-      commandHistory: [],
-      historyIndex: 0,
-      capturedErrors: [],
-      selectedElement: null,
-      isPickerActive: false,
-      originalOutline: '',
-      lastHoveredElement: null
-    };
+    let commandHistory = [];
+    let historyIndex = 0;
+    let capturedErrors = [];
+    let selectedElement = null;
+    let isPickerActive = false;
+    let originalOutline = '';
+    let lastHoveredElement = null;
 
-    if (!panel) {
-      console.warn(`${LOG_PREFIX} Painel não encontrado no DOM. Abortando inicialização.`);
-      return;
-    }
+    if (!panel) return;
 
     // ---------------------------------------------------------------------------------
     // INICIALIZAÇÃO BÁSICA DO PAINEL
     // ---------------------------------------------------------------------------------
     if (statusIndicator) {
-      statusIndicator.classList.remove('warn', 'error');
       statusIndicator.classList.add('ok');
-      statusIndicator.title = 'Todos os scripts do painel carregados.';
+      statusIndicator.title = 'Todos os scripts foram carregados com sucesso.';
     }
 
     if (trigger) trigger.addEventListener('click', () => panel.classList.remove('hidden'));
@@ -131,26 +96,19 @@
     });
 
     // ---------------------------------------------------------------------------------
-    // ERROS VISUAIS (toast + indicador de status)
+    // ERROS VISUAIS (toast + indicador)
     // ---------------------------------------------------------------------------------
-    function setStatus(level, title) {
-      if (!statusIndicator) return;
-      statusIndicator.classList.remove('ok', 'warn', 'error');
-      statusIndicator.classList.add(level);
-      if (title) statusIndicator.title = title;
-      emit('devtools:status-change', { level, title });
-    }
-
-    function showToast(message) {
-      if (!errorToast) return;
-      errorToast.textContent = message;
-      errorToast.classList.add('show');
-      setTimeout(() => errorToast.classList.remove('show'), 5000);
-    }
-
     function handleVisualError(message) {
-      showToast(message);
-      setStatus('error', 'Erro no script! Veja a aba Console para detalhes.');
+      if (errorToast) {
+        errorToast.textContent = message;
+        errorToast.classList.add('show');
+        setTimeout(() => errorToast.classList.remove('show'), 5000);
+      }
+      if (statusIndicator) {
+        statusIndicator.classList.remove('ok');
+        statusIndicator.classList.add('error');
+        statusIndicator.title = 'Erro no script! Veja o console (F12) ou o painel para detalhes.';
+      }
     }
 
     // ---------------------------------------------------------------------------------
@@ -159,9 +117,9 @@
     window.onerror = function (message, source, lineno, colno, error) {
       const sourceFile = source ? source.split('/').pop() : 'script';
       const errorMessage = `${message} em ${sourceFile}:${lineno}`;
-      state.capturedErrors.push(errorMessage);
+      capturedErrors.push(errorMessage);
       handleVisualError(errorMessage);
-      console.error(`${LOG_PREFIX}`, errorMessage, error);
+      console.error(errorMessage, error);
       return true; // evita alerta padrão do browser
     };
 
@@ -174,10 +132,14 @@
 
     function stringifyForPanel(arg) {
       if (arg instanceof Error) {
-        return `${arg.name}: ${arg.message}\n${arg.stack || '(sem stack trace)'}`;
+        return `${arg.name}: ${arg.message}\n${arg.stack || '(no stack trace)'}`;
       }
       if (typeof arg === 'object' && arg !== null) {
-        try { return JSON.stringify(arg, null, 2); } catch { return String(arg); }
+        try {
+          return JSON.stringify(arg, null, 2);
+        } catch {
+          return String(arg);
+        }
       }
       return String(arg);
     }
@@ -186,7 +148,10 @@
       if (!consoleOutput) return;
       const line = document.createElement('div');
       line.className = `console-line ${type}`;
-      const inner = args.map(a => `<div>${escapeHTML(stringifyForPanel(a))}</div>`).join(' ');
+      const inner = args.map(a =>
+        `<div>${stringifyForPanel(a).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
+      ).join(' ');
+
       line.innerHTML = `
         <span class="material-symbols-outlined console-icon">${icon}</span>
         <div>${inner}</div>
@@ -202,11 +167,10 @@
     console.warn = function (...args) {
       originalConsole.warn.apply(console, args);
       createLogMessage('warn', 'warning', args);
-      setStatus('warn', 'Avisos detectados. Veja a aba Console.');
     };
     console.error = function (...args) {
       const errorString = args.map(a => (a instanceof Error ? `${a.name}: ${a.message}` : String(a))).join(' ');
-      state.capturedErrors.push(errorString);
+      capturedErrors.push(errorString);
       originalConsole.error.apply(console, args);
       createLogMessage('error', 'error', args);
       if (args.length > 0) {
@@ -222,8 +186,7 @@
     if (consoleClearBtn) {
       consoleClearBtn.addEventListener('click', () => {
         if (consoleOutput) consoleOutput.innerHTML = '';
-        console.info(`${LOG_PREFIX} Console limpo.`);
-        setStatus('ok', 'Sem erros no momento.');
+        console.info('Console limpo.');
       });
     }
 
@@ -234,11 +197,11 @@
           const exportData = lines.map(line => {
             const type =
               line.classList.contains('error') ? 'error' :
-              line.classList.contains('warn') ? 'warn' :
-              line.classList.contains('info') ? 'info' :
-              line.classList.contains('log') ? 'log' :
-              line.classList.contains('command') ? 'command' :
-              line.classList.contains('return') ? 'return' : 'unknown';
+                line.classList.contains('warn') ? 'warn' :
+                  line.classList.contains('info') ? 'info' :
+                    line.classList.contains('log') ? 'log' :
+                      line.classList.contains('command') ? 'command' :
+                        line.classList.contains('return') ? 'return' : 'unknown';
             const text = line.innerText || '';
             return { type, text };
           });
@@ -252,9 +215,9 @@
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-          console.info(`${LOG_PREFIX} Logs exportados em JSON.`);
+          console.info('Logs exportados em JSON.');
         } catch (e) {
-          console.error(`${LOG_PREFIX} Falha ao exportar logs.`, e);
+          console.error('Falha ao exportar os logs.', e);
         }
       });
     }
@@ -262,12 +225,13 @@
     if (consoleInput) {
       consoleInput.addEventListener('keydown', (e) => {
         const command = e.target.value.trim();
+
         if (e.key === 'Enter' && command) {
-          if (state.commandHistory[state.commandHistory.length - 1] !== command) state.commandHistory.push(command);
-          state.historyIndex = state.commandHistory.length;
+          if (commandHistory[commandHistory.length - 1] !== command) commandHistory.push(command);
+          historyIndex = commandHistory.length;
           createLogMessage('command', 'chevron_right', [command]);
           try {
-            // Executa em Function isolada (scope local)
+            // Executa em Function isolada
             const result = (new Function(`return (${command})`))();
             if (typeof result !== 'undefined') createLogMessage('return', 'subdirectory_arrow_left', [result]);
           } catch (error) {
@@ -277,20 +241,21 @@
           if (consoleOutput) consoleOutput.scrollTop = consoleOutput.scrollHeight;
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
-          if (state.historyIndex > 0) e.target.value = state.commandHistory[--state.historyIndex] || '';
+          if (historyIndex > 0) e.target.value = commandHistory[--historyIndex] || '';
         } else if (e.key === 'ArrowDown') {
           e.preventDefault();
-          if (state.historyIndex < state.commandHistory.length - 1) e.target.value = state.commandHistory[++state.historyIndex] || '';
-          else { state.historyIndex = state.commandHistory.length; e.target.value = ''; }
+          if (historyIndex < commandHistory.length - 1) e.target.value = commandHistory[++historyIndex] || '';
+          else { historyIndex = commandHistory.length; e.target.value = ''; }
         }
       });
     }
 
     // ---------------------------------------------------------------------------------
     // MÓDULO 2: ELEMENTS - Árvore DOM + Element Picker + Style Inspector
+    // (Compatível com o novo layout em 2 colunas)
     // ---------------------------------------------------------------------------------
     function isPanelInternal(el) {
-      return !!(el && (el.id === 'dev-tools-panel' || (el.closest && el.closest('#dev-tools-panel'))));
+      return !!(el && (el.id === 'dev-tools-panel' || el.closest && el.closest('#dev-tools-panel')));
     }
 
     function buildDomTree(element, parentElement, depth = 0) {
@@ -305,9 +270,9 @@
       element.domNodeRef = node;
 
       const tag = element.tagName.toLowerCase();
-      const id = element.id ? `<span class="dom-id">#${escapeHTML(element.id)}</span>` : '';
-      const cls = element.className ? `<span class="dom-class">.${escapeHTML(String(element.className).trim().split(/\s+/).join('.'))}</span>` : '';
-      node.innerHTML = `&lt;<span class="dom-tag">${tag}</span>${id}${cls}&gt;`;
+      const id = element.id ? `<span class="dom-id">#${element.id}</span>` : '';
+      const classes = element.className ? `<span class="dom-class">.${String(element.className).trim().split(/\s+/).join('.')}</span>` : '';
+      node.innerHTML = `&lt;<span class="dom-tag">${tag}</span>${id}${classes}&gt;`;
 
       parentElement.appendChild(node);
 
@@ -330,18 +295,18 @@
     function selectElement(element) {
       if (!element || isPanelInternal(element)) return;
 
-      if (state.selectedElement && state.selectedElement.domNodeRef) {
-        state.selectedElement.domNodeRef.classList.remove('selected');
+      if (selectedElement && selectedElement.domNodeRef) {
+        selectedElement.domNodeRef.classList.remove('selected');
       }
 
-      state.selectedElement = element;
+      selectedElement = element;
 
-      if (state.selectedElement && state.selectedElement.domNodeRef) {
-        state.selectedElement.domNodeRef.classList.add('selected');
-        state.selectedElement.domNodeRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (selectedElement && selectedElement.domNodeRef) {
+        selectedElement.domNodeRef.classList.add('selected');
+        selectedElement.domNodeRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      updateStyleInspector(state.selectedElement);
+      updateStyleInspector(selectedElement);
     }
 
     function createStyleRuleHTML(property, value, isEditable) {
@@ -350,8 +315,8 @@
           <label class="style-checkbox-wrapper">
             <input type="checkbox" ${isEditable ? 'checked' : 'checked disabled'}>
           </label>
-          <span class="property" ${isEditable ? 'contenteditable="true"' : ''}>${escapeHTML(property)}</span>:
-          <span class="value" ${isEditable ? 'contenteditable="true"' : ''}>${escapeHTML(value)}</span>;
+          <span class="property" ${isEditable ? 'contenteditable="true"' : ''}>${property}</span>:
+          <span class="value" ${isEditable ? 'contenteditable="true"' : ''}>${value}</span>;
         </div>
       `;
     }
@@ -369,8 +334,8 @@
 
       // Seletor do elemento
       const tag = element.tagName.toLowerCase();
-      const id = element.id ? `#${escapeHTML(element.id)}` : '';
-      const classStr = element.className ? '.' + escapeHTML(String(element.className).trim().split(/\s+/).join('.')) : '';
+      const id = element.id ? `#${element.id}` : '';
+      const classStr = element.className ? '.' + String(element.className).trim().split(/\s+/).join('.') : '';
       html += `<div class="inspector-target"><strong>Selecionado:</strong> <code>${tag}${id}${classStr}</code></div>`;
 
       // Inline Styles (editáveis)
@@ -397,7 +362,7 @@
         html += `
           <div class="style-rule">
             <span class="property">${prop}</span>:
-            <span class="value">${escapeHTML(styles.getPropertyValue(prop))}</span>;
+            <span class="value">${styles.getPropertyValue(prop)}</span>;
           </div>
         `;
       });
@@ -429,11 +394,11 @@
             if (!prop) return;
             if (checkbox.checked) {
               const val = valEl.textContent.trim();
-              state.selectedElement.style.setProperty(prop, val);
+              selectedElement.style.setProperty(prop, val);
             } else {
-              state.selectedElement.style.removeProperty(prop);
+              selectedElement.style.removeProperty(prop);
             }
-            updateStyleInspector(state.selectedElement); // reflete mudanças
+            updateStyleInspector(selectedElement); // reflete mudanças
           });
         }
 
@@ -442,8 +407,8 @@
             const prop = propEl.textContent.trim();
             const val = valEl.textContent.trim();
             if (!prop) return;
-            state.selectedElement.style.setProperty(prop, val);
-            updateStyleInspector(state.selectedElement);
+            selectedElement.style.setProperty(prop, val);
+            updateStyleInspector(selectedElement);
           };
           propEl.addEventListener('blur', commit);
           valEl.addEventListener('blur', commit);
@@ -462,27 +427,27 @@
           const val = prompt(`Valor para "${prop}":`);
           if (val == null) return;
           try {
-            state.selectedElement.style.setProperty(prop, val);
-            updateStyleInspector(state.selectedElement);
+            selectedElement.style.setProperty(prop, val);
+            updateStyleInspector(selectedElement);
           } catch (e) {
-            console.error(`${LOG_PREFIX} Falha ao definir propriedade CSS:`, e);
+            console.error('Falha ao definir propriedade CSS:', e);
           }
         });
       }
 
       if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-          if (!state.selectedElement) return;
+          if (!selectedElement) return;
           if (!confirm('Remover TODAS as propriedades inline deste elemento?')) return;
-          state.selectedElement.removeAttribute('style');
-          updateStyleInspector(state.selectedElement);
+          selectedElement.removeAttribute('style');
+          updateStyleInspector(selectedElement);
         });
       }
     }
 
     function startPicker() {
-      if (state.isPickerActive) return;
-      state.isPickerActive = true;
+      if (isPickerActive) return;
+      isPickerActive = true;
       if (elementPickerBtn) elementPickerBtn.classList.add('active');
 
       document.addEventListener('mousemove', handleMouseMove);
@@ -491,41 +456,48 @@
     }
 
     function stopPicker() {
-      if (!state.isPickerActive) return;
-      state.isPickerActive = false;
+      if (!isPickerActive) return;
+      isPickerActive = false;
       if (elementPickerBtn) elementPickerBtn.classList.remove('active');
 
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('click', handleMouseClick, true);
       document.removeEventListener('keydown', handlePickerEscape, true);
 
-      if (state.lastHoveredElement) {
-        state.lastHoveredElement.style.outline = state.originalOutline;
-        state.lastHoveredElement = null;
+      if (lastHoveredElement) {
+        lastHoveredElement.style.outline = originalOutline;
+        lastHoveredElement = null;
       }
     }
 
-    function togglePicker() { state.isPickerActive ? stopPicker() : startPicker(); }
+    function togglePicker() {
+      if (isPickerActive) stopPicker(); else startPicker();
+    }
 
-    function handlePickerEscape(e) { if (e.key === 'Escape') stopPicker(); }
+    function handlePickerEscape(e) {
+      if (e.key === 'Escape') {
+        stopPicker();
+      }
+    }
 
     function handleMouseMove(e) {
-      if (state.lastHoveredElement) {
-        state.lastHoveredElement.style.outline = state.originalOutline;
+      if (lastHoveredElement) {
+        lastHoveredElement.style.outline = originalOutline;
       }
-      state.lastHoveredElement = e.target;
-      if (!state.lastHoveredElement || isPanelInternal(state.lastHoveredElement) || state.lastHoveredElement === document.body) {
-        state.lastHoveredElement = null; return;
+      lastHoveredElement = e.target;
+      if (!lastHoveredElement || isPanelInternal(lastHoveredElement) || lastHoveredElement === document.body) {
+        lastHoveredElement = null;
+        return;
       }
-      state.originalOutline = state.lastHoveredElement.style.outline;
-      state.lastHoveredElement.style.outline = '2px solid #2563eb';
+      originalOutline = lastHoveredElement.style.outline;
+      lastHoveredElement.style.outline = '2px solid #2563eb';
     }
 
     function handleMouseClick(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (state.lastHoveredElement && !isPanelInternal(state.lastHoveredElement)) {
-        selectElement(state.lastHoveredElement);
+      if (lastHoveredElement && !isPanelInternal(lastHoveredElement)) {
+        selectElement(lastHoveredElement);
         stopPicker();
       }
     }
@@ -542,6 +514,7 @@
 
         allNodes.forEach(node => {
           let isVisible = false;
+
           if (!searchTerm) {
             isVisible = true;
           } else if (searchTerm.startsWith('#')) {
@@ -562,6 +535,7 @@
             const tag = node.querySelector('.dom-tag');
             if (tag && tag.textContent.toLowerCase().includes(searchTerm)) isVisible = true;
           }
+
           node.style.display = isVisible ? 'block' : 'none';
         });
       });
@@ -569,7 +543,7 @@
 
     if (domTreeOutput) {
       refreshDomTree();
-      // Observa alterações grandes no DOM para permitir refresh manual via evento
+      // Observa alterações grandes no DOM para permitir refresh manual via atalho
       document.addEventListener('devtools:refresh-dom-tree', refreshDomTree);
     }
 
@@ -591,7 +565,7 @@
 
         resources.forEach(res => {
           const resourceName = (res.name || '').split('/').pop();
-          if (resourceName) content += `<tr><td>${escapeHTML(resourceName)}</td><td>${res.duration.toFixed(2)} ms</td></tr>`;
+          if (resourceName) content += `<tr><td>${resourceName}</td><td>${res.duration.toFixed(2)} ms</td></tr>`;
         });
 
         content += '</table>';
@@ -603,7 +577,7 @@
     // MÓDULO 4: STORAGE (Local & Session)
     // ---------------------------------------------------------------------------------
     function createStorageTableHTML(title, storage) {
-      let tableHTML = `<div class="storage-section"><h3 class="storage-title">${escapeHTML(title)}</h3>`;
+      let tableHTML = `<div class="storage-section"><h3 class="storage-title">${title}</h3>`;
       if (!storage || storage.length === 0) {
         tableHTML += `<p>Nenhum dado encontrado.</p></div>`;
         return tableHTML;
@@ -611,10 +585,10 @@
 
       tableHTML += `
         <div class="storage-actions">
-          <button class="storage-clear-all" data-storage-type="${escapeHTML(title)}">
+          <button class="storage-clear-all" data-storage-type="${title}">
             <span class="material-symbols-outlined">delete_sweep</span> Limpar tudo
           </button>
-          <button class="storage-export" data-storage-type="${escapeHTML(title)}">
+          <button class="storage-export" data-storage-type="${title}">
             <span class="material-symbols-outlined">download</span> Exportar JSON
           </button>
         </div>
@@ -630,13 +604,13 @@
         const value = storage.getItem(key);
         tableHTML += `
           <tr>
-            <td class="key">${escapeHTML(key)}</td>
-            <td class="value" contenteditable="true">${escapeHTML(value)}</td>
+            <td class="key">${key}</td>
+            <td class="value" contenteditable="true">${value}</td>
             <td class="actions">
-              <button class="storage-action-btn edit-btn" data-storage-type="${escapeHTML(title)}" data-key="${escapeHTML(key)}" title="Salvar Edição">
+              <button class="storage-action-btn edit-btn" data-storage-type="${title}" data-key="${key}" title="Salvar Edição">
                 <span class="material-symbols-outlined">save</span>
               </button>
-              <button class="storage-action-btn delete-btn" data-storage-type="${escapeHTML(title)}" data-key="${escapeHTML(key)}" title="Excluir Chave">
+              <button class="storage-action-btn delete-btn" data-storage-type="${title}" data-key="${key}" title="Excluir Chave">
                 <span class="material-symbols-outlined">delete</span>
               </button>
             </td>
@@ -679,7 +653,7 @@
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-          console.info(`${LOG_PREFIX} ${storageType} exportado em JSON.`);
+          console.info(`${storageType} exportado em JSON.`);
           return;
         }
 
@@ -688,7 +662,7 @@
           if (confirm(`Tem certeza que deseja LIMPAR TODOS os itens do ${storageType}?`)) {
             store.clear();
             populateStorageTab();
-            console.info(`${LOG_PREFIX} Todos os itens do ${storageType} foram removidos.`);
+            console.info(`Todos os itens do ${storageType} foram removidos.`);
           }
           return;
         }
@@ -701,7 +675,7 @@
           if (newValue !== null) {
             store.setItem(key, newValue);
             populateStorageTab();
-            console.info(`${LOG_PREFIX} Chave "${key}" atualizada no ${storageType}.`);
+            console.info(`Chave "${key}" atualizada no ${storageType}.`);
           }
           return;
         }
@@ -711,7 +685,7 @@
           if (confirm(`Tem certeza que deseja excluir a chave "${key}" do ${storageType}?`)) {
             store.removeItem(key);
             populateStorageTab();
-            console.info(`${LOG_PREFIX} Chave "${key}" removida do ${storageType}.`);
+            console.info(`Chave "${key}" removida do ${storageType}.`);
           }
         }
       });
@@ -722,12 +696,13 @@
     // ---------------------------------------------------------------------------------
     function populateInfoTab() {
       if (!infoContent) return;
+
       const info = {
         'URL': window.location.href,
         'Navegador (User Agent)': navigator.userAgent,
         'Resolução da Tela': `${window.screen.width}x${window.screen.height}`,
         'Resolução da Janela': `${window.innerWidth}x${window.innerHeight}`,
-        'Versão do Projeto': VERSION,
+        'Versão do Projeto': '5.2.0',
         'Linguagem': navigator.language,
         'Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone || 'n/a',
         'Online': navigator.onLine ? 'Sim' : 'Não'
@@ -735,9 +710,10 @@
 
       let content = `<table class="info-table">`;
       for (const [key, value] of Object.entries(info)) {
-        content += `<tr><td>${escapeHTML(key)}:</td><td>${escapeHTML(value)}</td></tr>`;
+        content += `<tr><td>${key}:</td><td>${value}</td></tr>`;
       }
       content += '</table>';
+
       infoContent.innerHTML = content;
     }
 
@@ -774,9 +750,9 @@
         const row = document.createElement('tr');
         row.className = 'network-row';
         row.innerHTML = `
-          <td class="url">${escapeHTML(shortUrl)}</td>
+          <td class="url">${shortUrl}</td>
           <td class="status-pending">pendente...</td>
-          <td>${escapeHTML(method)}</td>
+          <td>${method}</td>
           <td class="time">...</td>
         `;
         if (networkLogBody) networkLogBody.prepend(row);
@@ -801,7 +777,7 @@
           }
           const timeCell = row.querySelector('.time');
           if (timeCell) timeCell.textContent = `${duration} ms`;
-          console.error(`${LOG_PREFIX} Erro de rede interceptado (fetch):`, error);
+          console.error('Erro de rede interceptado (fetch):', error);
         });
 
         return fetchPromise;
@@ -824,9 +800,9 @@
         const row = document.createElement('tr');
         row.className = 'network-row';
         row.innerHTML = `
-          <td class="url">${escapeHTML(shortUrl)}</td>
+          <td class="url">${shortUrl}</td>
           <td class="status-pending">pendente...</td>
-          <td>${escapeHTML(info.method)}</td>
+          <td>${info.method}</td>
           <td class="time">...</td>
         `;
         if (networkLogBody) networkLogBody.prepend(row);
@@ -851,199 +827,181 @@
           }
           const timeCell = row.querySelector('.time');
           if (timeCell) timeCell.textContent = `${duration} ms`;
-          console.error(`${LOG_PREFIX} Erro de rede interceptado (XHR).`);
+          console.error('Erro de rede interceptado (XHR).');
         });
 
         return originalSend.apply(this, arguments);
       };
     }
-    // ARQUIVO: dev-panel.js (Módulo 7 Corrigido)
 
-// ---------------------------------------------------------------------------------
-// MÓDULO 7: SUÍTE DE DIAGNÓSTICO
-// ---------------------------------------------------------------------------------
-function addTestResult(message, type = 'info', solution = null) {
-  if (!testsOutput) return;
-  const line = document.createElement('div');
-  line.className = `console-line ${type}`;
-  let icon = 'info';
-  if (type === 'success') icon = 'check_circle';
-  if (type === 'warn') icon = 'warning';
-  if (type === 'error') icon = 'error';
-  let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, '&lt;')}</div>`;
-  if (solution) {
-    html += `<div style="margin-left:32px;margin-top:4px;font-size:12px;color:var(--color-info);"><strong>Sugestão:</strong> ${solution.replace(/</g, '&lt;')}</div>`;
-  }
-  line.innerHTML = html;
-  testsOutput.appendChild(line);
-}
-
-async function testArquivosEssenciais() {
-  addTestResult('Executando: Verificação de Arquivos Essenciais...', 'info');
-  const checks = [
-    { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
-    { name: 'Dados da Busca (busca-data.json)', url: 'busca-data.json', type: 'json' },
-    { name: 'Artigo: Introdução', url: 'artigos/introducao.md', type: 'content' },
-    { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' }
-  ];
-  let hasErrors = false;
-
-  const promises = checks.map(async (check) => {
-    try {
-      const response = await fetch(check.url);
-      if (!response.ok) throw new Error(`Status ${response.status}`);
-      const content = await response.text();
-      if (content.trim() === '') {
-        addTestResult(`${check.name}: O arquivo está vazio.`, 'warn', 'O arquivo existe mas não tem conteúdo, o que pode causar erros.');
-        hasErrors = true;
-      }
-      if (check.type === 'json') JSON.parse(content);
-    } catch (error) {
-      addTestResult(`${check.name}: Falha ao carregar ou processar (${error.message})`, 'error', `Verifique se o arquivo existe no caminho correto: ${check.url}`);
-      hasErrors = true;
-    }
-  });
-
-  await Promise.all(promises);
-  if (!hasErrors) addTestResult('PASSOU: Todos os arquivos essenciais foram carregados e são válidos.', 'success');
-}
-
-async function testLinksNosArtigos() {
-  addTestResult('Executando: Verificação de Links nos Artigos .md...', 'info');
-  const articleFiles = ['artigos/introducao.md', 'artigos/alertas.md', 'artigos/relatorios.md']; //
-  let brokenLinksCount = 0;
-  const linkPromises = [];
-
-  for (const file of articleFiles) {
-    try {
-      const response = await fetch(file);
-      if (!response.ok) { addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, 'warn'); continue; }
-      const markdown = await response.text();
-      const linkRegex = /\[.*?\]\((.*?)\)/g;
-      let match;
-      while ((match = linkRegex.exec(markdown)) !== null) {
-        const url = match[1];
-        const isWebOrRelative = /^(https?:|^\/|^\.\.?\/)/.test(url);
-        if (!isWebOrRelative) continue;
-
-        linkPromises.push(
-          fetch(url, { method: 'HEAD' }).then(linkResponse => {
-            if (!linkResponse.ok) {
-              brokenLinksCount++;
-              addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Status: ${linkResponse.status})`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
-            }
-          }).catch(() => {
-            brokenLinksCount++;
-            addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Erro de rede)`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
-          })
-        );
-      }
-    } catch (e) {
-      addTestResult(`Erro ao processar o artigo ${file}.`, 'warn');
-    }
-  }
-
-  await Promise.all(linkPromises);
-  if (brokenLinksCount === 0) addTestResult('PASSOU: Nenhum link quebrado encontrado dentro dos artigos.', 'success');
-}
-
-function testBoasPraticasScripts() {
-  addTestResult('Executando: Análise de Carregamento de Scripts...', 'info');
-  const scripts = document.querySelectorAll('script[src]');
-  let hasIssues = false;
-  scripts.forEach(script => {
-    const src = script.getAttribute('src');
-    if (src && (src.includes('main.js') || src.includes('doc-loader.js') || src.includes('busca.js') || src.includes('dev-panel.js'))) {
-      if (!script.hasAttribute('defer') && !script.hasAttribute('async')) {
-        hasIssues = true;
-        addTestResult(`O script <code>${src}</code> está sem 'defer' ou 'async'.`, 'warn', "Adicione o atributo 'defer' à tag script para melhorar a performance de carregamento da página.");
-      }
-    }
-  });
-  if (!hasIssues) addTestResult("PASSOU: Todos os scripts locais usam 'defer' ou 'async'.", 'success');
-}
-
-function testConteudoMisto() {
-  addTestResult('Executando: Verificação de Segurança (Conteúdo Misto)...', 'info');
-  let mixedContentCount = 0;
-  if (window.location.protocol === 'https:') {
-    const resources = document.querySelectorAll('img[src], script[src], link[href]');
-    resources.forEach(res => {
-      const url = res.src || res.href;
-      if (url && url.startsWith('http:')) {
-        mixedContentCount++;
-        addTestResult(`Conteúdo Misto encontrado: <code>${url}</code>`, 'error', 'Esta página é HTTPS, mas carrega um recurso via HTTP. Altere o link para HTTPS para evitar alertas de segurança.');
-      }
-    });
-  }
-  if (mixedContentCount === 0) addTestResult('PASSOU: Nenhum conteúdo misto (HTTP em página HTTPS) foi encontrado.', 'success');
-}
-
-function testAcessibilidadeImagens() {
-  addTestResult('Executando: Teste de Acessibilidade (Imagens)...');
-  const imagensSemAlt = document.querySelectorAll('main img:not([alt])');
-  if (imagensSemAlt.length === 0) {
-    addTestResult("PASSOU: Todas as imagens no conteúdo principal possuem o atributo 'alt'.", 'success');
-  } else {
-    addTestResult(`AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`, 'warn', 'Adicione o atributo `alt` com uma descrição útil do conteúdo da imagem para melhorar a acessibilidade.');
-  }
-}
-
-function testConsoleErros() {
-  addTestResult('Executando: Teste de Erros no Console...', 'info');
-  if (state.capturedErrors.length === 0) {
-    addTestResult('PASSOU: Nenhum erro de JavaScript foi detectado desde que a página carregou.', 'success');
-  } else {
-    addTestResult(`FALHOU: Foram detectados ${state.capturedErrors.length} erro(s). Veja o console para detalhes.`, 'error', 'Abra a aba "Console" aqui no painel ou o console do navegador (F12) para ver os erros em vermelho.');
-    state.capturedErrors.forEach(err => {
-      const shortErr = err.length > 100 ? err.substring(0, 97) + '...' : err;
-      addTestResult(`\u00A0\u00A0\u00A0- <code>${shortErr}</code>`, 'error');
-    });
-  }
-}
-
-async function runAllTests() {
-  if (!testsOutput || !runTestsButton) return;
-  runTestsButton.disabled = true;
-  testsOutput.innerHTML = '';
-  state.capturedErrors = []; // Limpa os erros para a nova verificação
-
-  addTestResult('Iniciando varredura completa do site...', 'info');
-  await testArquivosEssenciais();
-  await testLinksNosArtigos();
-  testAcessibilidadeImagens();
-  testBoasPraticasScripts();
-  testConteudoMisto();
-  testConsoleErros();
-  addTestResult('Varredura completa concluída.', 'success');
-  runTestsButton.disabled = false;
-}
-
-if (runTestsButton) runTestsButton.addEventListener('click', runAllTests);
     // ---------------------------------------------------------------------------------
-    // MÓDULO 8: INICIALIZAÇÃO FINAL
-    // Responsável por ligar todos os módulos e garantir o funcionamento do painel.
+    // MÓDULO 7: SUÍTE DE DIAGNÓSTICO
     // ---------------------------------------------------------------------------------
+    function addTestResult(message, type = 'info', solution = null) {
+      if (!testsOutput) return;
+      const line = document.createElement('div');
+      line.className = `console-line ${type}`;
+      let icon = 'info';
+      if (type === 'success') icon = 'check_circle';
+      if (type === 'warn') icon = 'warning';
+      if (type === 'error') icon = 'error';
+      let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, '&lt;')}</div>`;
+      if (solution) {
+        html += `<div style="margin-left:32px;margin-top:4px;font-size:12px;color:var(--color-info);"><strong>Sugestão:</strong> ${solution.replace(/</g, '&lt;')}</div>`;
+      }
+      line.innerHTML = html;
+      testsOutput.appendChild(line);
+    }
 
-    // Inicializa abas "Info" e "Storage"
+    async function testArquivosEssenciais() {
+      addTestResult('Executando: Verificação de Arquivos Essenciais...', 'info');
+      const checks = [
+        { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
+        { name: 'Dados da Busca (busca-data.json)', url: 'busca-data.json', type: 'json' },
+        { name: 'Artigo: Introdução', url: 'artigos/introducao.md', type: 'content' },
+        { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' }
+      ];
+      let hasErrors = false;
+
+      const promises = checks.map(async (check) => {
+        try {
+          const response = await fetch(check.url);
+          if (!response.ok) throw new Error(`Status ${response.status}`);
+          const content = await response.text();
+          if (content.trim() === '') {
+            addTestResult(`${check.name}: O arquivo está vazio.`, 'warn', 'O arquivo existe mas não tem conteúdo, o que pode causar erros.');
+            hasErrors = true;
+          }
+          if (check.type === 'json') JSON.parse(content);
+        } catch (error) {
+          addTestResult(`${check.name}: Falha ao carregar ou processar (${error.message})`, 'error', `Verifique se o arquivo existe no caminho correto: ${check.url}`);
+          hasErrors = true;
+        }
+      });
+
+      await Promise.all(promises);
+      if (!hasErrors) addTestResult('PASSOU: Todos os arquivos essenciais foram carregados e são válidos.', 'success');
+    }
+
+    async function testLinksNosArtigos() {
+      addTestResult('Executando: Verificação de Links nos Artigos .md...', 'info');
+      const articleFiles = ['artigos/introducao.md', 'artigos/alertas.md', 'artigos/relatorios.md'];
+      let brokenLinksCount = 0;
+      const linkPromises = [];
+
+      for (const file of articleFiles) {
+        try {
+          const response = await fetch(file);
+          if (!response.ok) { addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, 'warn'); continue; }
+          const markdown = await response.text();
+          const linkRegex = /\[.*?\]\((.*?)\)/g;
+          let match;
+          while ((match = linkRegex.exec(markdown)) !== null) {
+            const url = match[1];
+            const isWebOrRelative = /^(https?:|^\/|^\.\.?\/)/.test(url);
+            if (!isWebOrRelative) continue;
+
+            linkPromises.push(
+              fetch(url, { method: 'HEAD' }).then(linkResponse => {
+                if (!linkResponse.ok) {
+                  brokenLinksCount++;
+                  addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Status: ${linkResponse.status})`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
+                }
+              }).catch(() => {
+                brokenLinksCount++;
+                addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Erro de rede)`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
+              })
+            );
+          }
+        } catch (e) {
+          addTestResult(`Erro ao processar o artigo ${file}.`, 'warn');
+        }
+      }
+
+      await Promise.all(linkPromises);
+      if (brokenLinksCount === 0) addTestResult('PASSOU: Nenhum link quebrado encontrado dentro dos artigos.', 'success');
+    }
+
+    function testBoasPraticasScripts() {
+      addTestResult('Executando: Análise de Carregamento de Scripts...', 'info');
+      const scripts = document.querySelectorAll('script[src]');
+      let hasIssues = false;
+      scripts.forEach(script => {
+        const src = script.getAttribute('src');
+        if (src && (src.includes('main.js') || src.includes('doc-loader.js') || src.includes('busca.js') || src.includes('dev-panel.js'))) {
+          if (!script.hasAttribute('defer') && !script.hasAttribute('async')) {
+            hasIssues = true;
+            addTestResult(`O script <code>${src}</code> está sem 'defer' ou 'async'.`, 'warn', "Adicione o atributo 'defer' à tag script para melhorar a performance de carregamento da página.");
+          }
+        }
+      });
+      if (!hasIssues) addTestResult("PASSOU: Todos os scripts locais usam 'defer' ou 'async'.", 'success');
+    }
+
+    function testConteudoMisto() {
+      addTestResult('Executando: Verificação de Segurança (Conteúdo Misto)...', 'info');
+      let mixedContentCount = 0;
+      if (window.location.protocol === 'https:') {
+        const resources = document.querySelectorAll('img[src], script[src], link[href]');
+        resources.forEach(res => {
+          const url = res.src || res.href;
+          if (url && url.startsWith('http:')) {
+            mixedContentCount++;
+            addTestResult(`Conteúdo Misto encontrado: <code>${url}</code>`, 'error', 'Esta página é HTTPS, mas carrega um recurso via HTTP. Altere o link para HTTPS para evitar alertas de segurança.');
+          }
+        });
+      }
+      if (mixedContentCount === 0) addTestResult('PASSOU: Nenhum conteúdo misto (HTTP em página HTTPS) foi encontrado.', 'success');
+    }
+
+    function testAcessibilidadeImagens() {
+      addTestResult('Executando: Teste de Acessibilidade (Imagens)...');
+      const imagensSemAlt = document.querySelectorAll('main img:not([alt])');
+      if (imagensSemAlt.length === 0) {
+        addTestResult("PASSOU: Todas as imagens no conteúdo principal possuem o atributo 'alt'.", 'success');
+      } else {
+        addTestResult(`AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`, 'warn', 'Adicione o atributo \`alt\` com uma descrição útil do conteúdo da imagem para melhorar a acessibilidade.');
+      }
+    }
+
+    function testConsoleErros() {
+      addTestResult('Executando: Teste de Erros no Console...', 'info');
+      if (capturedErrors.length === 0) {
+        addTestResult('PASSOU: Nenhum erro de JavaScript foi detectado desde que a página carregou.', 'success');
+      } else {
+        addTestResult(`FALHOU: Foram detectados ${capturedErrors.length} erro(s). Veja o console para detalhes.`, 'error', 'Abra a aba "Console" aqui no painel ou o console do navegador (F12) para ver os erros em vermelho.');
+        capturedErrors.forEach(err => {
+          const shortErr = err.length > 100 ? err.substring(0, 97) + '...' : err;
+          addTestResult(`\u00A0\u00A0\u00A0- <code>${shortErr}</code>`, 'error');
+        });
+      }
+    }
+
+    async function runAllTests() {
+      if (!testsOutput || !runTestsButton) return;
+      runTestsButton.disabled = true;
+      testsOutput.innerHTML = '';
+      capturedErrors = [];
+
+      addTestResult('Iniciando varredura completa do site...', 'info');
+      await testArquivosEssenciais();
+      await testLinksNosArtigos();
+      testAcessibilidadeImagens();
+      testBoasPraticasScripts();
+      testConteudoMisto();
+      testConsoleErros();
+      addTestResult('Varredura completa concluída.', 'success');
+      runTestsButton.disabled = false;
+    }
+
+    if (runTestsButton) runTestsButton.addEventListener('click', runAllTests);
+
+    // ---------------------------------------------------------------------------------
+    // INICIALIZAÇÃO FINAL
+    // ---------------------------------------------------------------------------------
     populateInfoTab();
-    populateStorageTab();
-
-    // Inicializa interceptador de rede
     initializeNetworkInterceptor();
+    // A aba Elements é construída no carregamento (refreshDomTree) e o inspector é lazy.
 
-    // Observa alterações de tamanho da janela para atualizar info
-    window.addEventListener('resize', populateInfoTab);
-
-    // Força atualização da árvore DOM (Elements Tab) se algo mudar no DOM
-    const observer = new MutationObserver(() => {
-      document.dispatchEvent(new Event('devtools:refresh-dom-tree'));
-    });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-    // Mensagem de confirmação no console do navegador
-    console.info('%cPainel de Diagnóstico inicializado (v5.2.0)', 'color: green; font-weight: bold;');
-
-  }); // fim do DOMContentLoaded
-
-})(); // fim da IIFE principal
+  });
+})();
