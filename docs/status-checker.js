@@ -1,6 +1,6 @@
 // ARQUIVO: status-checker.js
-// RESPONSABILIDADE: Diagnóstico de componentes, carregamento de históricos e atualização da página de status.
-// VERSÃO: 5.1.1
+// RESPONSABILIDADE: Realizar diagnóstico, carregar históricos e atualizar a página de status.
+// VERSÃO: 5.2.0
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES ---
@@ -9,12 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
     const resultsContainer = document.getElementById('status-results');
     const summaryContainer = document.getElementById('status-summary');
-    const bannerContainer = document.getElementById('overall-status-banner');
     const uptimeGrid = document.getElementById('uptime-grid');
     const incidentsFeed = document.getElementById('incidents-feed');
     const lastUpdatedSpan = document.getElementById('last-updated');
 
-    // --- MAPAS DE TEXTO ---
+    // --- MAPAS DE TEXTO (PARA TRADUÇÃO E CONSISTÊNCIA) ---
     const statusTextMap = {
         operacional: 'Operacional',
         degradacao: 'Degradação de Performance',
@@ -27,59 +26,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const httpStatusTextMap = { 200: "OK", 404: "Não Encontrado", 500: "Erro Interno" };
     const STATUS_LEVEL = { SUCCESS: 'SUCCESS', WARNING: 'WARNING', CRITICAL: 'CRITICAL' };
 
-    // --- FUNÇÃO PRINCIPAL ---
+    // --- LÓGICA PRINCIPAL ---
+    
+    // Função que busca dados e atualiza todas as seções da página
     async function updateAllStatusData() {
-        console.log(`[Status v5.1.1] Verificando sistemas... ${new Date().toLocaleTimeString()}`);
-
-        // 1. Roda os checks
-        const componentResults = await runAllChecks();
-
-        // 2. Carrega históricos
+        console.log(`[Status v5.2.0] Verificando todos os sistemas... ${new Date().toLocaleTimeString()}`);
+        
+        // 1. Roda os checks de componentes em tempo real
+        await runAllChecks();
+        
+        // 2. Carrega dados históricos (sempre, para manter a página atualizada)
         loadUptimeHistory();
         loadIncidents();
 
-        // 3. Atualiza banner geral
-        updateOverallBanner(componentResults);
-
-        // 4. Timestamp
+        // 3. Atualiza o timestamp da última verificação
         if (lastUpdatedSpan) {
             const now = new Date();
             lastUpdatedSpan.textContent = `Última verificação: ${now.toLocaleTimeString('pt-BR')}`;
         }
     }
 
-    // --- VERIFICAÇÃO DE COMPONENTES ---
+    // Função que verifica os componentes
     async function runAllChecks() {
-        if (!resultsContainer || !summaryContainer) return { criticalErrors: 0, warnings: 0 };
-
-        // Checks fixos
         const checks = [
             { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
+            { name: 'Artigo: Introdução', url: 'artigos/introducao.md', type: 'content' },
             { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' },
             { name: 'Dependência Externa (Tailwind)', url: 'https://cdn.tailwindcss.com', type: 'external_script' }
         ];
-
-        // Checks dinâmicos de artigos
-        try {
-            const response = await fetch('artigos.json', { cache: "no-store" });
-            if (response.ok) {
-                const artigos = await response.json();
-                artigos.forEach(article => {
-                    if (!article.pagina.endsWith('.html')) {
-                        checks.push({
-                            name: `Artigo: ${article.titulo}`,
-                            url: `artigos/${article.pagina}.md`,
-                            type: 'content'
-                        });
-                    }
-                });
-            }
-        } catch (e) {
-            console.warn("Não foi possível carregar artigos para validação dinâmica:", e);
-        }
-
+        
         let criticalErrors = 0, warnings = 0;
-        resultsContainer.innerHTML = '';
+        resultsContainer.innerHTML = ''; 
 
         const checkPromises = checks.map(async (check) => {
             const result = await performCheck(check);
@@ -90,21 +67,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         await Promise.all(checkPromises);
 
-        if (criticalErrors > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-critical';
-            summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: ${criticalErrors} erro(s) crítico(s) encontrado(s).</h3>`;
-        } else if (warnings > 0) {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-warning';
-            summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: Nenhum erro crítico, mas ${warnings} aviso(s) requerem atenção.</h3>`;
-        } else {
-            summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-success';
-            summaryContainer.innerHTML = '<h3>Diagnóstico Concluído: Todos os componentes estão operacionais.</h3>';
+        if (summaryContainer) {
+            if (criticalErrors > 0) {
+                summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-critical';
+                summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: ${criticalErrors} erro(s) crítico(s) encontrado(s).</h3>`;
+            } else if (warnings > 0) {
+                summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-warning';
+                summaryContainer.innerHTML = `<h3>Diagnóstico Concluído: Nenhum erro crítico, mas ${warnings} aviso(s) requerem atenção.</h3>`;
+            } else {
+                summaryContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-success';
+                summaryContainer.innerHTML = '<h3>Diagnóstico Concluído: Todos os componentes estão operacionais.</h3>';
+            }
         }
-
-        return { criticalErrors, warnings };
     }
 
-    // --- CHECK INDIVIDUAL ---
+    // Função que executa uma única verificação
     async function performCheck({ name, url, type }) {
         if (type === 'external_script') {
             const found = document.querySelector(`script[src^="${url}"]`);
@@ -113,27 +90,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 : { name, status: STATUS_LEVEL.CRITICAL, detail: 'Tag de script não encontrada.', solution: `Verifique se a tag <script src="${url}..."> está no HTML.` };
         }
         try {
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(url, { cache: "no-store" }); // Evita cache na verificação
             const detail = `Status HTTP: ${response.status} (${httpStatusTextMap[response.status] || response.statusText})`;
             if (!response.ok) return { name, status: STATUS_LEVEL.CRITICAL, detail, solution: `Verifique se o caminho "${url}" está correto.` };
-
             const content = await response.text();
             if (content.trim() === '') return { name, status: STATUS_LEVEL.WARNING, detail, solution: `O arquivo está vazio e pode causar falhas.` };
-
-            if (type === 'json') {
-                try {
-                    JSON.parse(content);
-                } catch (e) {
-                    return { name, status: STATUS_LEVEL.CRITICAL, detail: 'Erro de formatação JSON.', solution: `O arquivo não é um JSON válido. Verifique a sintaxe.` };
-                }
-            }
+            if (type === 'json') JSON.parse(content);
             return { name, status: STATUS_LEVEL.SUCCESS, detail };
         } catch (e) {
-            return { name, status: STATUS_LEVEL.CRITICAL, detail: `Erro de rede ou parsing: ${e.message}`, solution: `Verifique o formato do arquivo ou sua conexão.` };
+            return { name, status: STATUS_LEVEL.CRITICAL, detail: `Erro de formatação ou rede: ${e.message}`, solution: `Verifique o formato do arquivo ou sua conexão.` };
         }
     }
-
-    // --- RENDERIZAÇÃO ---
+    
+    // Função para renderizar um resultado de check na tela
     function renderResult({ name, status, detail, solution }) {
         let dotClass, blockClass;
         switch (status) {
@@ -145,9 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.innerHTML += `<div class="p-4 rounded-md ${blockClass}"><div class="flex items-center gap-4"><span class="status-dot ${dotClass}"></span><div class="flex-grow"><p class="font-semibold text-[var(--text-primary)]">${name}</p><p class="text-sm text-[var(--text-secondary)] font-mono">${detail}</p></div></div>${solutionHTML}</div>`;
     }
 
-    // --- HISTÓRICO DE UPTIME ---
+    // Função para carregar e exibir o histórico de uptime
     async function loadUptimeHistory() {
-        if (!uptimeGrid) return;
         try {
             const response = await fetch('status-history.json');
             const data = await response.json();
@@ -163,9 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INCIDENTES ---
+    // Função para carregar e exibir o feed de incidentes
     async function loadIncidents() {
-        if (!incidentsFeed) return;
         try {
             const response = await fetch('status-history.json');
             const data = await response.json();
@@ -181,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3 class="text-lg font-bold mt-1 text-[var(--text-primary)]">${incident.title}</h3>
                     <div class="mt-3 space-y-4">
                         ${incident.updates.map(update => {
-                            const [time] = update.timestamp.split(' ');
+                            const [time, tz] = update.timestamp.split(' ');
                             const [hour, minute] = time.split(':');
                             const incidentDate = new Date(incident.date);
                             const localTime = new Date(incidentDate.getFullYear(), incidentDate.getMonth(), incidentDate.getDate(), hour, minute);
@@ -198,23 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
             incidentsFeed.innerHTML = '<p class="text-red-500">Não foi possível carregar o feed de incidentes.</p>';
         }
     }
-
-    // --- BANNER ---
-    function updateOverallBanner({ criticalErrors, warnings }) {
-        if (!bannerContainer) return;
-        if (criticalErrors > 0) {
-            bannerContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-critical';
-            bannerContainer.innerHTML = '🔴 Alguns sistemas estão com interrupção no serviço.';
-        } else if (warnings > 0) {
-            bannerContainer.className = 'mb-8 p-4 rounded-md text-center font-bold summary-warning';
-            bannerContainer.innerHTML = '🟡 Alguns sistemas apresentam degradação de performance.';
-        } else {
-            bannerContainer.className = 'hidden'; // Esconde o banner se tudo estiver OK
-            bannerContainer.innerHTML = '';
-        }
-    }
-
+    
     // --- INICIALIZAÇÃO ---
-    updateAllStatusData();
-    setInterval(updateAllStatusData, REFRESH_INTERVAL_SECONDS * 1000);
+    updateAllStatusData(); // Executa uma vez ao carregar a página
+    setInterval(updateAllStatusData, REFRESH_INTERVAL_SECONDS * 1000); // E depois a cada X segundos
 });
