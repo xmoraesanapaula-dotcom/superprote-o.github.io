@@ -1,0 +1,40 @@
+# Nome do workflow que aparecerá na aba "Actions" do seu repositório
+name: Gerar Indice de Busca
+
+# Define o gatilho: este workflow irá rodar sempre que houver um 'push' para a branch 'main'
+on:
+  push:
+    branches:
+      - main
+
+# Define as tarefas que serão executadas
+jobs:
+  build:
+    # Usa a versão mais recente do Ubuntu como ambiente para rodar os comandos
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Baixa o código do seu repositório para o ambiente da Action
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Node.js para que possamos usar npm
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Pode ajustar a versão se necessário
+
+      # 3. Instala as dependências do projeto (ex: front-matter)
+      - name: Instalar dependências
+        run: npm install
+
+      # 4. Executa o script de build para gerar o busca-data.json
+      - name: Gerar o arquivo busca-data.json
+        run: npm run build
+
+      # 5. Salva o arquivo busca-data.json atualizado de volta no repositório
+      - name: Commit dos arquivos gerados
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: Atualiza o índice de busca (busca-data.json)'
+          file_pattern: 'docs/busca-data.json'
