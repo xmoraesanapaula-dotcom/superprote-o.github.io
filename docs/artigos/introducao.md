@@ -1,8 +1,3 @@
----
-title: Introdução
-lastUpdated: 2025-09-08
----
-
 # Bem-vindo à Documentação do Super Proteção
 
 Este é o documento oficial do projeto **Super Proteção**, carregado dinamicamente a partir de um arquivo Markdown.  
