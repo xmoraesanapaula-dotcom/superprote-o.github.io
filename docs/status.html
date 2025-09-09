@@ -91,10 +91,12 @@
         <main class="p-8 md:p-12">
             <div class="mx-auto max-w-5xl">
 
-                <div id="overall-status-banner" class="mb-8 p-4 rounded-md text-center font-semibold">
-                    <p>Verificando status...</p>
+                <!-- RESUMO GERAL (único responsável) -->
+                <div id="status-summary" class="mb-8 p-4 rounded-md text-center font-bold">
+                    <p>Carregando diagnóstico...</p>
                 </div>
 
+                <!-- Resultados -->
                 <div class="mb-12">
                     <div class="flex justify-between items-baseline">
                         <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Status dos Componentes</h2>
@@ -102,9 +104,9 @@
                     </div>
                     <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Análise em tempo real da saúde dos componentes do site.</p>
                 </div>
-                <div id="status-summary" class="mb-8 p-4 rounded-md text-center"><p>Carregando resumo...</p></div>
                 <div class="space-y-3 mb-16" id="status-results"><p>Carregando resultados...</p></div>
 
+                <!-- Histórico de Uptime -->
                 <div class="mb-16">
                     <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Histórico de Uptime</h2>
                     <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Disponibilidade dos nossos sistemas nos últimos 90 dias.</p>
@@ -117,12 +119,14 @@
                     </div>
                 </div>
 
+                <!-- Incidentes -->
                 <div class="mb-16">
                     <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Incidentes e Manutenções</h2>
                     <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Um registro de todos os incidentes passados e manutenções programadas.</p>
                     <div id="incidents-feed" class="mt-6 space-y-8"><p>Carregando incidentes...</p></div>
                 </div>
 
+                <!-- Informativo -->
                 <div>
                     <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[var(--text-primary)]">Mantenha-se Informado</h2>
                     <p class="mt-2 text-lg text-gray-600 dark:text-[var(--text-secondary)]">Receba atualizações sobre manutenções e incidentes em tempo real.</p>
