@@ -857,96 +857,169 @@
         return originalSend.apply(this, arguments);
       };
     }
-    // ---------------------------------------------------------------------------------
-    // MÓDULO 7: SUÍTE DE DIAGNÓSTICO
-    // Responsável por rodar uma série de testes rápidos para identificar problemas comuns
-    // na página, scripts, rede e performance.
-    // ---------------------------------------------------------------------------------
-    function addTestResult(message, type = 'info', solution = null) {
-      // Adiciona uma linha no painel de resultados dos testes
-      if (!testsOutput) return;
+    // ARQUIVO: dev-panel.js (Módulo 7 Corrigido)
 
-      const line = document.createElement('div');
-      line.className = `console-line ${type}`;
+// ---------------------------------------------------------------------------------
+// MÓDULO 7: SUÍTE DE DIAGNÓSTICO
+// ---------------------------------------------------------------------------------
+function addTestResult(message, type = 'info', solution = null) {
+  if (!testsOutput) return;
+  const line = document.createElement('div');
+  line.className = `console-line ${type}`;
+  let icon = 'info';
+  if (type === 'success') icon = 'check_circle';
+  if (type === 'warn') icon = 'warning';
+  if (type === 'error') icon = 'error';
+  let html = `<span class="material-symbols-outlined console-icon">${icon}</span> <div>${message.replace(/</g, '&lt;')}</div>`;
+  if (solution) {
+    html += `<div style="margin-left:32px;margin-top:4px;font-size:12px;color:var(--color-info);"><strong>Sugestão:</strong> ${solution.replace(/</g, '&lt;')}</div>`;
+  }
+  line.innerHTML = html;
+  testsOutput.appendChild(line);
+}
 
-      // Ícone conforme tipo do teste
-      let icon = 'info';
-      if (type === 'success') icon = 'check_circle';
-      if (type === 'warn') icon = 'warning';
-      if (type === 'error') icon = 'error';
+async function testArquivosEssenciais() {
+  addTestResult('Executando: Verificação de Arquivos Essenciais...', 'info');
+  const checks = [
+    { name: 'Dados da Home (conteudo-index.json)', url: 'conteudo-index.json', type: 'json' },
+    { name: 'Dados da Busca (busca-data.json)', url: 'busca-data.json', type: 'json' },
+    { name: 'Artigo: Introdução', url: 'artigos/introducao.md', type: 'content' },
+    { name: 'Script Principal (main.js)', url: 'main.js', type: 'script' }
+  ];
+  let hasErrors = false;
 
-      // HTML principal
-      let html = `
-        <span class="material-symbols-outlined console-icon">${icon}</span> 
-        <div>${message.replace(/</g, '&lt;')}</div>
-      `;
-
-      // Solução sugerida (quando disponível)
-      if (solution) {
-        html += `
-          <div style="margin-left:32px;margin-top:4px;font-size:12px;color:var(--text-secondary);">
-            Sugestão: ${solution}
-          </div>`;
+  const promises = checks.map(async (check) => {
+    try {
+      const response = await fetch(check.url);
+      if (!response.ok) throw new Error(`Status ${response.status}`);
+      const content = await response.text();
+      if (content.trim() === '') {
+        addTestResult(`${check.name}: O arquivo está vazio.`, 'warn', 'O arquivo existe mas não tem conteúdo, o que pode causar erros.');
+        hasErrors = true;
       }
-
-      line.innerHTML = html;
-      testsOutput.appendChild(line);
-      testsOutput.scrollTop = testsOutput.scrollHeight;
+      if (check.type === 'json') JSON.parse(content);
+    } catch (error) {
+      addTestResult(`${check.name}: Falha ao carregar ou processar (${error.message})`, 'error', `Verifique se o arquivo existe no caminho correto: ${check.url}`);
+      hasErrors = true;
     }
+  });
 
-    function runDiagnostics() {
-      // Limpa resultados anteriores
-      if (testsOutput) testsOutput.innerHTML = '';
+  await Promise.all(promises);
+  if (!hasErrors) addTestResult('PASSOU: Todos os arquivos essenciais foram carregados e são válidos.', 'success');
+}
 
-      // --- Teste 1: Conectividade
-      if (navigator.onLine) {
-        addTestResult('Conexão com a internet: OK', 'success');
-      } else {
-        addTestResult('Sem conexão com a internet.', 'error',
-          'Verifique sua rede ou cabo de internet.');
-      }
+async function testLinksNosArtigos() {
+  addTestResult('Executando: Verificação de Links nos Artigos .md...', 'info');
+  const articleFiles = ['artigos/introducao.md', 'artigos/alertas.md', 'artigos/relatorios.md']; //
+  let brokenLinksCount = 0;
+  const linkPromises = [];
 
-      // --- Teste 2: LocalStorage
-      try {
-        localStorage.setItem('__test__', '1');
-        localStorage.removeItem('__test__');
-        addTestResult('LocalStorage acessível.', 'success');
-      } catch (e) {
-        addTestResult('Falha ao acessar LocalStorage.', 'error',
-          'Verifique se o navegador está em modo privado ou se há bloqueios.');
-      }
+  for (const file of articleFiles) {
+    try {
+      const response = await fetch(file);
+      if (!response.ok) { addTestResult(`Não foi possível carregar o artigo ${file} para verificar links.`, 'warn'); continue; }
+      const markdown = await response.text();
+      const linkRegex = /\[.*?\]\((.*?)\)/g;
+      let match;
+      while ((match = linkRegex.exec(markdown)) !== null) {
+        const url = match[1];
+        const isWebOrRelative = /^(https?:|^\/|^\.\.?\/)/.test(url);
+        if (!isWebOrRelative) continue;
 
-      // --- Teste 3: Performance API
-      if (performance && performance.now) {
-        const t = performance.now();
-        addTestResult(`Performance API disponível (now=${t.toFixed(2)}ms).`, 'success');
-      } else {
-        addTestResult('Performance API não suportada.', 'warn',
-          'Atualize para um navegador mais moderno.');
-      }
-
-      // --- Teste 4: Fetch API
-      if (window.fetch) {
-        addTestResult('Fetch API disponível.', 'success');
-      } else {
-        addTestResult('Fetch API não suportada.', 'error',
-          'Necessário polyfill ou navegador atualizado.');
-      }
-
-      // --- Teste 5: Erros capturados
-      if (capturedErrors.length > 0) {
-        capturedErrors.forEach(err =>
-          addTestResult(`Erro capturado: ${err}`, 'error')
+        linkPromises.push(
+          fetch(url, { method: 'HEAD' }).then(linkResponse => {
+            if (!linkResponse.ok) {
+              brokenLinksCount++;
+              addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Status: ${linkResponse.status})`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
+            }
+          }).catch(() => {
+            brokenLinksCount++;
+            addTestResult(`Link quebrado em ${file}: <code>${url}</code> (Erro de rede)`, 'error', 'Corrija o caminho do link no arquivo Markdown.');
+          })
         );
-      } else {
-        addTestResult('Nenhum erro capturado até agora.', 'success');
+      }
+    } catch (e) {
+      addTestResult(`Erro ao processar o artigo ${file}.`, 'warn');
+    }
+  }
+
+  await Promise.all(linkPromises);
+  if (brokenLinksCount === 0) addTestResult('PASSOU: Nenhum link quebrado encontrado dentro dos artigos.', 'success');
+}
+
+function testBoasPraticasScripts() {
+  addTestResult('Executando: Análise de Carregamento de Scripts...', 'info');
+  const scripts = document.querySelectorAll('script[src]');
+  let hasIssues = false;
+  scripts.forEach(script => {
+    const src = script.getAttribute('src');
+    if (src && (src.includes('main.js') || src.includes('doc-loader.js') || src.includes('busca.js') || src.includes('dev-panel.js'))) {
+      if (!script.hasAttribute('defer') && !script.hasAttribute('async')) {
+        hasIssues = true;
+        addTestResult(`O script <code>${src}</code> está sem 'defer' ou 'async'.`, 'warn', "Adicione o atributo 'defer' à tag script para melhorar a performance de carregamento da página.");
       }
     }
+  });
+  if (!hasIssues) addTestResult("PASSOU: Todos os scripts locais usam 'defer' ou 'async'.", 'success');
+}
 
-    if (runTestsButton) {
-      runTestsButton.addEventListener('click', runDiagnostics);
-    }
+function testConteudoMisto() {
+  addTestResult('Executando: Verificação de Segurança (Conteúdo Misto)...', 'info');
+  let mixedContentCount = 0;
+  if (window.location.protocol === 'https:') {
+    const resources = document.querySelectorAll('img[src], script[src], link[href]');
+    resources.forEach(res => {
+      const url = res.src || res.href;
+      if (url && url.startsWith('http:')) {
+        mixedContentCount++;
+        addTestResult(`Conteúdo Misto encontrado: <code>${url}</code>`, 'error', 'Esta página é HTTPS, mas carrega um recurso via HTTP. Altere o link para HTTPS para evitar alertas de segurança.');
+      }
+    });
+  }
+  if (mixedContentCount === 0) addTestResult('PASSOU: Nenhum conteúdo misto (HTTP em página HTTPS) foi encontrado.', 'success');
+}
 
+function testAcessibilidadeImagens() {
+  addTestResult('Executando: Teste de Acessibilidade (Imagens)...');
+  const imagensSemAlt = document.querySelectorAll('main img:not([alt])');
+  if (imagensSemAlt.length === 0) {
+    addTestResult("PASSOU: Todas as imagens no conteúdo principal possuem o atributo 'alt'.", 'success');
+  } else {
+    addTestResult(`AVISO: Encontrada(s) ${imagensSemAlt.length} imagem(ns) sem o atributo 'alt'.`, 'warn', 'Adicione o atributo `alt` com uma descrição útil do conteúdo da imagem para melhorar a acessibilidade.');
+  }
+}
+
+function testConsoleErros() {
+  addTestResult('Executando: Teste de Erros no Console...', 'info');
+  if (state.capturedErrors.length === 0) {
+    addTestResult('PASSOU: Nenhum erro de JavaScript foi detectado desde que a página carregou.', 'success');
+  } else {
+    addTestResult(`FALHOU: Foram detectados ${state.capturedErrors.length} erro(s). Veja o console para detalhes.`, 'error', 'Abra a aba "Console" aqui no painel ou o console do navegador (F12) para ver os erros em vermelho.');
+    state.capturedErrors.forEach(err => {
+      const shortErr = err.length > 100 ? err.substring(0, 97) + '...' : err;
+      addTestResult(`\u00A0\u00A0\u00A0- <code>${shortErr}</code>`, 'error');
+    });
+  }
+}
+
+async function runAllTests() {
+  if (!testsOutput || !runTestsButton) return;
+  runTestsButton.disabled = true;
+  testsOutput.innerHTML = '';
+  state.capturedErrors = []; // Limpa os erros para a nova verificação
+
+  addTestResult('Iniciando varredura completa do site...', 'info');
+  await testArquivosEssenciais();
+  await testLinksNosArtigos();
+  testAcessibilidadeImagens();
+  testBoasPraticasScripts();
+  testConteudoMisto();
+  testConsoleErros();
+  addTestResult('Varredura completa concluída.', 'success');
+  runTestsButton.disabled = false;
+}
+
+if (runTestsButton) runTestsButton.addEventListener('click', runAllTests);
     // ---------------------------------------------------------------------------------
     // MÓDULO 8: INICIALIZAÇÃO FINAL
     // Responsável por ligar todos os módulos e garantir o funcionamento do painel.
